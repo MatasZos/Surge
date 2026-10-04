@@ -39,3 +39,6 @@ desktop.ini
 *.crdownload
 *.part
 ~$*
+
+# Deno / Celbridge build
+test_output/
