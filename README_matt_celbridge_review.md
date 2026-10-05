@@ -1,6 +1,9 @@
 # Surge (team 5): Celbridge / Deno review
 
-Reviewed 2026-10-05 by Matt. Updated later the same day: the project now uses Deno only.
+Reviewed 2026-10-05 by Matt, after the 11:00 deadline. The project now uses Deno only.
+
+**Code reviewed:** `main` at `ec5e1fe` (Fri 2 Oct 16:07, Vladbr99: "Commiting duplicated some lines. FIXED"). There
+were no commits between then and the deadline.
 
 ## Summary
 
