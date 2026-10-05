@@ -1,29 +1,40 @@
 # Surge (team 5): Celbridge / Deno review
 
-Reviewed 2026-10-05 by Matt.
+Reviewed 2026-10-05 by Matt. Updated later the same day: the project now uses Deno only.
 
 ## Summary
 
-Celbridge's Deno tools were added to this project, alongside the existing Node/npm build (`build.ts`,
-`npm run dev`, `npm run build`), which was not changed. The game builds with `deno task build` and runs
-correctly from the result: the grid, the Shooter button and the robot enemy sprite all load, with no errors.
+The project now builds with Deno only, with Celbridge's tools. The Node/npm build has been removed: Deno runs on
+Windows, macOS and Linux, and does the same job. The game builds with `deno task build` and runs correctly from
+the result: the grid, the Shooter button and the robot enemy sprite all load, with no errors.
 
-The Deno build's report shows **no TypeScript errors** and **10 lint warnings**. None of them stop the game
-running. The repo also had a few housekeeping problems, which have been fixed or are listed below.
+The build's report shows **no TypeScript errors** and **10 lint warnings**. None of them stop the game running.
+The repo also had a few housekeeping problems, which have been fixed or are listed below.
 
 ## Changes made on this branch
 
 | Change | Why |
 |---|---|
 | Deleted `Machine Uprising.celbridge` and `SURGE.celbridge`, kept `Surge game.celbridge` | All three were identical. `Surge game.celbridge` was the most recent (added 29 Sep). |
-| Stopped tracking `dist/game.js` in git (`git rm --cached`) | It's build output, and `.gitignore` already lists `dist/`, but it had been committed. Every build showed it as changed. |
-| Stopped tracking `node_modules/` in git (152 files) | It's installed by `npm install`, and `.gitignore` already lists it. The committed copy was only part of it, and esbuild's files only work on the operating system they were installed on. |
 | Added the Deno build and Celbridge tools | See `CELBRIDGE.md`. |
+| Removed `package.json`, `package-lock.json`, `tsconfig.json`, `node_modules/` and the Node `build.ts` | Node/npm aren't needed any more. The Deno build is now `build.ts`. |
+| Stopped tracking `dist/game.js` in git | It's build output, and `.gitignore` already lists `dist/`, but it had been committed. Every build showed it as changed. |
+| `public/index.html` loads `app.js` instead of `game.js` | `app.js` is the file the Deno build produces (the same as the other teams). |
+| Added `deno task serve` | Serves `dist/` at http://127.0.0.1:8000, for previewing in a browser without Celbridge. |
 
-Both files are still on disk. Git just no longer tracks them.
+## Working without Celbridge
 
-**After this is merged:** anyone using the npm build needs to run `npm install` first. The Deno build doesn't use
-`node_modules/`.
+`README_deno_tooling.md` explains how to get the same set-up without Celbridge. That matters most for **Linux**
+users, as there's no Linux version of Celbridge yet, and `README_deno_install.md` covers installing Deno
+on Linux (as well as macOS and Windows). It also
+suits anyone working in VS Code:
+
+- `deno task dev` builds, tests, and rebuilds `dist/` every time a file in `src/`, `public/` or `tests/` is saved
+- `deno task serve`, in a second terminal, serves the game at http://127.0.0.1:8000. Then refresh the browser
+  after each rebuild
+
+The game needs the server: opened straight from disk (`file://`), browsers block Phaser from loading its images
+and sounds, so it shows a blank screen.
 
 ## Issues and recommended actions
 
@@ -43,8 +54,7 @@ import { Grid } from "./grid/Grid";
 import { Grid } from "./grid/Grid.ts";
 ```
 
-The npm build accepts this too (`allowImportingTsExtensions` is already on in `tsconfig.json`), and so do Deno and
-Celbridge without any extra settings.
+Then the `sloppy-imports` setting can come out of `deno.json`.
 
 **b) `no-explicit-any` (3): grid cells can hold anything**
 
@@ -90,26 +100,19 @@ energy into the managers. Smaller files are easier for several people to work on
 - **`my_functions.ts`** (a `sayHello` function) isn't used anywhere. It looks like it's left over from the course
   template.
 - **`oldreadme.md`** describes the game under its old name, "Machine Uprising".
-- **`package.json`** is still named `ts101-part03`, from the template.
 
-*Recommended:* delete `my_functions.ts`, merge anything useful from `oldreadme.md` into `README.md` and delete it,
-and rename the package to `surge`.
+*Recommended:* delete `my_functions.ts`, merge anything useful from `oldreadme.md` into `README.md` and delete it.
 
-### 4. Both builds write to `dist/`
-
-`deno task build` and `npm run build` both write `dist/game.js`, so whichever ran last is what you see.
-
-*Recommended:* fine. They build the same code the same way.
-
-### 5. Not yet checked inside Celbridge itself
+### 4. Not yet checked inside Celbridge itself
 
 The build was tested through a local web server, not in Celbridge's side preview.
 
 *Recommended:* open `Surge game.celbridge` and check the game appears in the side preview, and that the sprites
-load.
+load. If it shows a blank screen, preview it with `deno task serve` and a browser instead (see
+`README_deno_tooling.md`).
 
-## Files added for the Deno build
+## Files for the Deno build
 
-`Surge game.celbridge` (replaced), `CELBRIDGE.md`, `terminal.console`, `deno.json`, `deno.lock`, `deno_build.ts`,
-`tools/test_report.ts`, `tools/tmx_to_json.ts`, `tests/README.md`. The only other existing file changed is
-`.gitignore` (added `test_output/`). See `CELBRIDGE.md` for how to use them.
+`Surge game.celbridge` (replaced), `CELBRIDGE.md`, `README_deno_tooling.md`, `README_deno_install.md`, `terminal.console`, `deno.json`,
+`deno.lock`, `build.ts` (replaced), `tools/test_report.ts`, `tools/tmx_to_json.ts`, `tests/README.md`. See
+`CELBRIDGE.md` for how to use them in Celbridge, and `README_deno_tooling.md` for how to use them without it.
