@@ -15,7 +15,7 @@ export class Shooter extends Defender {
 
         this.setDisplaySize(60,60);
 
-        this.health = 100;
+        this.health = 300;
         this.damage = 20;
 
         console.log("Shooter created");

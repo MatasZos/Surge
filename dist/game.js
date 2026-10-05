@@ -146044,6 +146044,7 @@
     }
     takeDamage(amount) {
       this.health -= amount;
+      console.log("Defender health:", this.health);
       if (this.health <= 0) {
         this.destroy();
       }
@@ -146077,7 +146078,7 @@
     constructor(scene, x, y) {
       super(scene, x, y, "shooter");
       this.setDisplaySize(60, 60);
-      this.health = 100;
+      this.health = 300;
       this.damage = 20;
       console.log("Shooter created");
       this.shootTimer = scene.time.addEvent({
@@ -146115,9 +146116,9 @@
       scene.add.existing(this);
       scene.physics.add.existing(this);
       this.setDisplaySize(60, 60);
-      this.health = 100;
-      this.speed = 50;
-      this.damage = 10;
+      this.health = 200;
+      this.speed = 18;
+      this.damage = 25;
     }
     takeDamage(amount) {
       this.health -= amount;
@@ -146173,7 +146174,13 @@
     drawToolbar() {
       const toolbarX = 100;
       const toolbarY = 20;
-      const button = this.add.rectangle(toolbarX, toolbarY, 150, 40, 3355443);
+      const button = this.add.rectangle(
+        toolbarX,
+        toolbarY,
+        150,
+        40,
+        3355443
+      );
       const label = this.add.text(
         toolbarX,
         toolbarY,
@@ -146210,20 +146217,36 @@
       }
       const defenderX = GRID_X + col * CELL_SIZE + CELL_SIZE / 2;
       const defenderY = GRID_Y + row * CELL_SIZE + CELL_SIZE / 2;
-      const defender = new Shooter(this, defenderX, defenderY);
-      this.grid.placeHuman(row, col, defender);
+      const defender = new Shooter(
+        this,
+        defenderX,
+        defenderY
+      );
+      this.grid.placeHuman(
+        row,
+        col,
+        defender
+      );
       defender.setData("gridRow", row);
       defender.setData("gridCol", col);
       this.defenders.push(defender);
     }
     spawnEnemy() {
-      const row = __webpack_exports__default.Math.Between(0, GRID_ROWS - 1);
+      const row = __webpack_exports__default.Math.Between(
+        0,
+        GRID_ROWS - 1
+      );
       const enemyX = GRID_X + GRID_COLS * CELL_SIZE + 50;
       const enemyY = GRID_Y + row * CELL_SIZE + CELL_SIZE / 2;
-      const enemy = new Enemy(this, enemyX, enemyY, "enemy");
+      const enemy = new Enemy(
+        this,
+        enemyX,
+        enemyY,
+        "enemy"
+      );
       this.enemies.push(enemy);
     }
-    // Check whether a projectile has hit an enemy
+    // Check projectile and enemy collisions
     handleProjectileEnemyCollision() {
       for (const projectile of this.projectiles) {
         if (!projectile.active) {
@@ -146245,6 +146268,7 @@
         }
       }
     }
+    // Check enemy and defender collisions
     handleEnemyDefenderCollision() {
       for (const enemy of this.enemies) {
         if (!enemy.active) {
@@ -146262,15 +146286,26 @@
             enemy.isAttacking = true;
             const row = defender.getData("gridRow");
             const col = defender.getData("gridCol");
-            this.time.delayedCall(500, () => {
-              if (defender.active) {
-                defender.takeDamage(100);
-                this.grid.removeOccupant(row, col);
-                this.defenders = this.defenders.filter(
-                  (d) => d !== defender
-                );
-              }
-              enemy.isAttacking = false;
+            this.time.addEvent({
+              delay: 1e3,
+              callback: () => {
+                if (!defender.active) {
+                  enemy.isAttacking = false;
+                  return;
+                }
+                if (!enemy.active) {
+                  return;
+                }
+                defender.takeDamage(enemy.damage);
+                if (!defender.active) {
+                  this.grid.removeOccupant(row, col);
+                  this.defenders = this.defenders.filter(
+                    (d) => d !== defender
+                  );
+                  enemy.isAttacking = false;
+                }
+              },
+              loop: true
             });
             break;
           }
@@ -146278,7 +146313,10 @@
       }
     }
     create() {
-      this.grid = new Grid(GRID_ROWS, GRID_COLS);
+      this.grid = new Grid(
+        GRID_ROWS,
+        GRID_COLS
+      );
       this.events.on(
         "projectile-created",
         (projectile) => {

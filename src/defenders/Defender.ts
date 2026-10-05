@@ -6,7 +6,12 @@ export class Defender extends Phaser.GameObjects.Sprite {
     health: number;
     damage: number;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture: string) {
+    constructor(
+        scene: Phaser.Scene,
+        x: number,
+        y: number,
+        texture: string
+    ) {
         super(scene, x, y, texture);
 
         scene.add.existing(this);
@@ -16,7 +21,11 @@ export class Defender extends Phaser.GameObjects.Sprite {
     }
 
     takeDamage(amount: number) {
+
         this.health -= amount;
+
+        // Show health
+        console.log("Defender health:", this.health);
 
         if (this.health <= 0) {
             this.destroy();

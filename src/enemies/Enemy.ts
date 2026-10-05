@@ -22,13 +22,13 @@ export class Enemy extends Phaser.GameObjects.Sprite {
 
         this.setDisplaySize(60, 60);
 
-        this.health = 100;
-        this.speed = 50;
-        this.damage = 10;
+        // Enemy stats
+        this.health = 200;
+        this.speed = 18;
+        this.damage = 25;
     }
 
     takeDamage(amount: number) {
-
         this.health -= amount;
 
         console.log("Enemy health:", this.health);
@@ -39,9 +39,12 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     }
 
     move(delta: number) {
+
+        // Stop while attacking
         if (this.isAttacking) {
             return;
         }
+
         this.x -= this.speed * (delta / 1000);
     }
 }

@@ -25,10 +25,8 @@ class MainScene extends Phaser.Scene {
   preload() {
     // Assets
     this.load.image("shooter","assets/defenders/shooterdefender.png");
-
     this.load.image("enemy","assets/enemies/meleerobot.png");
-
-    this.load.image("laser","assets/effects/projectile.png" );
+    this.load.image("laser","assets/effects/projectile.png");
   }
 
   private drawGrid() {
@@ -41,7 +39,8 @@ class MainScene extends Phaser.Scene {
         const x = GRID_X + col * CELL_SIZE;
         const y = GRID_Y + row * CELL_SIZE;
 
-        graphics.strokeRect( x, y, CELL_SIZE,CELL_SIZE
+        graphics.strokeRect(
+          x,y,CELL_SIZE,CELL_SIZE
         );
       }
     }
@@ -51,9 +50,12 @@ class MainScene extends Phaser.Scene {
     const toolbarX = 100;
     const toolbarY = 20;
 
-    const button = this.add.rectangle(toolbarX,toolbarY,150,40,0x333333 );
+    const button = this.add.rectangle(
+      toolbarX,toolbarY,150,40,0x333333
+    );
 
-    const label = this.add.text(toolbarX,toolbarY,"Shooter",{
+    const label = this.add.text(
+      toolbarX,toolbarY,"Shooter",{
         fontSize: "18px",
         color: "#ffffff"
       }
@@ -84,13 +86,17 @@ class MainScene extends Phaser.Scene {
 
     // Ignore clicks outside grid
     if (
-      row < 0 ||row >= GRID_ROWS ||col < 0 ||col >= GRID_COLS) {
+      row < 0 ||
+      row >= GRID_ROWS ||
+      col < 0 ||
+      col >= GRID_COLS
+    ) {
       return;
     }
 
-    const cell =this.grid.getCell(row, col);
+    const cell = this.grid.getCell(row,col);
 
-    // Dont allow two defenders in the same cell
+    // Dont allow two defenders in same cell
     if (!cell.isEmpty()) {
       return;
     }
@@ -101,18 +107,29 @@ class MainScene extends Phaser.Scene {
     }
 
     // Centre of selected grid cell
-    const defenderX =GRID_X +col * CELL_SIZE +CELL_SIZE / 2;
+    const defenderX =
+      GRID_X + col * CELL_SIZE + CELL_SIZE / 2;
 
-    const defenderY =GRID_Y +row * CELL_SIZE +CELL_SIZE / 2;
+    const defenderY =
+      GRID_Y + row * CELL_SIZE + CELL_SIZE / 2;
 
     // Create shooter
-    const defender = new Shooter(this,defenderX,defenderY);
+    const defender = new Shooter(
+      this,
+      defenderX,
+      defenderY
+    );
 
     // Store shooter in grid
-    this.grid.placeHuman(row,col,defender);
+    this.grid.placeHuman(
+      row,
+      col,
+      defender
+    );
 
-    defender.setData("gridRow", row);
-    defender.setData("gridCol", col);
+    // Remember grid position
+    defender.setData("gridRow",row);
+    defender.setData("gridCol",col);
 
     this.defenders.push(defender);
   }
@@ -120,19 +137,29 @@ class MainScene extends Phaser.Scene {
   private spawnEnemy() {
 
     // Pick random lane
-    const row = Phaser.Math.Between(0,GRID_ROWS - 1);
+    const row = Phaser.Math.Between(
+      0,
+      GRID_ROWS - 1
+    );
 
-    const enemyX =GRID_X +GRID_COLS * CELL_SIZE +50;
+    const enemyX =
+      GRID_X + GRID_COLS * CELL_SIZE + 50;
 
-    const enemyY = GRID_Y +row * CELL_SIZE +CELL_SIZE / 2;
+    const enemyY =
+      GRID_Y + row * CELL_SIZE + CELL_SIZE / 2;
 
     // Create enemy
-    const enemy = new Enemy(this,enemyX,enemyY,"enemy");
+    const enemy = new Enemy(
+      this,
+      enemyX,
+      enemyY,
+      "enemy"
+    );
 
     this.enemies.push(enemy);
   }
 
-  // Check whether a projectile has hit an enemy
+  // Check projectile and enemy collisions
   private handleProjectileEnemyCollision() {
 
     for (const projectile of this.projectiles) {
@@ -149,7 +176,6 @@ class MainScene extends Phaser.Scene {
           continue;
         }
 
-        // Check whether their rectangles overlap
         const hit =
           Phaser.Geom.Intersects.RectangleToRectangle(
             projectile.getBounds(),
@@ -158,7 +184,7 @@ class MainScene extends Phaser.Scene {
 
         if (hit) {
 
-          //Damage enemy 
+          // Damage enemy
           enemy.takeDamage(projectile.damage);
 
           // Remove projectile
@@ -170,69 +196,94 @@ class MainScene extends Phaser.Scene {
     }
   }
 
+  // Check enemy and defender collisions
   private handleEnemyDefenderCollision() {
 
-  for (const enemy of this.enemies) {
+    for (const enemy of this.enemies) {
 
-    if (!enemy.active) {
-      continue;
-    }
-
-    for (const defender of this.defenders) {
-
-      if (!defender.active) {
+      if (!enemy.active) {
         continue;
       }
 
-      const hit =
-        Phaser.Geom.Intersects.RectangleToRectangle(
-          enemy.getBounds(),
-          defender.getBounds()
-        );
+      for (const defender of this.defenders) {
 
-      if (hit && !enemy.isAttacking) {
-        // Stop enemy while attacking
-        enemy.isAttacking = true;
+        if (!defender.active) {
+          continue;
+        }
 
-        // Remember which grid cell this defender is in
-        const row = defender.getData("gridRow");
-        const col = defender.getData("gridCol");
+        const hit =
+          Phaser.Geom.Intersects.RectangleToRectangle(
+            enemy.getBounds(),
+            defender.getBounds()
+          );
 
-        // Wait half a second before attacking
-        this.time.delayedCall(500, () => {
-          if (defender.active) {
+        if (hit && !enemy.isAttacking) {
 
-          // Kill defender when enemy touches it
-          defender.takeDamage(100);
-          
-          // Clear the grid cell
-          this.grid.removeOccupant(row, col);
+          // Stop enemy
+          enemy.isAttacking = true;
 
-          // Remove dead defender from our list
-          this.defenders = this.defenders.filter(
-            d => d !== defender
-        );
-      }
-       // Enemy starts moving again
-      enemy.isAttacking = false;
-    });
+          const row = defender.getData("gridRow");
+          const col = defender.getData("gridCol");
 
-        break;
+          // Attack every second
+          this.time.addEvent({
+            delay: 1000,
+
+            callback: () => {
+
+              // Defender already dead
+              if (!defender.active) {
+                enemy.isAttacking = false;
+                return;
+              }
+
+              // Enemy already dead
+              if (!enemy.active) {
+                return;
+              }
+
+              // Damage defender
+              defender.takeDamage(enemy.damage);
+
+              // Defender has died
+              if (!defender.active) {
+
+                // Clear grid cell
+                this.grid.removeOccupant(row,col);
+
+                // Remove defender from list
+                this.defenders =
+                  this.defenders.filter(
+                    d => d !== defender
+                  );
+
+                // Enemy moves again
+                enemy.isAttacking = false;
+              }
+            },
+
+            loop: true
+          });
+
+          break;
+        }
       }
     }
   }
-}
 
   create() {
+
     // Create grid
-    this.grid = new Grid(GRID_ROWS,GRID_COLS);
+    this.grid = new Grid(
+      GRID_ROWS,
+      GRID_COLS
+    );
 
     // Store projectiles created by shooters
     this.events.on(
       "projectile-created",
       (projectile: Projectile) => {
         this.projectiles.push(projectile);
-
       }
     );
 
@@ -247,8 +298,10 @@ class MainScene extends Phaser.Scene {
       this
     );
 
+    // First enemy
     this.spawnEnemy();
 
+    // Spawn enemies
     this.time.addEvent({
       delay: 3000,
       callback: this.spawnEnemy,
@@ -261,6 +314,7 @@ class MainScene extends Phaser.Scene {
     _time: number,
     delta: number
   ) {
+
     // Move enemies
     for (const enemy of this.enemies) {
       if (enemy.active) {
@@ -274,9 +328,10 @@ class MainScene extends Phaser.Scene {
         projectile.move(delta);
       }
     }
+
     // Check projectile/enemy collisions
     this.handleProjectileEnemyCollision();
-    
+
     // Check enemy/defender collisions
     this.handleEnemyDefenderCollision();
   }
