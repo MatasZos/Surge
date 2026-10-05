@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { Grid } from "./grid/Grid";
 import { Shooter } from "./defenders/Shooter";
 import { Enemy } from "./enemies/Enemy";
+import { MeleeEnemy } from "./enemies/MeleeEnemy";
 import { Projectile } from "./objects/projectile";
 
 const GRID_ROWS = 5;
@@ -149,11 +150,10 @@ class MainScene extends Phaser.Scene {
       GRID_Y + row * CELL_SIZE + CELL_SIZE / 2;
 
     // Create enemy
-    const enemy = new Enemy(
+    const enemy = new MeleeEnemy(
       this,
       enemyX,
-      enemyY,
-      "enemy"
+      enemyY
     );
 
     this.enemies.push(enemy);
