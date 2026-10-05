@@ -24,6 +24,7 @@ The repo also had a few housekeeping problems, which have been fixed or are list
 | Stopped tracking `dist/game.js` in git | It's build output, and `.gitignore` already lists `dist/`, but it had been committed. Every build showed it as changed. |
 | `public/index.html` loads `app.js` instead of `game.js` | `app.js` is the file the Deno build produces (the same as the other teams). |
 | Added `deno task serve` | Serves `dist/` at http://127.0.0.1:8000, for previewing in a browser without Celbridge. |
+| Added `public/fit-to-window.css` | Scales the page to fit the window or Celbridge's preview panel, so the game is never cut off. |
 
 ## Working without Celbridge
 
@@ -106,13 +107,18 @@ energy into the managers. Smaller files are easier for several people to work on
 
 *Recommended:* delete `my_functions.ts`, merge anything useful from `oldreadme.md` into `README.md` and delete it.
 
-### 4. Not yet checked inside Celbridge itself
+### 4. The Celbridge preview
 
-The build was tested through a local web server, not in Celbridge's side preview.
+Celbridge's side preview loads the game, including its images and sounds, without needing a separate web server
+(checked in Celbridge on 5 Oct).
 
-*Recommended:* open `Surge game.celbridge` and check the game appears in the side preview, and that the sprites
-load. If it shows a blank screen, preview it with `deno task serve` and a browser instead (see
-`README_deno_tooling.md`).
+The page now also scales to fit the preview panel. `public/fit-to-window.css` (linked from `public/index.html`)
+shrinks the game to fit as the panel is resized, keeping its shape, so nothing is cut off. Mouse clicks still land
+in the right place. It's the last stylesheet on the page, so it's easy to remove if you'd rather lay the page out
+yourselves.
+
+*Recommended:* nothing needed. If you change the page's layout (e.g. add a heading or a panel), check it still
+fits a narrow panel.
 
 ## Files for the Deno build
 
