@@ -11,7 +11,10 @@ export class Enemy extends Phaser.GameObjects.Sprite {
         scene: Phaser.Scene,
         x: number,
         y: number,
-        texture: string
+        texture: string,
+        health: number,
+        speed: number,
+        damage: number
     ) {
         super(scene, x, y, texture);
 
@@ -23,9 +26,9 @@ export class Enemy extends Phaser.GameObjects.Sprite {
         this.setDisplaySize(60, 60);
 
         // Enemy stats
-        this.health = 200;
-        this.speed = 18;
-        this.damage = 25;
+        this.health = health;
+        this.speed = speed;
+        this.damage = damage;
     }
 
     takeDamage(amount: number) {
