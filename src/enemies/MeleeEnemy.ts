@@ -8,10 +8,6 @@ export class MeleeEnemy extends Enemy {
         x: number,
         y: number
     ) {
-        super(scene, x, y, "enemy");
-
-        this.health = 100;
-        this.speed = 50;
-        this.damage = 100;
+        super(scene, x, y, "meleeEnemy", 200, 18, 25);
     }
 }

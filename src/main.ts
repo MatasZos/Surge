@@ -26,7 +26,7 @@ class MainScene extends Phaser.Scene {
   preload() {
     // Assets
     this.load.image("shooter","assets/defenders/shooterdefender.png");
-    this.load.image("enemy","assets/enemies/meleerobot.png");
+    this.load.image("meleeEnemy", "assets/enemies/meleerobot.png");
     this.load.image("laser","assets/effects/projectile.png");
   }
 
