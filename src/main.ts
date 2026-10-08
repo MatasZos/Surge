@@ -4,6 +4,7 @@ import { Shooter } from "./defenders/Shooter";
 import { Enemy } from "./enemies/Enemy";
 import { MeleeEnemy } from "./enemies/MeleeEnemy";
 import { Projectile } from "./objects/projectile";
+import { Stronghold } from "./objects/Stronghold";
 
 const GRID_ROWS = 5;
 const GRID_COLS = 8;
@@ -18,6 +19,7 @@ class MainScene extends Phaser.Scene {
   private enemies: Enemy[] = [];
   private projectiles: Projectile[] = [];
   private defenders: Shooter[] = [];
+  private stronghold!:Stronghold;
 
   constructor() {
     super('MainScene');
@@ -28,6 +30,7 @@ class MainScene extends Phaser.Scene {
     this.load.image("shooter","assets/defenders/shooterdefender.png");
     this.load.image("meleeEnemy", "assets/enemies/meleerobot.png");
     this.load.image("laser","assets/effects/projectile.png");
+    this.load.image("stronghold","assets/stronghold/stronghold.png");
   }
 
   private drawGrid() {
@@ -291,12 +294,11 @@ class MainScene extends Phaser.Scene {
     this.drawGrid();
     this.drawToolbar();
 
+    this.stronghold = new Stronghold(this, GRID_X - 50, GRID_Y + (GRID_ROWS * CELL_SIZE) / 2, "stronghold");
+
+    this.stronghold.setDisplaySize(80,GRID_ROWS * CELL_SIZE);
     // Grid clicking
-    this.input.on(
-      "pointerdown",
-      this.handleGridClick,
-      this
-    );
+    this.input.on("pointerdown",this.handleGridClick,this);
 
     // First enemy
     this.spawnEnemy();

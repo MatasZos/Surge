@@ -1,5 +1,3 @@
-# A shell console. When it opens it runs "deno task dev": build into dist/, run the tests, write
-# test_output/, then watch src/, public/ and tests/ and do it all again on every save.
 [session]
 type = "shell"
 
