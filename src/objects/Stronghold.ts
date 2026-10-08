@@ -15,6 +15,10 @@ export class Stronghold extends Phaser.GameObjects.Sprite {
         this.health = 500;
     }
 
+    getCollisionBounds():Phaser.Geom.Rectangle {
+        return new Phaser.Geom.Rectangle(175,145,15,500);
+    }
+
     takeDamage(amount: number){
         this.health -= amount;
 

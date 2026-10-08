@@ -26,14 +26,15 @@ body {
 }
 
 main {
-  max-width: calc(800px + 2rem + 4px);
-  margin: 0 auto;
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
 }
 
 h1 {
-  margin: 1.5rem auto;
-  color: var(--dark);
-  text-align: center;
+    margin: 1.5rem auto;
+    color: var(--dark);
+    text-align: center;
 }
 
 h2,
@@ -43,15 +44,23 @@ h3 {
   text-align: center;
 }
 
+
 .container {
-  margin: 0 auto 1.5rem;
-  padding: 1rem;
+  margin: 0 auto 1rem;
+  padding: 12px;
+  width: 100%;
+  min-height: 0;
+
   border: 2px solid var(--secondary);
-  border-radius: 1px;
+  border-radius: 4px;
   background: white;
   box-shadow: 2px 4px 0px 0px var(--tertiary);
-  text-align: center;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 
 /* Game canvas - 800 x 600, shrinks to fit narrow windows (the game still uses 800 x 600 pixels) */
 

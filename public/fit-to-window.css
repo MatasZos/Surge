@@ -30,13 +30,19 @@ h1 {
   width: 100%;
 }
 
+
 #game-container {
   width: 100%;
   height: 100%;
+  min-height: 0;
+
   display: flex;
   justify-content: center;
   align-items: center;
+
+  overflow: hidden;
 }
+
 
 /* Phaser sets the canvas size in its style attribute, so these need !important. With width and height on auto,
    the canvas keeps its shape while staying inside its container. */

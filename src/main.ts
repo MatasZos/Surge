@@ -6,12 +6,18 @@ import { MeleeEnemy } from "./enemies/MeleeEnemy";
 import { Projectile } from "./objects/projectile";
 import { Stronghold } from "./objects/Stronghold";
 
-const GRID_ROWS = 5;
-const GRID_COLS = 8;
-const CELL_SIZE = 75;
 
-const GRID_X = 100;
-const GRID_Y = 100;
+const GAME_WIDTH = 1200
+const GAME_HEIGHT = 800;
+
+const GRID_ROWS = 5;
+const GRID_COLS = 7;
+
+const CELL_WIDTH = 107;
+const CELL_HEIGHT = 100;
+
+const GRID_X = 235;
+const GRID_Y = 145;
 
 class MainScene extends Phaser.Scene {
   private grid!: Grid;
@@ -31,28 +37,30 @@ class MainScene extends Phaser.Scene {
     this.load.image("meleeEnemy", "assets/enemies/meleerobot.png");
     this.load.image("laser","assets/effects/projectile.png");
     this.load.image("stronghold","assets/stronghold/stronghold.png");
+    this.load.image("battlefield","assets/backgrounds/battlefield.png")
   }
 
   private drawGrid() {
     const graphics = this.add.graphics();
 
-    graphics.lineStyle(2,0xffffff,0.5);
+    graphics.lineStyle(2, 0xffffff, 0.5);
 
     for (let row = 0; row < GRID_ROWS; row++) {
       for (let col = 0; col < GRID_COLS; col++) {
-        const x = GRID_X + col * CELL_SIZE;
-        const y = GRID_Y + row * CELL_SIZE;
+        const x = GRID_X + col * CELL_WIDTH;
+        const y = GRID_Y + row * CELL_HEIGHT;
 
         graphics.strokeRect(
-          x,y,CELL_SIZE,CELL_SIZE
+          x,y,CELL_WIDTH,CELL_HEIGHT
         );
       }
     }
   }
 
   private drawToolbar() {
-    const toolbarX = 100;
-    const toolbarY = 20;
+    const toolbarX = 150;
+    const toolbarY = 55;
+   
 
     const button = this.add.rectangle(
       toolbarX,toolbarY,150,40,0x333333
@@ -64,6 +72,8 @@ class MainScene extends Phaser.Scene {
         color: "#ffffff"
       }
     );
+
+    label.setOrigin(0.5);
 
     button.setInteractive({
       useHandCursor: true
@@ -81,11 +91,11 @@ class MainScene extends Phaser.Scene {
 
     // Convert mouse position into grid position
     const col = Math.floor(
-      (pointer.x - GRID_X) / CELL_SIZE
+      (pointer.x - GRID_X) / CELL_WIDTH
     );
 
     const row = Math.floor(
-      (pointer.y - GRID_Y) / CELL_SIZE
+      (pointer.y - GRID_Y) / CELL_HEIGHT
     );
 
     // Ignore clicks outside grid
@@ -112,10 +122,10 @@ class MainScene extends Phaser.Scene {
 
     // Centre of selected grid cell
     const defenderX =
-      GRID_X + col * CELL_SIZE + CELL_SIZE / 2;
+      GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2;
 
     const defenderY =
-      GRID_Y + row * CELL_SIZE + CELL_SIZE / 2;
+      GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
 
     // Create shooter
     const defender = new Shooter(
@@ -141,24 +151,12 @@ class MainScene extends Phaser.Scene {
   private spawnEnemy() {
 
     // Pick random lane
-    const row = Phaser.Math.Between(
-      0,
-      GRID_ROWS - 1
-    );
-
-    const enemyX =
-      GRID_X + GRID_COLS * CELL_SIZE + 50;
-
-    const enemyY =
-      GRID_Y + row * CELL_SIZE + CELL_SIZE / 2;
+    const row = Phaser.Math.Between(0, GRID_ROWS - 1);
+    const enemyX =GRID_X + GRID_COLS * CELL_WIDTH + 50;
+    const enemyY =GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
 
     // Create enemy
-    const enemy = new MeleeEnemy(
-      this,
-      enemyX,
-      enemyY
-    );
-
+    const enemy = new MeleeEnemy( this, enemyX, enemyY);
     this.enemies.push(enemy);
   }
 
@@ -274,13 +272,46 @@ class MainScene extends Phaser.Scene {
     }
   }
 
-  create() {
+  private handleEnemyStrongholdCollision(){
+    for (const enemy of this.enemies){
 
-    // Create grid
-    this.grid = new Grid(
-      GRID_ROWS,
-      GRID_COLS
+        if(!enemy.active){
+            continue;
+
+        }
+
+        if (enemy.isAttacking){
+            continue;
+        }
+
+        const hit = Phaser.Geom.Intersects.RectangleToRectangle(
+            enemy.getBounds(),
+            this.stronghold.getCollisionBounds()
+            );
+
+        if(hit){
+            enemy.isAttacking=true;
+            console.log("Enemy reached Stronghold")
+        }
+    }
+  }
+
+  create() {
+    const background = this.add.image(
+        GAME_WIDTH/2,
+        GAME_HEIGHT/2,
+        "battlefield"
+    )
+
+    background.setDisplaySize(
+        GAME_WIDTH,
+        GAME_HEIGHT
     );
+     background.setDepth(-10)
+
+     this.grid = new Grid(GRID_ROWS, GRID_COLS);
+
+    
 
     // Store projectiles created by shooters
     this.events.on(
@@ -294,9 +325,12 @@ class MainScene extends Phaser.Scene {
     this.drawGrid();
     this.drawToolbar();
 
-    this.stronghold = new Stronghold(this, GRID_X - 50, GRID_Y + (GRID_ROWS * CELL_SIZE) / 2, "stronghold");
+    this.stronghold = new Stronghold(this, 110, 405, "stronghold");
 
-    this.stronghold.setDisplaySize(80,GRID_ROWS * CELL_SIZE);
+    const strongholdScale = Math.min( 180/ this.stronghold.width, 430/ this.stronghold.height);
+
+    this.stronghold.setScale(strongholdScale);
+    this.stronghold.setDepth(2);
     // Grid clicking
     this.input.on("pointerdown",this.handleGridClick,this);
 
@@ -336,15 +370,23 @@ class MainScene extends Phaser.Scene {
 
     // Check enemy/defender collisions
     this.handleEnemyDefenderCollision();
+
+    //Check enemy/stronghold collisions
+    this.handleEnemyStrongholdCollision();
   }
 }
 
 new Phaser.Game({
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: GAME_WIDTH,
+  height: GAME_HEIGHT,
   backgroundColor: '#1b1b1b',
   parent: 'game-container',
+
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH
+  },
 
   physics: {
     default: 'arcade',
