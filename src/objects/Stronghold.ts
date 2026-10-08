@@ -1,4 +1,4 @@
-import phaser from "phaser";
+import Phaser from "phaser";
 
 export class Stronghold extends Phaser.GameObjects.Sprite {
     health:number;
