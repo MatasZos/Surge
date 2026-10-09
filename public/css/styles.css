@@ -27,8 +27,9 @@ body {
 
 main {
     width: 100%;
-    max-width: 1450px;
+    max-width: 1100px;
     margin: 0 auto;
+    flex: none;
 }
 
 h1 {
@@ -46,15 +47,18 @@ h3 {
 
 
 .container {
-  margin: 0 auto 1rem;
-  padding: 12px;
+  padding: 10px;
   width: 100%;
+  height: auto;
+  max-width: 1080px;
   min-height: 0;
+  flex: none;
+  margin: 0 auto 1rem;
 
-  border: 2px solid var(--secondary);
-  border-radius: 4px;
+  border: 1px solid var(--secondary);
+  border-radius: 12px;
   background: white;
-  box-shadow: 2px 4px 0px 0px var(--tertiary);
+  box-shadow: 2px 4px 0px var(--tertiary);
 
   display: flex;
   justify-content: center;
@@ -66,10 +70,12 @@ h3 {
 
 #gameCanvas {
   display: block;
-  max-width: 100%;
+  width: 100%;
+  max-width: 800px;
   height: auto;
   margin: 0 auto;
   background: var(--dark);
+  border-radius: 4px;
 }
 
 .control-grid {
