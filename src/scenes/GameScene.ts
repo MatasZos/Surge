@@ -92,8 +92,10 @@ export class GameScene extends Phaser.Scene {
     const col = Math.floor((pointer.x - GRID_X) / CELL_WIDTH);
     const row = Math.floor((pointer.y - GRID_Y) / CELL_HEIGHT);
 
-    if (row < 0 || row >= GRID_ROWS ||
-        col < 0 || col >= GRID_COLS) return;
+    if (
+      row < 0 || row >= GRID_ROWS ||
+      col < 0 || col >= GRID_COLS
+    ) return;
 
     if (!this.grid.getCell(row, col).isEmpty()) return;
     if (this.selectedDefender === null) return;
@@ -111,8 +113,10 @@ export class GameScene extends Phaser.Scene {
     const now = this.time.now;
     const last = this.lastPlaced[type];
 
-    if (last !== undefined &&
-        now - last < this.cooldowns[type]) {
+    if (
+      last !== undefined &&
+      now - last < this.cooldowns[type]
+    ) {
       console.log("Defender on cooldown");
       return;
     }
@@ -151,7 +155,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
-    // Reset state when starting a new game
+    // Reset game state
     this.energy = 50;
     this.selectedDefender = null;
     this.enemies = [];
@@ -221,13 +225,19 @@ export class GameScene extends Phaser.Scene {
 
     this.input.on("pointerdown", this.handleGridClick, this);
 
-    this.spawnEnemy();
+    // First enemy after 20 seconds
+    this.time.delayedCall(20000, () => {
 
-    this.time.addEvent({
-      delay: 3000,
-      callback: this.spawnEnemy,
-      callbackScope: this,
-      loop: true
+      this.spawnEnemy();
+
+      // Spawn another enemy every 15 seconds
+      this.time.addEvent({
+        delay: 15000,
+        callback: this.spawnEnemy,
+        callbackScope: this,
+        loop: true
+      });
+
     });
   }
 
