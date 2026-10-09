@@ -1,7 +1,7 @@
 
 import Phaser from "phaser";
 import { Grid } from "../grid/Grid";
-import { Shooter } from "../defenders/Shooter";
+import { Defender } from "../defenders/Defender";
 import { Enemy } from "../enemies/Enemy";
 import { Projectile } from "../objects/projectile";
 import { Stronghold } from "../objects/Stronghold";
@@ -11,15 +11,17 @@ export class CollisionSystem {
   private grid: Grid;
   private enemies: Enemy[];
   private projectiles: Projectile[];
-  private defenders: Shooter[];
+  private defenders: Defender[];
   private stronghold: Stronghold;
+
+  private attackTimers = new Map<Enemy, Phaser.Time.TimerEvent>();
 
   constructor(
     scene: Phaser.Scene,
     grid: Grid,
     enemies: Enemy[],
     projectiles: Projectile[],
-    defenders: Shooter[],
+    defenders: Defender[],
     stronghold: Stronghold
   ) {
     this.scene = scene;
@@ -30,123 +32,98 @@ export class CollisionSystem {
     this.stronghold = stronghold;
   }
 
-  // Check projectile and enemy collisions
   private handleProjectileEnemyCollision() {
     for (const projectile of this.projectiles) {
-      if (!projectile.active) {
-        continue;
-      }
+      if (!projectile.active) continue;
 
       for (const enemy of this.enemies) {
-        if (!enemy.active) {
-          continue;
-        }
+        if (!enemy.active) continue;
 
-        const hit =
-          Phaser.Geom.Intersects.RectangleToRectangle(
-            projectile.getBounds(),
-            enemy.getBounds()
-          );
+        const hit = Phaser.Geom.Intersects.RectangleToRectangle(
+          projectile.getBounds(),
+          enemy.getBounds()
+        );
 
         if (hit) {
-          // Damage enemy
           enemy.takeDamage(projectile.damage);
-
-          // Remove projectile
           projectile.destroy();
-
           break;
         }
       }
     }
   }
 
-  // Check enemy and defender collisions
   private handleEnemyDefenderCollision() {
     for (const enemy of this.enemies) {
-      if (!enemy.active) {
-        continue;
-      }
+      if (!enemy.active) continue;
+      if (enemy.isAttacking) continue;
 
       for (const defender of this.defenders) {
-        if (!defender.active) {
-          continue;
-        }
+        if (!defender.active) continue;
 
-        const hit =
-          Phaser.Geom.Intersects.RectangleToRectangle(
-            enemy.getBounds(),
-            defender.getBounds()
-          );
+        const hit = Phaser.Geom.Intersects.RectangleToRectangle(
+          enemy.getBounds(),
+          defender.getBounds()
+        );
 
-        if (hit && !enemy.isAttacking) {
-          // Stop enemy
-          enemy.isAttacking = true;
+        if (!hit) continue;
 
-          const row = defender.getData("gridRow");
-          const col = defender.getData("gridCol");
+        enemy.isAttacking = true;
 
-          // Attack every second
-          this.scene.time.addEvent({
-            delay: 1000,
+        const row = defender.getData("gridRow");
+        const col = defender.getData("gridCol");
 
-            callback: () => {
-              // Defender already dead
-              if (!defender.active) {
-                enemy.isAttacking = false;
-                return;
+        const timer = this.scene.time.addEvent({
+          delay: 1000,
+          callback: () => {
+            if (!enemy.active || !defender.active) {
+              this.stopAttack(enemy);
+              return;
+            }
+
+            defender.takeDamage(enemy.damage);
+
+            if (!defender.active) {
+              this.grid.removeOccupant(row, col);
+
+              const index = this.defenders.indexOf(defender);
+              if (index !== -1) {
+                this.defenders.splice(index, 1);
               }
 
-              // Enemy already dead
-              if (!enemy.active) {
-                return;
-              }
+              this.stopAttack(enemy);
+            }
+          },
+          loop: true
+        });
 
-              // Damage defender
-              defender.takeDamage(enemy.damage);
-
-              // Defender has died
-              if (!defender.active) {
-                // Clear grid cell
-                this.grid.removeOccupant(row, col);
-
-                // Remove defender from shared list
-                const index = this.defenders.indexOf(defender);
-
-                if (index !== -1) {
-                  this.defenders.splice(index, 1);
-                }
-
-                // Enemy moves again
-                enemy.isAttacking = false;
-              }
-            },
-
-            loop: true
-          });
-
-          break;
-        }
+        this.attackTimers.set(enemy, timer);
+        break;
       }
     }
   }
 
-  // Check enemy and Stronghold collisions
+  private stopAttack(enemy: Enemy) {
+    const timer = this.attackTimers.get(enemy);
+
+    if (timer) {
+      timer.remove();
+      this.attackTimers.delete(enemy);
+    }
+
+    if (enemy.active) {
+      enemy.isAttacking = false;
+    }
+  }
+
   private handleEnemyStrongholdCollision() {
     for (const enemy of this.enemies) {
-      if (!enemy.active) {
-        continue;
-      }
+      if (!enemy.active || enemy.isAttacking) continue;
 
-      if (enemy.isAttacking) {
-        continue;
-      }
-
-      const hit =
-        Phaser.Geom.Intersects.RectangleToRectangle(
-          enemy.getBounds(),
-          this.stronghold.getCollisionBounds()
-        );
+      const hit = Phaser.Geom.Intersects.RectangleToRectangle(
+        enemy.getBounds(),
+        this.stronghold.getCollisionBounds()
+      );
 
       if (hit) {
         enemy.isAttacking = true;
@@ -155,9 +132,16 @@ export class CollisionSystem {
     }
   }
 
-  // Run all collision checks each frame
   update() {
     this.handleProjectileEnemyCollision();
+
+    // Remove timers belonging to dead enemies
+    for (const enemy of this.attackTimers.keys()) {
+      if (!enemy.active) {
+        this.stopAttack(enemy);
+      }
+    }
+
     this.handleEnemyDefenderCollision();
     this.handleEnemyStrongholdCollision();
   }

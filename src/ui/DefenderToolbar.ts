@@ -2,9 +2,9 @@
 import Phaser from "phaser";
 
 export class DefenderToolbar {
-
   private scene: Phaser.Scene;
   private onSelect: (defender: string) => void;
+  private labels: Phaser.GameObjects.Text[] = [];
 
   constructor(
     scene: Phaser.Scene,
@@ -12,52 +12,43 @@ export class DefenderToolbar {
   ) {
     this.scene = scene;
     this.onSelect = onSelect;
-
     this.drawToolbar();
   }
 
-  // Draw the defender selection toolbar
   private drawToolbar() {
+    this.addButton(150, "Shooter - 100", "shooter");
+    this.addButton(340, "Generator - 50", "generator");
+  }
 
-    const toolbarX = 150;
-    const toolbarY = 55;
-
-    // Shooter button background
+  private addButton(
+    x: number,
+    text: string,
+    type: string
+  ) {
     const button = this.scene.add.rectangle(
-      toolbarX,
-      toolbarY,
-      150,
-      40,
-      0x333333
+      x, 55, 175, 40, 0x333333
     );
 
-    // Shooter button label
     const label = this.scene.add.text(
-      toolbarX,
-      toolbarY,
-      "Shooter",
-      {
-        fontSize: "18px",
-        color: "#ffffff"
-      }
+      x, 55, text,
+      { fontSize: "16px", color: "#ffffff" }
     );
 
     label.setOrigin(0.5);
+    label.setDepth(11);
+    button.setDepth(10);
+    this.labels.push(label);
 
-    // Make button clickable
-    button.setInteractive({
-      useHandCursor: true
-    });
+    button.setInteractive({ useHandCursor: true });
 
-    // Select Shooter when clicked
     button.on("pointerdown", () => {
+      this.onSelect(type);
 
-      // Tell GameScene which defender was selected
-      this.onSelect("shooter");
+      for (const item of this.labels) {
+        item.setColor("#ffffff");
+      }
 
-      // Highlight selected defender
       label.setColor("#00ff00");
-
     });
   }
 }

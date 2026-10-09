@@ -2,7 +2,9 @@
 import Phaser from "phaser";
 
 import { Grid } from "../grid/Grid";
+import { Defender } from "../defenders/Defender";
 import { Shooter } from "../defenders/Shooter";
+import { Generator } from "../defenders/Generator";
 import { Enemy } from "../enemies/Enemy";
 import { MeleeEnemy } from "../enemies/MeleeEnemy";
 import { Projectile } from "../objects/projectile";
@@ -11,7 +13,6 @@ import { Stronghold } from "../objects/Stronghold";
 import { CollisionSystem } from "../systems/CollisionSystem";
 import { DefenderToolbar } from "../ui/DefenderToolbar";
 
-// Shared game settings
 import {
   GAME_WIDTH,
   GAME_HEIGHT,
@@ -23,7 +24,6 @@ import {
   GRID_Y
 } from "../constants";
 
-// Main gameplay scene
 export class GameScene extends Phaser.Scene {
 
   private grid!: Grid;
@@ -31,58 +31,52 @@ export class GameScene extends Phaser.Scene {
 
   private enemies: Enemy[] = [];
   private projectiles: Projectile[] = [];
-  private defenders: Shooter[] = [];
+  private defenders: Defender[] = [];
 
   private stronghold!: Stronghold;
   private collisionSystem!: CollisionSystem;
+
+  private energy = 50;
+  private energyText!: Phaser.GameObjects.Text;
+
+  private costs: Record<string, number> = {
+    shooter: 100,
+    generator: 50
+  };
+
+  private cooldowns: Record<string, number> = {
+    shooter: 7500,
+    generator: 7500
+  };
+
+  private lastPlaced: Record<string, number> = {};
 
   constructor() {
     super("GameScene");
   }
 
-  // Load game assets
   preload() {
-    this.load.image(
-      "shooter",
-      "assets/defenders/shooterdefender.png"
-    );
+    this.load.image("shooter", "assets/defenders/shooterdefender.png");
+    this.load.image("generator", "assets/defenders/generator.png");
 
-    this.load.image(
-      "meleeEnemy",
-      "assets/enemies/meleerobot.png"
-    );
+    this.load.image("meleeEnemy", "assets/enemies/meleerobot.png");
 
-    this.load.image(
-      "laser",
-      "assets/effects/projectile.png"
-    );
+    this.load.image("laser", "assets/effects/projectile.png");
+    this.load.image("energy", "assets/effects/energy.png");
 
-    this.load.image(
-      "stronghold",
-      "assets/stronghold/stronghold.png"
-    );
-
-    this.load.image(
-      "battlefield",
-      "assets/backgrounds/battlefield.png"
-    );
+    this.load.image("stronghold", "assets/stronghold/stronghold.png");
+    this.load.image("battlefield", "assets/backgrounds/battlefield.png");
   }
 
-  // Draw the battlefield grid
   private drawGrid() {
     const graphics = this.add.graphics();
-
     graphics.lineStyle(2, 0xffffff, 0.5);
 
     for (let row = 0; row < GRID_ROWS; row++) {
       for (let col = 0; col < GRID_COLS; col++) {
-
-        const x = GRID_X + col * CELL_WIDTH;
-        const y = GRID_Y + row * CELL_HEIGHT;
-
         graphics.strokeRect(
-          x,
-          y,
+          GRID_X + col * CELL_WIDTH,
+          GRID_Y + row * CELL_HEIGHT,
           CELL_WIDTH,
           CELL_HEIGHT
         );
@@ -90,146 +84,124 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  // Handle defender placement on the grid
-  private handleGridClick(
-    pointer: Phaser.Input.Pointer
-  ) {
+  private updateEnergyText() {
+    this.energyText.setText("Energy: " + this.energy);
+  }
 
-    // Convert mouse position to grid coordinates
-    const col = Math.floor(
-      (pointer.x - GRID_X) / CELL_WIDTH
-    );
+  private handleGridClick(pointer: Phaser.Input.Pointer) {
+    const col = Math.floor((pointer.x - GRID_X) / CELL_WIDTH);
+    const row = Math.floor((pointer.y - GRID_Y) / CELL_HEIGHT);
 
-    const row = Math.floor(
-      (pointer.y - GRID_Y) / CELL_HEIGHT
-    );
+    if (row < 0 || row >= GRID_ROWS ||
+        col < 0 || col >= GRID_COLS) return;
 
-    // Ignore clicks outside the grid
-    if (
-      row < 0 ||
-      row >= GRID_ROWS ||
-      col < 0 ||
-      col >= GRID_COLS
-    ) {
+    if (!this.grid.getCell(row, col).isEmpty()) return;
+    if (this.selectedDefender === null) return;
+
+    const type = this.selectedDefender;
+    const cost = this.costs[type];
+
+    if (cost === undefined) return;
+
+    if (this.energy < cost) {
+      console.log("Not enough energy");
       return;
     }
 
-    const cell = this.grid.getCell(row, col);
+    const now = this.time.now;
+    const last = this.lastPlaced[type];
 
-    // Prevent two defenders in the same cell
-    if (!cell.isEmpty()) {
+    if (last !== undefined &&
+        now - last < this.cooldowns[type]) {
+      console.log("Defender on cooldown");
       return;
     }
 
-    // Nothing selected
-    if (this.selectedDefender === null) {
-      return;
+    const x = GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2;
+    const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
+
+    let defender: Defender;
+
+    if (type === "generator") {
+      defender = new Generator(this, x, y);
+    } else {
+      defender = new Shooter(this, x, y);
     }
 
-    // Calculate centre of selected grid cell
-    const defenderX =
-      GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2;
+    this.grid.placeHuman(row, col, defender);
 
-    const defenderY =
-      GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
-
-    // Create Shooter
-    const defender = new Shooter(
-      this,
-      defenderX,
-      defenderY
-    );
-
-    // Store Shooter in grid
-    this.grid.placeHuman(
-      row,
-      col,
-      defender
-    );
-
-    // Remember grid position
     defender.setData("gridRow", row);
     defender.setData("gridCol", col);
 
-    // Add Shooter to shared defender list
     this.defenders.push(defender);
+
+    this.energy -= cost;
+    this.updateEnergyText();
+
+    this.lastPlaced[type] = now;
   }
 
-  // Spawn enemy in a random lane
   private spawnEnemy() {
+    const row = Phaser.Math.Between(0, GRID_ROWS - 1);
 
-    const row = Phaser.Math.Between(
-      0,
-      GRID_ROWS - 1
-    );
+    const x = GRID_X + GRID_COLS * CELL_WIDTH + 50;
+    const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
 
-    const enemyX =
-      GRID_X + GRID_COLS * CELL_WIDTH + 50;
-
-    const enemyY =
-      GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
-
-    // Create melee enemy
-    const enemy = new MeleeEnemy(
-      this,
-      enemyX,
-      enemyY
-    );
-
-    this.enemies.push(enemy);
+    this.enemies.push(new MeleeEnemy(this, x, y));
   }
 
-  // Set up the game scene
   create() {
+    // Reset state when starting a new game
+    this.energy = 50;
+    this.selectedDefender = null;
+    this.enemies = [];
+    this.projectiles = [];
+    this.defenders = [];
+    this.lastPlaced = {};
 
-    // Battlefield background
     const background = this.add.image(
       GAME_WIDTH / 2,
       GAME_HEIGHT / 2,
       "battlefield"
     );
 
-    background.setDisplaySize(
-      GAME_WIDTH,
-      GAME_HEIGHT
-    );
-
+    background.setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
     background.setDepth(-10);
 
-    // Create battlefield grid
-    this.grid = new Grid(
-      GRID_ROWS,
-      GRID_COLS
-    );
+    this.grid = new Grid(GRID_ROWS, GRID_COLS);
 
-    // Store projectiles created by Shooters
-    this.events.on(
-      "projectile-created",
-      (projectile: Projectile) => {
-        this.projectiles.push(projectile);
-      }
-    );
+    this.events.on("projectile-created", (projectile: Projectile) => {
+      this.projectiles.push(projectile);
+    });
 
-    // Draw battlefield grid
+    this.events.on("energy-collected", (amount: number) => {
+      this.energy += amount;
+      this.updateEnergyText();
+    });
+
     this.drawGrid();
 
-    // Create defender selection toolbar
-    new DefenderToolbar(
-      this,
-      (defender: string) => {
-        this.selectedDefender = defender;
+    new DefenderToolbar(this, (defender: string) => {
+      this.selectedDefender = defender;
+    });
+
+    this.energyText = this.add.text(
+      550, 35,
+      "Energy: 50",
+      {
+        fontSize: "24px",
+        color: "#00ccff",
+        backgroundColor: "#222222",
+        padding: { x: 12, y: 8 }
       }
     );
 
-    // Create Stronghold
+    this.energyText.setDepth(20);
+
     this.stronghold = new Stronghold(
-      this,
-      110,
-      405,
-      "stronghold"
+      this, 110, 405, "stronghold"
     );
 
-    // Scale Stronghold without stretching
     const strongholdScale = Math.min(
       180 / this.stronghold.width,
       430 / this.stronghold.height
@@ -238,7 +210,6 @@ export class GameScene extends Phaser.Scene {
     this.stronghold.setScale(strongholdScale);
     this.stronghold.setDepth(2);
 
-    // Initialise collision system
     this.collisionSystem = new CollisionSystem(
       this,
       this.grid,
@@ -248,17 +219,10 @@ export class GameScene extends Phaser.Scene {
       this.stronghold
     );
 
-    // Enable grid clicking
-    this.input.on(
-      "pointerdown",
-      this.handleGridClick,
-      this
-    );
+    this.input.on("pointerdown", this.handleGridClick, this);
 
-    // Spawn first enemy
     this.spawnEnemy();
 
-    // Spawn an enemy every 3 seconds
     this.time.addEvent({
       delay: 3000,
       callback: this.spawnEnemy,
@@ -267,27 +231,15 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-  // Main game loop
-  update(
-    _time: number,
-    delta: number
-  ) {
-
-    // Move active enemies
+  update(_time: number, delta: number) {
     for (const enemy of this.enemies) {
-      if (enemy.active) {
-        enemy.move(delta);
-      }
+      if (enemy.active) enemy.move(delta);
     }
 
-    // Move active projectiles
     for (const projectile of this.projectiles) {
-      if (projectile.active) {
-        projectile.move(delta);
-      }
+      if (projectile.active) projectile.move(delta);
     }
 
-    // Handle all collisions
     this.collisionSystem.update();
   }
 }
