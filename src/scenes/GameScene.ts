@@ -36,7 +36,7 @@ export class GameScene extends Phaser.Scene {
   private stronghold!: Stronghold;
   private collisionSystem!: CollisionSystem;
 
-  private energy = 50;
+  private energy = 200;
   private energyText!: Phaser.GameObjects.Text;
 
   private costs: Record<string, number> = {
@@ -156,7 +156,7 @@ export class GameScene extends Phaser.Scene {
 
   create() {
     // Reset game state
-    this.energy = 50;
+    this.energy = 200;
     this.selectedDefender = null;
     this.enemies = [];
     this.projectiles = [];
@@ -191,7 +191,7 @@ export class GameScene extends Phaser.Scene {
 
     this.energyText = this.add.text(
       550, 35,
-      "Energy: 50",
+      "Energy: 200",
       {
         fontSize: "24px",
         color: "#00ccff",
