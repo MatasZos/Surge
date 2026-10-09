@@ -7,18 +7,47 @@ export class MainMenu extends Phaser.Scene {
         super("MainMenu");
     }
 
+     preload() {
+        this.load.image(
+            "menuBackground",
+            "/assets/mainmenu/menu-background.png"
+        );
+    }
+
     create() {
 
         // Background
-        this.add.rectangle(
+        const background = this.add.image(
             GAME_WIDTH / 2, GAME_HEIGHT / 2,
-            GAME_WIDTH, GAME_HEIGHT, 0x0a1220
+            "menuBackground"
         );
+
+        background.setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
+        background.setDepth(-10);       
+
+        this.add.rectangle(
+            GAME_WIDTH / 2,
+            GAME_HEIGHT / 2,
+            GAME_WIDTH,
+            GAME_HEIGHT,
+            0x000000,
+            0.25
+        ).setDepth(-5);
+
+        // Simple background 
+        this.add.rectangle(
+            GAME_WIDTH / 2,
+            290,
+            420,
+            160,
+            0x000000,
+            0.55
+        ).setDepth(0);
 
         // Game title
         this.add.text(
             GAME_WIDTH / 2, 250,
-            "MACHINE UPRISING",
+            "SURGE",
             {
                 fontSize: "60px",
                 color: "#49dcef",
