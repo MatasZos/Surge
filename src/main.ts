@@ -1,6 +1,7 @@
 
 import Phaser from "phaser";
 import { GameScene } from "./scenes/GameScene";
+import { MainMenu } from "./scenes/MainMenu";
 
 const GAME_WIDTH = 1200;
 const GAME_HEIGHT = 800;
@@ -24,5 +25,5 @@ new Phaser.Game({
         }
     },
 
-    scene: [GameScene]
+    scene: [MainMenu,GameScene]
 });
