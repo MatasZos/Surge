@@ -1,37 +1,41 @@
+
+
 :root {
-  --primary: #66c2ff;
-  --primary-dark: #0077cc;
-  --secondary: #cbd1e1;
-  --tertiary: #e5e9f2;
-  --bg: #f1f3f9;
-  --dark: #1e253b;
+    --primary: #66c2ff;
+    --primary-dark: #0077cc;
+    --secondary: #cbd1e1;
+    --tertiary: #e5e9f2;
+    --bg: #f1f3f9;
+    --dark: #1e253b;
 }
 
 html {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
+
 *,
 *:before,
 *:after {
-  box-sizing: inherit;
+    box-sizing: inherit;
 }
+
 
 body {
-  margin: 0 auto;
-  padding: 1rem;
-  background-color: var(--bg);
-  color: var(--dark);
-  line-height: 1.6;
-  font-family: system-ui, sans-serif;
+    margin: 0 auto;
+    padding: 1rem;
+    background-color: var(--bg);
+    color: var(--dark);
+    line-height: 1.6;
+    font-family: system-ui, sans-serif;
 }
 
+/* Main page */
 main {
     width: 100%;
-    max-width: 1100px;
     margin: 0 auto;
-    flex: none;
 }
 
+/* Page headings */
 h1 {
     margin: 1.5rem auto;
     color: var(--dark);
@@ -40,67 +44,25 @@ h1 {
 
 h2,
 h3 {
-  margin: 1rem 0;
-  color: var(--dark);
-  text-align: center;
+    margin: 1rem 0;
+    color: var(--dark);
+    text-align: center;
 }
 
 
 .container {
-  padding: 10px;
-  width: 100%;
-  height: auto;
-  max-width: 1080px;
-  min-height: 0;
-  flex: none;
-  margin: 0 auto 1rem;
+    padding: 10px;
 
-  border: 1px solid var(--secondary);
-  border-radius: 12px;
-  background: white;
-  box-shadow: 2px 4px 0px var(--tertiary);
+    border: 1px solid var(--secondary);
+    border-radius: 12px;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    background: white;
+    box-shadow: 2px 4px 0px var(--tertiary);
 }
 
-
-/* Game canvas - 800 x 600, shrinks to fit narrow windows (the game still uses 800 x 600 pixels) */
-
-#gameCanvas {
-  display: block;
-  width: 100%;
-  max-width: 800px;
-  height: auto;
-  margin: 0 auto;
-  background: var(--dark);
-  border-radius: 4px;
-}
-
-.control-grid {
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  justify-items: start;
-  gap: 0.5rem 1rem;
-  grid-template-columns: max-content max-content;
-  margin: 1rem auto;
-}
-
-kbd {
-  justify-self: end;
-  background: #f0f0f0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  width: max-content;
-}
 
 @media (max-width: 600px) {
-  body {
-    padding: 0;
-  }
+    body {
+        padding: 0;
+    }
 }

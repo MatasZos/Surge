@@ -15,6 +15,7 @@ export class MainMenu extends Phaser.Scene {
     }
 
     create() {
+        document.body.classList.add("menu-active");
 
         // Background
         const background = this.add.image(

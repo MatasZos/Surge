@@ -1,59 +1,112 @@
-/* Fit the whole page to the window (or the Celbridge preview panel), so nothing is ever cut off: the page fills
-   the window exactly, and the game canvas shrinks to fit the space left under the title, keeping its shape.
-   The game still uses its full 800 x 600 inside - only the display is scaled. */
 
 html,
 body {
-  height: 100%;
+    height: 100%;
 }
 
-/* the title takes the space it needs, and the white game box takes the rest */
 body,
 main {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
+/* Main page container */
 main {
-  flex: none;
-  width: 100%;
-  max-width: 850px;
-  margin: 0 auto;
+    flex: none;
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
 }
 
+/* Page title */
 h1 {
-  flex: none;
+    flex: none;
 }
+
+
 
 .container {
-  flex: none;
-  min-height: 0;
-  width: 100%;
-  height: auto;;
-  margin: 0 auto 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    max-width: 1400px;
+    min-height: 0;
+    height: auto;
+
+    margin: 0 auto 1rem;
 }
 
-
+/* Phaser canvas container */
 #game-container {
-  width: 100%;
-  height: auto;
-  min-height: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: auto;
 
-  overflow: hidden;
+    overflow: hidden;
+}
+
+/* Scale the 1200 x 800 Phaser canvas
+   while preserving its aspect ratio */
+#game-container canvas {
+    display: block;
+    max-width: 100%;
+}
+
+body.menu-active {
+    padding: 0;
+    overflow: hidden;
+}
+
+body.menu-active main {
+    width: 100%;
+    max-width: none;
+    height: 100vh;
+    height: 100dvh;
+}
+
+body.menu-active h1 {
+    display: none;
+}
+
+body.menu-active .container {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: #000;
+}
+
+body.menu-active #game-container {
+    width: 100%;
+    height: 100%;
+    flex: 1 1 auto;
 }
 
 
-/* Phaser sets the canvas size in its style attribute, so these need !important. With width and height on auto,
-   the canvas keeps its shape while staying inside its container. */
-canvas {
-  display: block;
-  width: auto !important;
-  height: auto !important;
-  max-width: 100% !important;
-  max-height: 100% !important;
+
+@media (max-width: 650px) {
+    body {
+        padding: 0;
+    }
+
+    .container {
+        width: 100%;
+    }
+
+    #game-container {
+        width: 100%;
+    }
 }

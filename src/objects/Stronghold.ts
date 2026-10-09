@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { SIDEBAR_WIDTH } from "../constants";
 
 export class Stronghold extends Phaser.GameObjects.Sprite {
     health:number;
@@ -16,7 +17,7 @@ export class Stronghold extends Phaser.GameObjects.Sprite {
     }
 
     getCollisionBounds():Phaser.Geom.Rectangle {
-        return new Phaser.Geom.Rectangle(175,145,15,500);
+        return new Phaser.Geom.Rectangle(175 + SIDEBAR_WIDTH,145,15,500);
     }
 
     takeDamage(amount: number){

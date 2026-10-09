@@ -3,8 +3,7 @@ import Phaser from "phaser";
 import { GameScene } from "./scenes/GameScene";
 import { MainMenu } from "./scenes/MainMenu";
 
-const GAME_WIDTH = 1200;
-const GAME_HEIGHT = 800;
+import { GAME_WIDTH, GAME_HEIGHT } from "./constants";
 
 new Phaser.Game({
     type: Phaser.AUTO,
@@ -14,10 +13,9 @@ new Phaser.Game({
     parent: "game-container",
 
     scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH
-    },
-
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.NO_CENTER
+},
     physics: {
         default: "arcade",
         arcade: {

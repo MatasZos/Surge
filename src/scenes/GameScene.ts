@@ -10,6 +10,8 @@ import { MeleeEnemy } from "../enemies/MeleeEnemy";
 import { Projectile } from "../objects/projectile";
 import { Stronghold } from "../objects/Stronghold";
 
+import { EnergyManager } from "../managers/EnergyManager";
+
 import { CollisionSystem } from "../systems/CollisionSystem";
 import { DefenderToolbar } from "../ui/DefenderToolbar";
 
@@ -21,7 +23,12 @@ import {
   CELL_WIDTH,
   CELL_HEIGHT,
   GRID_X,
-  GRID_Y
+  GRID_Y,
+  DEFENDER_COSTS,
+  DEFENDER_COOLDOWNS,
+  SIDEBAR_WIDTH,
+  BATTLEFIELD_WIDTH
+
 } from "../constants";
 
 export class GameScene extends Phaser.Scene {
@@ -35,19 +42,9 @@ export class GameScene extends Phaser.Scene {
 
   private stronghold!: Stronghold;
   private collisionSystem!: CollisionSystem;
-
-  private energy = 200;
+  
+  private energyManager!: EnergyManager;
   private energyText!: Phaser.GameObjects.Text;
-
-  private costs: Record<string, number> = {
-    shooter: 100,
-    generator: 50
-  };
-
-  private cooldowns: Record<string, number> = {
-    shooter: 7500,
-    generator: 7500
-  };
 
   private lastPlaced: Record<string, number> = {};
 
@@ -85,8 +82,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   private updateEnergyText() {
-    this.energyText.setText("Energy: " + this.energy);
-  }
+    this.energyText.setText("Energy: " + this.energyManager.getEnergy());
+}
 
   private handleGridClick(pointer: Phaser.Input.Pointer) {
     const col = Math.floor((pointer.x - GRID_X) / CELL_WIDTH);
@@ -101,21 +98,21 @@ export class GameScene extends Phaser.Scene {
     if (this.selectedDefender === null) return;
 
     const type = this.selectedDefender;
-    const cost = this.costs[type];
+    const cost = DEFENDER_COSTS[type];
 
     if (cost === undefined) return;
 
-    if (this.energy < cost) {
-      console.log("Not enough energy");
-      return;
-    }
+    if (!this.energyManager.canAfford(cost)) {
+    console.log("Not enough energy");
+    return;
+}
 
     const now = this.time.now;
     const last = this.lastPlaced[type];
 
     if (
       last !== undefined &&
-      now - last < this.cooldowns[type]
+      now - last < DEFENDER_COOLDOWNS[type]
     ) {
       console.log("Defender on cooldown");
       return;
@@ -139,7 +136,7 @@ export class GameScene extends Phaser.Scene {
 
     this.defenders.push(defender);
 
-    this.energy -= cost;
+    this.energyManager.spendEnergy(cost);
     this.updateEnergyText();
 
     this.lastPlaced[type] = now;
@@ -155,56 +152,46 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
+
+    document.body.classList.remove("menu-active");
     // Reset game state
-    this.energy = 200;
+    this.energyManager = new EnergyManager(200);
     this.selectedDefender = null;
     this.enemies = [];
     this.projectiles = [];
     this.defenders = [];
     this.lastPlaced = {};
-
-    const background = this.add.image(
-      GAME_WIDTH / 2,
-      GAME_HEIGHT / 2,
-      "battlefield"
-    );
-
-    background.setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
+    const background = this.add.image(SIDEBAR_WIDTH + BATTLEFIELD_WIDTH / 2,GAME_HEIGHT / 2,"battlefield");
+    background.setDisplaySize(BATTLEFIELD_WIDTH,GAME_HEIGHT);
     background.setDepth(-10);
+    
+    this.add.rectangle(SIDEBAR_WIDTH / 2,GAME_HEIGHT / 2,SIDEBAR_WIDTH,GAME_HEIGHT,0x1b2838).setDepth(-9);
+
 
     this.grid = new Grid(GRID_ROWS, GRID_COLS);
 
     this.events.on("projectile-created", (projectile: Projectile) => {
-      this.projectiles.push(projectile);
-    });
+        this.projectiles.push(projectile);
+        });
 
     this.events.on("energy-collected", (amount: number) => {
-      this.energy += amount;
-      this.updateEnergyText();
-    });
-
+        this.energyManager.addEnergy(amount);
+        this.updateEnergyText();
+        });
+        
     this.drawGrid();
 
     new DefenderToolbar(this, (defender: string) => {
       this.selectedDefender = defender;
     });
 
-    this.energyText = this.add.text(
-      550, 35,
-      "Energy: 200",
-      {
-        fontSize: "24px",
-        color: "#00ccff",
-        backgroundColor: "#222222",
-        padding: { x: 12, y: 8 }
-      }
-    );
+    this.energyText = this.add.text(100,350,"Energy: 200",{ fontSize: "22px",color: "#00ccff", backgroundColor: "#162536",padding: { x: 10, y: 8 }});
+    
+    this.energyText.setOrigin(0.5);
 
     this.energyText.setDepth(20);
 
-    this.stronghold = new Stronghold(
-      this, 110, 405, "stronghold"
-    );
+    this.stronghold = new Stronghold(this, SIDEBAR_WIDTH + 110, 405, "stronghold");
 
     const strongholdScale = Math.min(
       180 / this.stronghold.width,

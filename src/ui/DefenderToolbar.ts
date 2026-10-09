@@ -1,10 +1,11 @@
 
 import Phaser from "phaser";
+import {DEFENDER_COSTS} from "../constants"
 
 export class DefenderToolbar {
   private scene: Phaser.Scene;
   private onSelect: (defender: string) => void;
-  private labels: Phaser.GameObjects.Text[] = [];
+  private buttons: Phaser.GameObjects.Rectangle[] = [];
 
   constructor(
     scene: Phaser.Scene,
@@ -12,43 +13,62 @@ export class DefenderToolbar {
   ) {
     this.scene = scene;
     this.onSelect = onSelect;
+
     this.drawToolbar();
   }
 
   private drawToolbar() {
-    this.addButton(150, "Shooter - 100", "shooter");
-    this.addButton(340, "Generator - 50", "generator");
+
+    const toolbarX = 65
+    this.scene.add.rectangle(toolbarX,170,120,255,0x263447,0.95).setDepth(10);
+
+    this.scene.add.text(toolbarX,65,"DEFENDERS", {fontSize: "14px", color:"#ffffff"}).setOrigin(0.5).setDepth(11);
+
+    this.addButton(toolbarX,125,"Shooter" , "shooter");
+
+    this.addButton(toolbarX, 235,"Generator","generator");
+
   }
 
   private addButton(
     x: number,
-    text: string,
-    type: string
+    y: number,
+    name: string,
+    type:string
+    
   ) {
+    //Button background
     const button = this.scene.add.rectangle(
-      x, 55, 175, 40, 0x333333
+      x, y, 100, 100, 0x40536b
     );
 
-    const label = this.scene.add.text(
-      x, 55, text,
-      { fontSize: "16px", color: "#ffffff" }
-    );
+    button.setDepth(11);
+    button.setInteractive({useHandCursor:true })
+    this.buttons.push(button);
 
-    label.setOrigin(0.5);
-    label.setDepth(11);
-    button.setDepth(10);
-    this.labels.push(label);
+    //Defender image for icon
+    const icon = this.scene.add.image( x, y -17, type);
+    icon.setDisplaySize(55,55);
+    icon.setDepth(12);
 
-    button.setInteractive({ useHandCursor: true });
+    //Defender name 
+    this.scene.add.text(x, y +22, name, {fontSize:"14px", color: "#ffffff"}).setOrigin(0.5).setDepth(12);
 
-    button.on("pointerdown", () => {
-      this.onSelect(type);
+    //Energy cost
+    this.scene.add.text(x , y +40, DEFENDER_COSTS[type] + " Energy", {fontSize: "12px", color: "#00ccff"}).setOrigin(0.5).setDepth(12);
 
-      for (const item of this.labels) {
-        item.setColor("#ffffff");
-      }
+    //Selection handling
+    button.on("pointerdown", () => { this.onSelect(type);
+    //reset button colours
+    for(const item of this.buttons){
+        item.setFillStyle(0x40536b);
+        item.setStrokeStyle();
 
-      label.setColor("#00ff00");
+        }
+
+    button.setFillStyle(0x286b55);
+    button.setStrokeStyle(2, 0x00ff99);
     });
   }
 }
+
