@@ -116,21 +116,45 @@ export class CollisionSystem {
     }
   }
 
-  private handleEnemyStrongholdCollision() {
+  
+private handleEnemyStrongholdCollision() {
     for (const enemy of this.enemies) {
-      if (!enemy.active || enemy.isAttacking) continue;
+        if (!enemy.active || enemy.isAttacking) continue;
 
-      const hit = Phaser.Geom.Intersects.RectangleToRectangle(
-        enemy.getBounds(),
-        this.stronghold.getCollisionBounds()
-      );
+        const hit = Phaser.Geom.Intersects.RectangleToRectangle(
+            enemy.getBounds(),
+            this.stronghold.getCollisionBounds()
+        );
 
-      if (hit) {
+        if (!hit) continue;
+
+        // Stop the enemy from moving
         enemy.isAttacking = true;
+
         console.log("Enemy reached Stronghold");
-      }
+
+        // damage the stronghold once per second 
+        const timer = this.scene.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                if (!enemy.active || this.stronghold.health <= 0) {
+                    this.stopAttack(enemy);
+                    return;
+                }
+                this.stronghold.takeDamage(enemy.damage);
+
+                if (this.stronghold.health <= 0) {
+                    this.stopAttack(enemy);
+                }
+            },
+            loop: true
+        });
+
+        this.attackTimers.set(enemy, timer);
     }
-  }
+}
+
+ 
 
   update() {
     this.handleProjectileEnemyCollision();

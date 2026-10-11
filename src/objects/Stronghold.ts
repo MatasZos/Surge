@@ -20,14 +20,28 @@ export class Stronghold extends Phaser.GameObjects.Sprite {
         return new Phaser.Geom.Rectangle(175 + SIDEBAR_WIDTH,145,15,500);
     }
 
-    takeDamage(amount: number){
+    
+    takeDamage(amount: number) {
+        // dont take damage after destroyed
+        if (this.health <= 0) {
+            return;
+        }
+
         this.health -= amount;
 
-        console.log("Stronghold health: " + this.health);
-        
-        if(this.health <= 0){
+        //prevent stronghold going into negative health
+        if (this.health < 0) {
             this.health = 0;
+        }
+
+        console.log("Stronghold health: " + this.health);
+
+        if (this.health === 0) {
             console.log("Stronghold destroyed!");
+
+            //gamescne knows if stronghold is destroyed
+            this.scene.events.emit("stronghold-destroyed");
         }
     }
+
 }

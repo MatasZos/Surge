@@ -2,6 +2,7 @@
 import Phaser from "phaser";
 import { GameScene } from "./scenes/GameScene";
 import { MainMenu } from "./scenes/MainMenu";
+import { GameOver } from "./scenes/GameOver";
 
 import { GAME_WIDTH, GAME_HEIGHT } from "./constants";
 
@@ -23,5 +24,5 @@ new Phaser.Game({
         }
     },
 
-    scene: [MainMenu,GameScene]
+    scene: [MainMenu,GameScene, GameOver]
 });

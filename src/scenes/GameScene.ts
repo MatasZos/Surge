@@ -201,6 +201,10 @@ export class GameScene extends Phaser.Scene {
     this.stronghold.setScale(strongholdScale);
     this.stronghold.setDepth(2);
 
+    this.events.once("stronghold-destroyed",()=>{
+        this.scene.start("GameOver")
+    });
+
     this.collisionSystem = new CollisionSystem(
       this,
       this.grid,
