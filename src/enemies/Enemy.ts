@@ -1,3 +1,4 @@
+
 import Phaser from "phaser";
 
 export class Enemy extends Phaser.GameObjects.Sprite {
@@ -32,12 +33,30 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     }
 
     takeDamage(amount: number) {
+
+        if (!this.active) return;
+
         this.health -= amount;
 
         console.log("Enemy health:", this.health);
 
         if (this.health <= 0) {
+
+            this.health = 0;
+
+            // Play explosion sound when enemy dies
+            this.scene.sound.play("explosionSound", {
+                volume: 0.5
+            });
+
             this.destroy();
+
+        } else {
+
+            // Play sound when enemy takes damage
+            this.scene.sound.play("enemyHitSound", {
+                volume: 0.3
+            });
         }
     }
 

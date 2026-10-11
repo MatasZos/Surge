@@ -1,3 +1,4 @@
+
 import Phaser from "phaser";
 import { Defender } from "./Defender";
 import { Projectile } from "../objects/projectile";
@@ -5,7 +6,7 @@ import { Projectile } from "../objects/projectile";
 export class Shooter extends Defender {
 
     private shootTimer: Phaser.Time.TimerEvent;
-    
+
     constructor(
         scene: Phaser.Scene,
         x: number,
@@ -13,7 +14,7 @@ export class Shooter extends Defender {
     ) {
         super(scene, x, y, "shooter");
 
-        this.setDisplaySize(60,60);
+        this.setDisplaySize(60, 60);
 
         this.health = 300;
         this.damage = 20;
@@ -31,15 +32,23 @@ export class Shooter extends Defender {
 
     private shoot() {
 
+        if (!this.active) return;
+
         console.log("Shooter fired");
 
+        // Play laser sound
+        this.scene.sound.play("laserSound", {
+            volume: 0.3
+        });
+
+        // Create projectile
         new Projectile(
             this.scene,
             this.x + 25,
             this.y - 2
         );
     }
-    
+
     destroy(fromScene?: boolean) {
 
         if (this.shootTimer) {

@@ -63,6 +63,12 @@ export class GameScene extends Phaser.Scene {
 
     this.load.image("stronghold", "assets/stronghold/stronghold.png");
     this.load.image("battlefield", "assets/backgrounds/battlefield.png");
+
+    //audio
+    this.load.audio("backgroundMusic", "assets/sounds/backgroundMusic.m4a");
+    this.load.audio("laserSound", "assets/sounds/laser.m4a");
+    this.load.audio("enemyHitSound", "assets/sounds/enemyhit.m4a");
+    this.load.audio("explosionSound", "assets/sounds/explosion.m4a");
   }
 
   private drawGrid() {
@@ -152,6 +158,32 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
+
+    
+    // Start background music safely
+    if (this.cache.audio.exists("backgroundMusic")) {
+
+        const music = this.sound.add("backgroundMusic", {
+            volume: 0.2,
+            loop: true
+        });
+
+        if (this.sound.locked) {
+            this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                music.play();
+            });
+        } else {
+            music.play();
+        }
+
+        // Stop music when leaving gameplay
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+            music.stop();
+            music.destroy();
+        });
+    }
+
+
 
     document.body.classList.remove("menu-active");
     // Reset game state
