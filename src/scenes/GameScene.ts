@@ -129,10 +129,11 @@ export class GameScene extends Phaser.Scene {
 
     let defender: Defender;
 
+   
     if (type === "generator") {
-      defender = new Generator(this, x, y);
+        defender = new Generator(this, x, y);
     } else {
-      defender = new Shooter(this, x, y);
+        defender = new Shooter(this, x, y, this.enemies);
     }
 
     this.grid.placeHuman(row, col, defender);
