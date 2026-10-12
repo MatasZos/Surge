@@ -8,6 +8,9 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     damage: number;
     isAttacking: boolean = false;
 
+    private maxHealth: number;
+    private healthBar: Phaser.GameObjects.Graphics;
+
     constructor(
         scene: Phaser.Scene,
         x: number,
@@ -30,6 +33,31 @@ export class Enemy extends Phaser.GameObjects.Sprite {
         this.health = health;
         this.speed = speed;
         this.damage = damage;
+        this.maxHealth = health;
+        this.healthBar = scene.add.graphics();
+        this.updateHealthBar();
+    }
+
+    private updateHealthBar() {
+
+        this.healthBar.clear();
+
+        const width = 60;
+        const height = 7;
+        const x = this.x - width / 2;
+        const y = this.y - 45;
+
+        // Red background
+        this.healthBar.fillStyle(0xff0000);
+        this.healthBar.fillRect(x, y, width, height);
+
+        // Green remaining health
+        this.healthBar.fillStyle(0x00ff00);
+        this.healthBar.fillRect(
+            x, y,
+            width * (this.health / this.maxHealth),
+            height
+        );
     }
 
     takeDamage(amount: number) {
@@ -37,6 +65,8 @@ export class Enemy extends Phaser.GameObjects.Sprite {
         if (!this.active) return;
 
         this.health -= amount;
+        this.health = Math.max(0, this.health);
+        //this.updateHealthBar();
 
         console.log("Enemy health:", this.health);
 
@@ -45,18 +75,18 @@ export class Enemy extends Phaser.GameObjects.Sprite {
             this.health = 0;
 
             // Play explosion sound when enemy dies
-            this.scene.sound.play("explosionSound", {
-                volume: 0.5
-            });
+            if (this.scene.cache.audio.exists("explosionSound")) {
+                this.scene.sound.play("explosionSound", { volume: 0.5 });
+            }
 
             this.destroy();
 
         } else {
 
             // Play sound when enemy takes damage
-            this.scene.sound.play("enemyHitSound", {
-                volume: 0.3
-            });
+            if (this.scene.cache.audio.exists("enemyHitSound")) {
+                this.scene.sound.play("enemyHitSound", { volume: 0.3 });
+            }
         }
     }
 
@@ -68,5 +98,14 @@ export class Enemy extends Phaser.GameObjects.Sprite {
         }
 
         this.x -= this.speed * (delta / 1000);
+        this.updateHealthBar();
+    }
+
+    destroy(fromScene?: boolean) {
+        if (this.healthBar?.active) {
+            this.healthBar.destroy();
+        }
+
+        super.destroy(fromScene);
     }
 }

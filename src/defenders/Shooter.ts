@@ -44,7 +44,9 @@ export class Shooter extends Defender {
     private shoot() {
         if (!this.active) return;
 
-        this.scene.sound.play("laserSound", { volume: 0.3 });
+        if (this.scene.cache.audio.exists("laserSound")) {
+            this.scene.sound.play("laserSound", { volume: 0.3 });
+        }
 
         new Projectile(this.scene, this.x + 25, this.y - 2);
     }
