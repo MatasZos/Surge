@@ -120,23 +120,52 @@ SURGE includes a main menu featuring a background (artwork), a game title, subti
 
 The menu uses a separate webpage layout whereas the gameplay uses its own interface.
 
-###2.10 Sound Effects
+### 2.10 Sound Effects
 
 Basic sound effects have been added to the game to add a bit more liveliness to the game.
 
-## 3 Player Input
+## 3 Player Input/Controls
 
-SURGE is primary controlled using the mouse
+SURGE is primarily controlled using the mouse.
 
-| Action |  Control | 
+| Action | Control |
+|---|---|
+| Select Defender | Left-click a defender in the toolbar |
+| Place Defender | Left-click an empty battlefield grid cell |
+| Collect Energy | Left-click an energy pickup |
+| Start Game | Click the Play button |
+| Restart Game | Click the Restart button on the Game Over screen |
+| Return to Main Menu | Click the Main Menu button on the Game Over screen |
 
+## 4 Technical Implementation
 
+### 4.1 Technologies
 
-## 4 Main Menu
+The project uses:
+- Typescript
+- Phaser 4
+- Deno
+- HTML & CSS for webpage layout
+- Git and GitHub for version control
+- GitHub project for task allocation and management
+- Celbridge IDE for development
 
-The main menu will introduce players to four Core buttons, Start Game, How to Play, Settings and Exit. The buttons are arranged vertically, the layout is simple, clear and visually appealing with the rest of the game 
+### 4.2 Project Structure
 
-## 5 Game Features
+| Directory | Responsibility |
+|---|---|
+| `src/scenes/` | Contains the Main Menu, Game Scene and Game Over scenes. |
+| `src/defenders/` | Contains defender classes such as Shooter and Generator. |
+| `src/enemies/` | Contains enemy classes and their movement and attack behaviour. |
+| `src/grid/` | Manages the battlefield grid, individual cells and defender placement. |
+| `src/managers/` | Contains resource management and wave management modules. |
+| `src/systems/` | Handles collision detection and combat interactions. |
+| `src/objects/` | Contains game objects such as the Stronghold and projectiles. |
+| `src/ui/` | Contains the Phaser defender selection toolbar. |
+| `src/constants.ts` | Stores game dimensions, grid settings, defender costs and cooldowns.
+  
+
+## 5 Game Features (Implemented and Planned)
 
 | Feature | Priority | Description |
 |---|:---:|---|
@@ -154,17 +183,23 @@ The main menu will introduce players to four Core buttons, Start Game, How to Pl
 | Multiple Levels | 3 | Add additional levels with increasing difficulty. |
 | Level Complete Screen | 3 | Display a completion screen when the player successfully finishes a level. |
 
-## 6 Development Priorities
-The main features required to create the basic playable version of SURGE:
- - Grid System
- - Toolbar
- - Shooter Defender
- - Melee Enemy
- - Health/Damage System
- - Input Mechanics
+## 6 Development Progress
+Completed development work includes:
+- Setting up the project
+- Typescript and Phaser configuration
+- Grid and cell management
+- Defender placement
+- Shooter and Generator defenders
+- Melee enemy movement and combat
+- Projectile collision detection
+- Energy management and collection
+- Health and damage interactions
+- Stronghold implementation and collisions
+- Vertical toolbar and defender icons
+- Main menu and Game Over scenes
+- Stronghold destruction and restart functionality
+- Basic sound effects
 
 
-## 7 Technology
 
-- Typescript
-- IDE ( Visual Studio Code / Celbridge)
+
