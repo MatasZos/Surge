@@ -5,61 +5,132 @@
 ### 1.1 Game Concept
 
 SURGE is a 2D tower-defence game based on Humans VS Machines. 
-The Player must defend their base (stronghold) from waves of machines by placing different human defenders on a battlefield grid
+The Player must defend their stronghold from waves of machines by placing different human defenders on a battlefield grid
+
+Players must manage energy, position defenders effectively, and prevent enemies from reaching and destroying their Stronghold.
 
 ### 1.2 Genre
 
-2D Tower Defence
+2D Tower Defence/Strategy
 
 ### 1.3 Inspiration
 
-The game is inspired by tower-defence games such as Plants VS Zombies.
+SURGE is inspired by tower-defence games such as Plants vs. Zombies, in particular its grid-based defender placement, resource management and approaching enemy waves.
 
 #### 1.4 Core Gameplay
 
 The player:
-- Places defenders on the battlefield grid
-- Uses energy to place defenders
+- Select defenders from a vertical toolbar
+- Places defenders on available battlefield grid cells
+- Spend energy to place defenders
 - Defends against waves of machine enemies
-- Uses a variety of defenders to defend different situations
-- Aim is to survive increasingly difficult waves and defeat the boss
+- Use Shooters to attack enemies automatically
+- Aim is to protect the Stronghold from enemy attacks
 
 ## 2 Game Design
 
 ### 2.1 Battlefield / Grid
 
-The board/battlefield will consist of grids that are divided into multiple horizontal lines. Defenders can be placed on any available grid cell, while the enemies will enter from the opposite side and move towards the stronghold
+The game uses a 7-column by 5-row grid
 
-### 2.2 Energy System / Generation
+The defenders can be placed on available cells, and each cell can hold on defender at a time
 
-The main resource for the defenders is energy. Each defender will have a different cost of energy. The player must be able to manage the available energy and decide on which defender is more useful during each wave/situation. The energy will  spawn randomly to be picked up by the player to use, in addition there will be energy generators in order to speed up the energy process.
+Enemies approach the stronghold from the opposite side of the battlefield
+
+The grid tracks occupied cells, allowing destroyed defenders to be removed and replaced.
+
+### 2.2 Defender Selection Toolbar
+
+A vertical defender selection toolbar that is connected to the main game scene.
+
+The toolbar includes:
+- Shooter and Gnerator selection
+- Defender sprite icons
+- Energy cost labels
+- Visual highlighting for the selected defender
+- A dedicated sidebar seperated from the battlefield
+- A display showing the players current spendable energy
+
+### 2.3 Energy System / Generation
+
+The main resource for the defenders is energy. Each defender will have a different cost of energy. 
+
+The player begins with 200 energy.
+
+Shooter - 100 Energy Cost
+Generator - 50 Energy Cost
+
+Energy is managed through a separate EnergyManager class.
+
+The system checks whether the player has enough energy before allowing a defender to be placed.
+
+Both defender types currently have a 7.5 second placement cooldown
+
+### 2.4 Generator Defender
+The Generator produces collectible energy pickups.
+
+- Energy pickups provide 25 energy
+- The player clicks pickups to collect them
+- Uncollected energy pickups disappear after a period of time
+- Generated energy can be used to purchase additional defenders
 
 
-### 2.3 Defenders
+### 2.5 Shooter Defender
 
-The defenderds are human/soldiers which are used to defend the strongohld and will be placed by the player. The defenders will be stationary and will be locked to a grid cell that the player chooses. The first standard types of defenders are:
-- Shooter - will attack the machines via a projectile from a distance
-- Barricade - a high health wall to block enemies from moving forward
-- Generator - it will generate additional energy for the player
+The Shooter is a stationary defensive unit placed on the battlefield grid
 
-More defenders will be developed and introduced in the progress
+It automatically fires projectiles at approaching enemies
 
-### 2.4 Enemies 
+Projectiles deal damage when they collide with enemies, and enemies are destroyed when their health reaches zero
 
-The enemies are the machines trying to reach the stronghold which move acrooss the battlefield towards the defenders. Different machines will have different abilities:
-- Melee machine - the standard enemy that attacks the defenders at close rnage only 
-- Shooter machine - attacks the defender from a far via projectiles
-- Boss machine - a powerful anemey which will have increased health and damage (and possibly abilities and mechanics)
+### 2.6 Melee Enemy
+The Melee Enemy is the currently implemented machine enemy type
 
-More enemies will be developed and introduced in the process 
+The Melee Enemy:
+- Spawns on the right hand side of the battlefield
+-  Moves towards the stronghold
+-  Attacks defenders blocking its path
+-  Stops moving while attacking
+-  Can damage the Stronghold upon reaching it
 
-### 2.5 Health and Damage (Stats)
+  The current Melee Enemy has 200 health and deals 25 damage per attack
 
-Both of the defenders and enemies will have a certain amount of health. Attackers reduce health and once a units health reaches 0, they are removed from the battlefield. If a defender is removed, a new one can be placed on the grid cell. If an enemey reaches the stronghold, it will deal damage to it, and the player (objective) will lose health or progress in the game or level.
+### 2.7 Health and Damage (Stats)
+
+The game supports health and damage interactions between projectiles, enemies, defenders and the Stronghold.
+
+- Projectiles damage enemy units
+- Enemies damage defenders when they reach them
+- Destroyed defenders are removed from their grid cells
+- Enemies can damage the stronghold once they reach its collision area
+
+Enemies attacking the Stronghold deal damage at regular intervals (currently one attack cycle per second)
+
+### 2.8 Stronghold Destruction and Game Over
+When Stronghold health reaches zero, a destruction event is triggered.
+
+The game transitions to as Game Over scene.
+
+The game over screen provides two options:
+- Restart: Starts a new game/instance
+- Main Menu: Returns to the title scree
+
+### 2.9 Main Menu
+SURGE includes a main menu featuring a background (artwork), a game title, subtitle and Play button
+
+The menu uses a separate webpage layout whereas the gameplay uses its own interface.
+
+###2.10 Sound Effects
+
+Basic sound effects have been added to the game to add a bit more liveliness to the game.
 
 ## 3 Player Input
 
-The game will be primarily mouse control based. The player selects a defender from the toolbar provided and clicks on any available grid cell. The player will also use the mosue to interact with the menu and other game UI elements.
+SURGE is primary controlled using the mouse
+
+| Action |  Control | 
+
+
 
 ## 4 Main Menu
 
