@@ -3,6 +3,7 @@ import Phaser from "phaser";
 import { Defender } from "./Defender";
 import { Projectile } from "../objects/projectile";
 import { Enemy } from "../enemies/Enemy";
+import { SETTINGS } from "../config/settings";
 
 export class Shooter extends Defender {
 
@@ -18,8 +19,8 @@ export class Shooter extends Defender {
         super(scene, x, y, "shooter");
 
         this.setDisplaySize(60, 60);
-        this.health = 300;
-        this.damage = 20;
+        this.health = SETTINGS.defenders.shooter.health;
+        this.damage = SETTINGS.defenders.shooter.damage;
         this.enemies = enemies;
 
         this.shootTimer = scene.time.addEvent({

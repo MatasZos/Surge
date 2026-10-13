@@ -1,10 +1,12 @@
 
 import Phaser from "phaser";
+import { SETTINGS } from "../config/settings";
 
 export class Projectile extends Phaser.GameObjects.Sprite {
 
-    damage: number = 20;
-    speed: number = 300;
+    damage: number = SETTINGS.defenders.shooter.projectileDamage;
+    speed: number = SETTINGS.defenders.shooter.projectileSpeed;
+
 
     constructor(
         scene: Phaser.Scene,
@@ -19,10 +21,7 @@ export class Projectile extends Phaser.GameObjects.Sprite {
 
         this.setDepth(10);
 
-        scene.events.emit(
-            "projectile-created",
-            this
-        );
+        scene.events.emit("projectile-created",this);
     }
 
     move(delta: number) {

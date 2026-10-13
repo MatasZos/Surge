@@ -1,8 +1,10 @@
+
 import Phaser from "phaser";
 import { Enemy } from "./Enemy";
 import { Defender } from "../defenders/Defender";
 import { Stronghold } from "../objects/Stronghold";
 import { EnemyProjectile } from "../objects/EnemyProjectile";
+import { SETTINGS } from "../config/settings";
 
 export class RangedEnemy extends Enemy {
 
@@ -15,14 +17,14 @@ export class RangedEnemy extends Enemy {
         private defenders: Defender[],
         private stronghold: Stronghold
     ) {
-        super(scene, x, y, "meleeEnemy", 150, 12, 20);
+        super(scene,x,y,"meleeEnemy",SETTINGS.enemies.ranged.health,SETTINGS.enemies.ranged.speed,SETTINGS.enemies.ranged.damage);
 
         // Make ranged enemies blue
         this.setTint(0x00aaff);
 
-        // Shoot every 2 seconds
+        // Shoot using the interval from the spreadsheet
         this.shootTimer = scene.time.addEvent({
-            delay: 2000,
+            delay: SETTINGS.enemies.ranged.attackIntervalMs,
             callback: () => {
                 if (this.active && this.isAttacking) {
                     console.log("Ranged enemy shooting!");
@@ -40,7 +42,7 @@ export class RangedEnemy extends Enemy {
             defender.active &&
             defender.x < this.x &&
             Math.abs(defender.y - this.y) < 30 &&
-            this.x - defender.x <= 300
+            this.x - defender.x <= SETTINGS.enemies.ranged.attackRange
         );
 
         // Check for stronghold in shooting range
@@ -48,7 +50,7 @@ export class RangedEnemy extends Enemy {
 
         const strongholdInRange =
             this.x > strongholdX &&
-            this.x - strongholdX <= 300;
+            this.x - strongholdX <= SETTINGS.enemies.ranged.attackRange;
 
         // Stop and shoot
         this.isAttacking = defenderInRange || strongholdInRange;

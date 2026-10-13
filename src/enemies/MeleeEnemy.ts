@@ -1,5 +1,7 @@
+
 import Phaser from "phaser";
 import { Enemy } from "./Enemy";
+import { SETTINGS } from "../config/settings";
 
 export class MeleeEnemy extends Enemy {
 
@@ -8,6 +10,7 @@ export class MeleeEnemy extends Enemy {
         x: number,
         y: number
     ) {
-        super(scene, x, y, "meleeEnemy", 200, 18, 25);
+        super(
+            scene,x,y,"meleeEnemy",SETTINGS.enemies.melee.health,SETTINGS.enemies.melee.speed,SETTINGS.enemies.melee.damage);
     }
 }

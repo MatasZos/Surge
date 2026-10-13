@@ -1,6 +1,6 @@
 
 import Phaser from "phaser";
-import {DEFENDER_COSTS} from "../constants"
+import { SETTINGS } from "../config/settings";
 
 export class DefenderToolbar {
   private scene: Phaser.Scene;
@@ -34,13 +34,11 @@ export class DefenderToolbar {
     x: number,
     y: number,
     name: string,
-    type:string
+    type:"shooter" | "generator"
     
   ) {
     //Button background
-    const button = this.scene.add.rectangle(
-      x, y, 100, 100, 0x40536b
-    );
+    const button = this.scene.add.rectangle(x, y, 100, 100, 0x40536b);
 
     button.setDepth(11);
     button.setInteractive({useHandCursor:true })
@@ -55,7 +53,7 @@ export class DefenderToolbar {
     this.scene.add.text(x, y +22, name, {fontSize:"14px", color: "#ffffff"}).setOrigin(0.5).setDepth(12);
 
     //Energy cost
-    this.scene.add.text(x , y +40, DEFENDER_COSTS[type] + " Energy", {fontSize: "12px", color: "#00ccff"}).setOrigin(0.5).setDepth(12);
+    this.scene.add.text(x , y +40, SETTINGS.defenders[type].cost + " Energy", {fontSize: "12px", color: "#00ccff"}).setOrigin(0.5).setDepth(12);
 
     //Selection handling
     button.on("pointerdown", () => { this.onSelect(type);

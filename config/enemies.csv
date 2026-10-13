@@ -1,0 +1,3 @@
+enemy_id,health,speed,damage,attack_interval_ms,attack_range,projectile_speed,projectile_damage
+melee,300,18,25,1000,0,0,0
+ranged,150,12,20,2000,300,250,20

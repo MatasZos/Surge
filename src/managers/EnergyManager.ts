@@ -1,8 +1,9 @@
+import { SETTINGS } from "../config/settings";
 export class EnergyManager {
 
     private energy: number;
 
-    constructor(startingEnergy: number = 200) {
+    constructor(startingEnergy: number = SETTINGS.energy.startingEnergy) {
         this.energy = startingEnergy;
     }
 

@@ -1,5 +1,6 @@
 
 import Phaser from "phaser";
+import { SETTINGS } from "../config/settings";
 
 import { Grid } from "../grid/Grid";
 import { Defender } from "../defenders/Defender";
@@ -18,7 +19,6 @@ import { CollisionSystem } from "../systems/CollisionSystem";
 import { DefenderToolbar } from "../ui/DefenderToolbar";
 
 import {
-  GAME_WIDTH,
   GAME_HEIGHT,
   GRID_ROWS,
   GRID_COLS,
@@ -26,11 +26,8 @@ import {
   CELL_HEIGHT,
   GRID_X,
   GRID_Y,
-  DEFENDER_COSTS,
-  DEFENDER_COOLDOWNS,
   SIDEBAR_WIDTH,
   BATTLEFIELD_WIDTH
-
 } from "../constants";
 
 export class GameScene extends Phaser.Scene {
@@ -45,7 +42,7 @@ export class GameScene extends Phaser.Scene {
 
   private stronghold!: Stronghold;
   private collisionSystem!: CollisionSystem;
-  
+
   private energyManager!: EnergyManager;
   private energyText!: Phaser.GameObjects.Text;
 
@@ -56,6 +53,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload() {
+    // Images for defenders, enemies and projectiles
     this.load.image("shooter", "assets/defenders/shooterdefender.png");
     this.load.image("generator", "assets/defenders/generator.png");
 
@@ -67,7 +65,7 @@ export class GameScene extends Phaser.Scene {
     this.load.image("stronghold", "assets/stronghold/stronghold.png");
     this.load.image("battlefield", "assets/backgrounds/battlefield.png");
 
-    //audio
+    // Audio
     this.load.audio("backgroundMusic", "assets/sounds/backgroundMusic.m4a");
     this.load.audio("laserSound", "assets/sounds/laser.m4a");
     this.load.audio("enemyHitSound", "assets/sounds/enemyhit.m4a");
@@ -91,8 +89,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   private updateEnergyText() {
-    this.energyText.setText("Energy: " + this.energyManager.getEnergy());
-}
+    this.energyText.setText(
+      "Energy: " + this.energyManager.getEnergy()
+    );
+  }
 
   private handleGridClick(pointer: Phaser.Input.Pointer) {
     const col = Math.floor((pointer.x - GRID_X) / CELL_WIDTH);
@@ -107,21 +107,24 @@ export class GameScene extends Phaser.Scene {
     if (this.selectedDefender === null) return;
 
     const type = this.selectedDefender;
-    const cost = DEFENDER_COSTS[type];
 
-    if (cost === undefined) return;
+    // Defender cost and cooldown from CSV settings
+    if (type !== "shooter" && type !== "generator") return;
+
+    const cost = SETTINGS.defenders[type].cost;
+    const cooldown = SETTINGS.defenders[type].cooldownMs;
 
     if (!this.energyManager.canAfford(cost)) {
-    console.log("Not enough energy");
-    return;
-}
+      console.log("Not enough energy");
+      return;
+    }
 
     const now = this.time.now;
     const last = this.lastPlaced[type];
 
     if (
       last !== undefined &&
-      now - last < DEFENDER_COOLDOWNS[type]
+      now - last < cooldown
     ) {
       console.log("Defender on cooldown");
       return;
@@ -132,11 +135,10 @@ export class GameScene extends Phaser.Scene {
 
     let defender: Defender;
 
-   
     if (type === "generator") {
-        defender = new Generator(this, x, y);
+      defender = new Generator(this, x, y);
     } else {
-        defender = new Shooter(this, x, y, this.enemies);
+      defender = new Shooter(this, x, y, this.enemies);
     }
 
     this.grid.placeHuman(row, col, defender);
@@ -158,100 +160,119 @@ export class GameScene extends Phaser.Scene {
     const x = GRID_X + GRID_COLS * CELL_WIDTH + 50;
     const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
 
-    if (Math.random() < 0.5) {
-        this.enemies.push(new MeleeEnemy(this, x, y));
+    // Spawn probability from CSV settings
+    if (Math.random() < SETTINGS.waves.meleeSpawnProbability) {
+      this.enemies.push(
+        new MeleeEnemy(this, x, y)
+      );
     } else {
-        this.enemies.push(
-            new RangedEnemy(this, x, y, this.defenders, this.stronghold)
-        );
+      this.enemies.push(
+        new RangedEnemy(
+          this,
+          x,
+          y,
+          this.defenders,
+          this.stronghold
+        )
+      );
     }
   }
 
   create() {
 
-    
     // Start background music safely
     if (this.cache.audio.exists("backgroundMusic")) {
+      const music = this.sound.add("backgroundMusic", {
+        volume: 0.2,
+        loop: true
+      });
 
-        const music = this.sound.add("backgroundMusic", {
-            volume: 0.2,
-            loop: true
+      if (this.sound.locked) {
+        this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+          music.play();
         });
+      } else {
+        music.play();
+      }
 
-        if (this.sound.locked) {
-            this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
-                music.play();
-            });
-        } else {
-            music.play();
-        }
-
-        // Stop music when leaving gameplay
-        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-            music.stop();
-            music.destroy();
-        });
+      // Stop music when leaving gameplay
+      this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+        music.stop();
+        music.destroy();
+      });
     }
 
-
-
     document.body.classList.remove("menu-active");
+
     // Reset game state
-    this.energyManager = new EnergyManager(200);
+    this.energyManager = new EnergyManager();
     this.selectedDefender = null;
     this.enemies = [];
     this.projectiles = [];
     this.enemyProjectiles = [];
     this.defenders = [];
     this.lastPlaced = {};
+
+    // Battlefield background
     const background = this.add.image(SIDEBAR_WIDTH + BATTLEFIELD_WIDTH / 2,GAME_HEIGHT / 2,"battlefield");
+
     background.setDisplaySize(BATTLEFIELD_WIDTH,GAME_HEIGHT);
+
     background.setDepth(-10);
-    
+
+    // Sidebar background
     this.add.rectangle(SIDEBAR_WIDTH / 2,GAME_HEIGHT / 2,SIDEBAR_WIDTH,GAME_HEIGHT,0x1b2838).setDepth(-9);
 
-
+    // Create grid
     this.grid = new Grid(GRID_ROWS, GRID_COLS);
 
-    this.events.on("projectile-created", (projectile: Projectile) => {
+    // Track player projectiles
+    this.events.on("projectile-created",(projectile: Projectile) => {
         this.projectiles.push(projectile);
-        });
+      }
+    );
 
-    this.events.on("enemy-projectile-created", (projectile: EnemyProjectile) => {
+    // Track enemy projectiles
+    this.events.on(
+      "enemy-projectile-created",
+      (projectile: EnemyProjectile) => {
         this.enemyProjectiles.push(projectile);
+      }
+    );
+
+    // Collect generator energy
+    this.events.on("energy-collected", (amount: number) => {
+      this.energyManager.addEnergy(amount);
+      this.updateEnergyText();
     });
 
-    this.events.on("energy-collected", (amount: number) => {
-        this.energyManager.addEnergy(amount);
-        this.updateEnergyText();
-        });
-        
     this.drawGrid();
 
+    // Defender selection toolbar
     new DefenderToolbar(this, (defender: string) => {
       this.selectedDefender = defender;
     });
 
-    this.energyText = this.add.text(100,350,"Energy: 200",{ fontSize: "22px",color: "#00ccff", backgroundColor: "#162536",padding: { x: 10, y: 8 }});
-    
-    this.energyText.setOrigin(0.5);
+    // Energy display
+    this.energyText = this.add.text(100,350,"Energy: " + this.energyManager.getEnergy(),{fontSize: "22px",color: "#00ccff",backgroundColor: "#162536",padding: { x: 10, y: 8 }});
 
+    this.energyText.setOrigin(0.5);
     this.energyText.setDepth(20);
 
-    this.stronghold = new Stronghold(this, SIDEBAR_WIDTH + 110, 405, "stronghold");
+    // Stronghold
+    this.stronghold = new Stronghold(this,SIDEBAR_WIDTH + 110,405,"stronghold");
 
-    const strongholdScale = Math.min(
-      180 / this.stronghold.width,
-      430 / this.stronghold.height
-    );
+    const strongholdScale = Math.min(180 / this.stronghold.width,430 / this.stronghold.height);
 
     this.stronghold.setScale(strongholdScale);
     this.stronghold.setDepth(2);
 
-    this.events.once("stronghold-destroyed",()=>{
-        this.scene.start("GameOver")
+    // Game over when stronghold is destroyed
+    this.events.once("stronghold-destroyed", () => {
+      this.scene.start("GameOver");
     });
 
+    // Collision system
     this.collisionSystem = new CollisionSystem(
       this,
       this.grid,
@@ -262,38 +283,48 @@ export class GameScene extends Phaser.Scene {
       this.enemyProjectiles
     );
 
+    // Grid placement
     this.input.on("pointerdown", this.handleGridClick, this);
 
-    // First enemy after 20 seconds
-    this.time.delayedCall(20000, () => {
+    this.time.delayedCall(SETTINGS.waves.firstEnemyDelayMs,() => {
 
-      this.spawnEnemy();
+        this.spawnEnemy();
 
-      // Spawn another enemy every 15 seconds
-      this.time.addEvent({
-        delay: 15000,
-        callback: this.spawnEnemy,
-        callbackScope: this,
-        loop: true
-      });
+        this.time.addEvent({
+          delay: SETTINGS.waves.enemySpawnIntervalMs,
+          callback: this.spawnEnemy,
+          callbackScope: this,
+          loop: true
+        });
 
-    });
+      }
+    );
   }
 
   update(_time: number, delta: number) {
+
+    // Move enemies
     for (const enemy of this.enemies) {
-      if (enemy.active) enemy.move(delta);
+      if (enemy.active) {
+        enemy.move(delta);
+      }
     }
 
+    // Move player projectiles
     for (const projectile of this.projectiles) {
-      if (projectile.active) projectile.move(delta);
+      if (projectile.active) {
+        projectile.move(delta);
+      }
     }
 
+    // Move enemy projectiles
     for (const projectile of this.enemyProjectiles) {
-        if (projectile.active) projectile.move(delta);
+      if (projectile.active) {
+        projectile.move(delta);
+      }
     }
 
-
+    // Handle collisions
     this.collisionSystem.update();
   }
 }

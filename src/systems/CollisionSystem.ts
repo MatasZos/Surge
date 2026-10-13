@@ -1,3 +1,5 @@
+import { SETTINGS } from "../config/settings";
+
 
 import Phaser from "phaser";
 import { Grid } from "../grid/Grid";
@@ -81,7 +83,7 @@ export class CollisionSystem {
         const col = defender.getData("gridCol");
 
         const timer = this.scene.time.addEvent({
-          delay: 1000,
+            delay: 1000,
           callback: () => {
             if (!enemy.active || !defender.active) {
               this.stopAttack(enemy);
@@ -143,7 +145,7 @@ private handleEnemyStrongholdCollision() {
 
         // damage the stronghold once per second 
         const timer = this.scene.time.addEvent({
-            delay: 1000,
+            delay: SETTINGS.stronghold.meleeAttackIntervalMs,
             callback: () => {
                 if (!enemy.active || this.stronghold.health <= 0) {
                     this.stopAttack(enemy);

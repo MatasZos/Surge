@@ -1,6 +1,7 @@
 
 import Phaser from "phaser";
 import { Defender } from "./Defender";
+import { SETTINGS } from "../config/settings";
 
 export class Generator extends Defender {
   private energyTimer?: Phaser.Time.TimerEvent;
@@ -9,8 +10,8 @@ export class Generator extends Defender {
     super(scene, x, y, "generator");
 
     this.setDisplaySize(60, 60);
-    this.health = 300;
-    this.damage = 0;
+    this.health = SETTINGS.defenders.generator.health;
+    this.damage = SETTINGS.defenders.generator.damage;
 
     // First energy after 7 seconds
     this.energyTimer = scene.time.delayedCall(7000, () => {

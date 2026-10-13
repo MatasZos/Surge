@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { SIDEBAR_WIDTH } from "../constants";
+import { SETTINGS } from "../config/settings"
 
 export class Stronghold extends Phaser.GameObjects.Sprite {
     health:number;
@@ -13,7 +14,7 @@ export class Stronghold extends Phaser.GameObjects.Sprite {
 
         scene.add.existing(this);
 
-        this.health = 500;
+        this.health = SETTINGS.stronghold.startingHealth;
     }
 
     getCollisionBounds():Phaser.Geom.Rectangle {

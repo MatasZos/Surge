@@ -1,0 +1,6 @@
+setting,value
+starting_energy,500
+generator_pickup_value,25
+generator_first_production_ms,7000
+generator_production_interval_ms,24000
+pickup_lifetime_ms,15000

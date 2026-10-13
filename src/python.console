@@ -3,3 +3,7 @@ type = "python"
 
 [session.python]
 dependencies = ["openpyxl"]
+
+[[session.trigger]]
+pattern = "config/gameplay.xlsx"
+command = "%run config/export_config.py"

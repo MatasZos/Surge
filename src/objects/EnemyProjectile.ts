@@ -1,9 +1,10 @@
 import Phaser from "phaser";
+import { SETTINGS } from "../config/settings";
 
 export class EnemyProjectile extends Phaser.GameObjects.Rectangle {
 
-    damage = 20;
-    speed = 250;
+    damage = SETTINGS.enemies.ranged.projectileDamage;
+    speed = SETTINGS.enemies.ranged.projectileSpeed;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, 16, 5, 0x00aaff);
