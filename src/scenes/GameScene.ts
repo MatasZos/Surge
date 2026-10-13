@@ -436,11 +436,11 @@ export class GameScene extends Phaser.Scene {
 
                 // Repeated enemy spawning
                 this.time.addEvent({
-                    delay: SETTINGS.waves.enemySpawnIntervalMs,
-                    callback: this.spawnEnemy,
-                    callbackScope: this,
-                    loop: true
-                });
+                delay: Math.max(1000, SETTINGS.waves.enemySpawnIntervalMs),
+                callback: this.spawnEnemy,
+                callbackScope: this,
+                loop: true
+            });
             }
         );
     }
