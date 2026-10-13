@@ -42,7 +42,19 @@ export const SETTINGS = {
             fireIntervalMs: 0,
             projectileSpeed: 0,
             projectileDamage: 0
+        },
+
+        
+        barricade: {
+            health: 0,
+            damage: 0,
+            cost: 0,
+            cooldownMs: 0,
+            fireIntervalMs: 0,
+            projectileSpeed: 0,
+            projectileDamage: 0
         }
+
     },
 
     energy: {
