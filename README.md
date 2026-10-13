@@ -112,11 +112,14 @@ The Ranged Enemy:
 
 The game supports health and damage interactions between projectiles, enemies, defenders and the Stronghold.
 
-- Projectiles damage enemy units
-- Enemies damage defenders when they reach them
+- Defenders and Enemies now have projectile damage units
+- Defenders deal damage to enemies with a visual healthbar
+- Enemies damage defenders when they reach them (Melee enemy) and Shoot at defenders
+  when they are close by to them (Ranged enemy)
 - Destroyed defenders are removed from their grid cells
 - Enemies can damage the stronghold once they reach its collision area
-
+  and once the ranged enemy is within the the shooting range.
+  
 Enemies attacking the Stronghold deal damage at regular intervals (currently one attack cycle per second)
 
 ### 2.9 Stronghold Destruction and Game Over
