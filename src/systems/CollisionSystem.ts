@@ -180,6 +180,17 @@ private handleEnemyProjectileCollision() {
 
             defender.takeDamage(projectile.damage);
 
+            // Make defender turn red when hit
+            if (defender.active) {
+                defender.setTint(0xff0000);
+
+                this.scene.time.delayedCall(150, () => {
+                    if (defender.active) {
+                        defender.clearTint();
+                    }
+                });
+            }
+
             if (!defender.active) {
                 const row = defender.getData("gridRow");
                 const col = defender.getData("gridCol");
