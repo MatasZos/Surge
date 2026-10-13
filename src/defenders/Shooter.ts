@@ -19,7 +19,7 @@ export class Shooter extends Defender {
         super(scene, x, y, "shooter");
 
         this.setDisplaySize(60, 60);
-        this.health = SETTINGS.defenders.shooter.health;
+        this.setDefenderHealth(SETTINGS.defenders.shooter.health);
         this.damage = SETTINGS.defenders.shooter.damage;
         this.enemies = enemies;
 

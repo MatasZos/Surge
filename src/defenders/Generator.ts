@@ -10,7 +10,7 @@ export class Generator extends Defender {
     super(scene, x, y, "generator");
 
     this.setDisplaySize(60, 60);
-    this.health = SETTINGS.defenders.generator.health;
+    this.setDefenderHealth(SETTINGS.defenders.generator.health);
     this.damage = SETTINGS.defenders.generator.damage;
 
     // First energy after 7 seconds

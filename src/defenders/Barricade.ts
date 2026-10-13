@@ -10,7 +10,7 @@ export class Barricade extends Defender {
 
         this.setDisplaySize(65, 75);
 
-        this.health = SETTINGS.defenders.barricade.health;
+        this.setDefenderHealth(SETTINGS.defenders.barricade.health);
         this.damage = SETTINGS.defenders.barricade.damage;
     }
 }
