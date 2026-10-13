@@ -17,10 +17,7 @@ export class RangedEnemy extends Enemy {
         private defenders: Defender[],
         private stronghold: Stronghold
     ) {
-        super(scene,x,y,"meleeEnemy",SETTINGS.enemies.ranged.health,SETTINGS.enemies.ranged.speed,SETTINGS.enemies.ranged.damage);
-
-        // Make ranged enemies blue
-        this.setTint(0x00aaff);
+        super(scene,x,y,"rangedEnemy",SETTINGS.enemies.ranged.health,SETTINGS.enemies.ranged.speed,SETTINGS.enemies.ranged.damage);
 
         // Shoot using the interval from the spreadsheet
         this.shootTimer = scene.time.addEvent({

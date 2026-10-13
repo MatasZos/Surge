@@ -78,6 +78,11 @@ export class GameScene extends Phaser.Scene {
             "assets/enemies/meleerobot.png"
         );
 
+        this.load.image(
+            "rangedEnemy",
+            "assets/enemies/rangedEnemy.png"
+        );
+
         // Effects
         this.load.image("laser", "assets/effects/projectile.png");
         this.load.image("energy", "assets/effects/energy.png");
