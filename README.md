@@ -95,7 +95,20 @@ The Melee Enemy:
 
   The current Melee Enemy has 200 health and deals 25 damage per attack
 
-### 2.7 Health and Damage (Stats)
+### 2.7 Ranged Enemy
+The Ranged Enemy is the currently implemented machine enemy type that attacks from a distance.
+
+The Ranged Enemy:
+- Spawns on the right hand side of the battlefield
+- Moves towards the stronghold
+- Stops moving when defenders or the stronghold are within its 300px shooting range
+- Fires blue projectiles every 2 seconds
+- Can damage defenders and the stronghold with its projectiles
+- Can be damaged and destroyed by defenders
+
+  The current Ranged Enemy has 150 health and deals 20 damage per projectile
+
+### 2.8 Health and Damage (Stats)
 
 The game supports health and damage interactions between projectiles, enemies, defenders and the Stronghold.
 
@@ -106,7 +119,7 @@ The game supports health and damage interactions between projectiles, enemies, d
 
 Enemies attacking the Stronghold deal damage at regular intervals (currently one attack cycle per second)
 
-### 2.8 Stronghold Destruction and Game Over
+### 2.9 Stronghold Destruction and Game Over
 When Stronghold health reaches zero, a destruction event is triggered.
 
 The game transitions to as Game Over scene.
@@ -115,12 +128,12 @@ The game over screen provides two options:
 - Restart: Starts a new game/instance
 - Main Menu: Returns to the title scree
 
-### 2.9 Main Menu
+### 2.10 Main Menu
 SURGE includes a main menu featuring a background (artwork), a game title, subtitle and Play button
 
 The menu uses a separate webpage layout whereas the gameplay uses its own interface.
 
-### 2.10 Sound Effects
+### 2.11 Sound Effects
 
 Basic sound effects have been added to the game to add a bit more liveliness to the game.
 
