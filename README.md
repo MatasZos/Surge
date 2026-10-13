@@ -199,6 +199,8 @@ Completed development work includes:
 - Main menu and Game Over scenes
 - Stronghold destruction and restart functionality
 - Basic sound effects
+- Health bars implemented (Enemy, ...)
+- Ranged enemy movement and shooting
 
 
 
