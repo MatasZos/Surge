@@ -7,6 +7,8 @@ import { Shooter } from "../defenders/Shooter";
 import { Generator } from "../defenders/Generator";
 import { Enemy } from "../enemies/Enemy";
 import { MeleeEnemy } from "../enemies/MeleeEnemy";
+import { RangedEnemy } from "../enemies/RangedEnemy";
+import { EnemyProjectile } from "../objects/EnemyProjectile";
 import { Projectile } from "../objects/projectile";
 import { Stronghold } from "../objects/Stronghold";
 
@@ -37,6 +39,7 @@ export class GameScene extends Phaser.Scene {
   private selectedDefender: string | null = null;
 
   private enemies: Enemy[] = [];
+  private enemyProjectiles: EnemyProjectile[] = [];
   private projectiles: Projectile[] = [];
   private defenders: Defender[] = [];
 
@@ -155,7 +158,13 @@ export class GameScene extends Phaser.Scene {
     const x = GRID_X + GRID_COLS * CELL_WIDTH + 50;
     const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
 
-    this.enemies.push(new MeleeEnemy(this, x, y));
+    if (Math.random() < 0.5) {
+        this.enemies.push(new MeleeEnemy(this, x, y));
+    } else {
+        this.enemies.push(
+            new RangedEnemy(this, x, y, this.defenders, this.stronghold)
+        );
+    }
   }
 
   create() {
@@ -192,6 +201,7 @@ export class GameScene extends Phaser.Scene {
     this.selectedDefender = null;
     this.enemies = [];
     this.projectiles = [];
+    this.enemyProjectiles = [];
     this.defenders = [];
     this.lastPlaced = {};
     const background = this.add.image(SIDEBAR_WIDTH + BATTLEFIELD_WIDTH / 2,GAME_HEIGHT / 2,"battlefield");
@@ -206,6 +216,10 @@ export class GameScene extends Phaser.Scene {
     this.events.on("projectile-created", (projectile: Projectile) => {
         this.projectiles.push(projectile);
         });
+
+    this.events.on("enemy-projectile-created", (projectile: EnemyProjectile) => {
+        this.enemyProjectiles.push(projectile);
+    });
 
     this.events.on("energy-collected", (amount: number) => {
         this.energyManager.addEnergy(amount);
@@ -244,7 +258,8 @@ export class GameScene extends Phaser.Scene {
       this.enemies,
       this.projectiles,
       this.defenders,
-      this.stronghold
+      this.stronghold,
+      this.enemyProjectiles
     );
 
     this.input.on("pointerdown", this.handleGridClick, this);
@@ -273,6 +288,11 @@ export class GameScene extends Phaser.Scene {
     for (const projectile of this.projectiles) {
       if (projectile.active) projectile.move(delta);
     }
+
+    for (const projectile of this.enemyProjectiles) {
+        if (projectile.active) projectile.move(delta);
+    }
+
 
     this.collisionSystem.update();
   }

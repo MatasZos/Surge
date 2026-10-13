@@ -66,7 +66,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
 
         this.health -= amount;
         this.health = Math.max(0, this.health);
-        //this.updateHealthBar();
+        this.updateHealthBar();
 
         console.log("Enemy health:", this.health);
 

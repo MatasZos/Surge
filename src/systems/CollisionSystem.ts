@@ -5,6 +5,8 @@ import { Defender } from "../defenders/Defender";
 import { Enemy } from "../enemies/Enemy";
 import { Projectile } from "../objects/projectile";
 import { Stronghold } from "../objects/Stronghold";
+import { RangedEnemy } from "../enemies/RangedEnemy";
+import { EnemyProjectile } from "../objects/EnemyProjectile";
 
 export class CollisionSystem {
   private scene: Phaser.Scene;
@@ -13,6 +15,7 @@ export class CollisionSystem {
   private projectiles: Projectile[];
   private defenders: Defender[];
   private stronghold: Stronghold;
+  private enemyProjectiles: EnemyProjectile[];
 
   private attackTimers = new Map<Enemy, Phaser.Time.TimerEvent>();
 
@@ -22,7 +25,9 @@ export class CollisionSystem {
     enemies: Enemy[],
     projectiles: Projectile[],
     defenders: Defender[],
-    stronghold: Stronghold
+    stronghold: Stronghold,
+    enemyProjectiles: EnemyProjectile[]
+    
   ) {
     this.scene = scene;
     this.grid = grid;
@@ -30,6 +35,7 @@ export class CollisionSystem {
     this.projectiles = projectiles;
     this.defenders = defenders;
     this.stronghold = stronghold;
+    this.enemyProjectiles = enemyProjectiles;
   }
 
   private handleProjectileEnemyCollision() {
@@ -57,6 +63,7 @@ export class CollisionSystem {
     for (const enemy of this.enemies) {
       if (!enemy.active) continue;
       if (enemy.isAttacking) continue;
+      if (enemy instanceof RangedEnemy) continue;
 
       for (const defender of this.defenders) {
         if (!defender.active) continue;
@@ -120,6 +127,7 @@ export class CollisionSystem {
 private handleEnemyStrongholdCollision() {
     for (const enemy of this.enemies) {
         if (!enemy.active || enemy.isAttacking) continue;
+        if (enemy instanceof RangedEnemy) continue;
 
         const hit = Phaser.Geom.Intersects.RectangleToRectangle(
             enemy.getBounds(),
@@ -154,10 +162,60 @@ private handleEnemyStrongholdCollision() {
     }
 }
 
+private handleEnemyProjectileCollision() {
+
+    for (const projectile of this.enemyProjectiles) {
+        if (!projectile.active) continue;
+
+        // Check if the bullet hits a defender
+        for (const defender of this.defenders) {
+            if (!defender.active) continue;
+
+            const hit = Phaser.Geom.Intersects.RectangleToRectangle(
+                projectile.getBounds(),
+                defender.getBounds()
+            );
+
+            if (!hit) continue;
+
+            defender.takeDamage(projectile.damage);
+
+            if (!defender.active) {
+                const row = defender.getData("gridRow");
+                const col = defender.getData("gridCol");
+
+                this.grid.removeOccupant(row, col);
+
+                const index = this.defenders.indexOf(defender);
+
+                if (index !== -1) {
+                    this.defenders.splice(index, 1);
+                }
+            }
+
+            projectile.destroy();
+            break;
+        }
+
+        if (!projectile.active) continue;
+
+        // Check if the bullet hits the stronghold
+        const hitStronghold = Phaser.Geom.Intersects.RectangleToRectangle(
+            projectile.getBounds(),
+            this.stronghold.getCollisionBounds()
+        );
+
+        if (hitStronghold) {
+            this.stronghold.takeDamage(projectile.damage);
+            projectile.destroy();
+        }
+    }
+}
  
 
   update() {
     this.handleProjectileEnemyCollision();
+    this.handleEnemyProjectileCollision();
 
     // Remove timers belonging to dead enemies
     for (const enemy of this.attackTimers.keys()) {
