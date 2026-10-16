@@ -97,6 +97,19 @@ export class Enemy extends Phaser.GameObjects.Sprite {
                     this.destroy();
                 }
             }, 20);
+        
+            const explosion = this.scene.add.circle(
+                this.x,
+                this.y,
+                20,
+                0xff3300
+            );
+
+            explosion.setDepth(this.depth - 1);
+
+            this.scene.time.delayedCall(150, () => {
+                explosion.destroy();
+            });
 
         } else {
 
