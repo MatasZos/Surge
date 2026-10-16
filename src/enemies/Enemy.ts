@@ -79,7 +79,24 @@ export class Enemy extends Phaser.GameObjects.Sprite {
                 this.scene.sound.play("explosionSound", { volume: 0.5 });
             }
 
-            this.destroy();
+            this.setActive(false);
+            this.isAttacking = false;
+            this.healthBar.setVisible(false);
+
+            const startScale = this.scaleX;
+
+            let step = 0;
+
+            const shrink = setInterval(() => {
+                step++;
+
+                this.setScale(startScale * (1 - step / 10));
+
+                if (step >= 10) {
+                    clearInterval(shrink);
+                    this.destroy();
+                }
+            }, 20);
 
         } else {
 

@@ -72,7 +72,23 @@ export class Defender extends Phaser.GameObjects.Sprite {
         console.log("Defender health:", this.health);
 
         if (this.health <= 0) {
-            this.destroy();
+            this.setActive(false);
+            this.healthBar.setVisible(false);
+
+            const startScale = this.scaleX;
+
+            let step = 0;
+
+            const shrink = setInterval(() => {
+                step++;
+
+                this.setScale(startScale * (1 - step / 10));
+
+                if (step >= 10) {
+                    clearInterval(shrink);
+                    this.destroy();
+                }
+            }, 20);
         }
     }
 
