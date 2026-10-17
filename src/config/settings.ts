@@ -1,6 +1,5 @@
-//default values for everything in SURGE (for right now)
-export const SETTINGS = {
 
+export const SETTINGS = {
     enemies: {
         melee: {
             health: 0,
@@ -17,6 +16,16 @@ export const SETTINGS = {
             speed: 0,
             damage: 0,
             attackIntervalMs: 0,
+            attackRange: 0,
+            projectileSpeed: 0,
+            projectileDamage: 0
+        },
+
+        crusher: {
+            health: 3000,
+            speed: 8,
+            damage: 150,
+            attackIntervalMs: 2500,
             attackRange: 0,
             projectileSpeed: 0,
             projectileDamage: 0
@@ -44,7 +53,6 @@ export const SETTINGS = {
             projectileDamage: 0
         },
 
-        
         barricade: {
             health: 0,
             damage: 0,
@@ -54,7 +62,6 @@ export const SETTINGS = {
             projectileSpeed: 0,
             projectileDamage: 0
         }
-
     },
 
     energy: {
@@ -71,7 +78,7 @@ export const SETTINGS = {
     },
 
     waves: {
-        firstEnemyDelayMs:  0,
+        firstEnemyDelayMs: 0,
         enemySpawnIntervalMs: 0,
         meleeSpawnProbability: 0.0,
         rangedSpawnProbability: 0.0

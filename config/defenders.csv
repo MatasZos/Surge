@@ -1,4 +1,4 @@
 defender_id,health,damage,cost,cooldown_ms,fire_interval_ms,projectile_speed,projectile_damage
 shooter,300,20,100,7500,1000,300,20
 generator,300,0,50,7500,0,0,0
-barricade,4000,0,125,30000,0,0,0
+barricade,2750,0,125,30000,0,0,0

@@ -11,6 +11,7 @@ import { Barricade } from "../defenders/Barricade";
 import { Enemy } from "../enemies/Enemy";
 import { MeleeEnemy } from "../enemies/MeleeEnemy";
 import { RangedEnemy } from "../enemies/RangedEnemy";
+import { CrusherEnemy } from "../enemies/CrusherEnemy";
 
 import { EnemyProjectile } from "../objects/EnemyProjectile";
 import { Projectile } from "../objects/projectile";
@@ -68,6 +69,8 @@ export class GameScene extends Phaser.Scene {
         this.load.image( "meleeEnemy", "assets/enemies/meleerobot.png" );
 
         this.load.image( "rangedEnemy", "assets/enemies/rangedEnemy.png");
+
+        this.load.image("crusherEnemy", "assets/enemies/crusherrobot.png");
 
         // Effects
         this.load.image("laser", "assets/effects/projectile.png");
@@ -183,21 +186,40 @@ export class GameScene extends Phaser.Scene {
         this.lastPlaced[type] = now;
     }
 
-    private spawnEnemy() {
+    
+private spawnEnemy() {
 
-        const row = Phaser.Math.Between(0, GRID_ROWS - 1);
+    const row = Phaser.Math.Between(0, GRID_ROWS - 1);
 
-        const x = GRID_X + GRID_COLS * CELL_WIDTH + 50;
-        const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
+    const x = GRID_X + GRID_COLS * CELL_WIDTH + 50;
+    const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
 
-        // Enemy spawn probabilities from CSV
-        if (Math.random() < SETTINGS.waves.meleeSpawnProbability) {
-            this.enemies.push( new MeleeEnemy(this, x, y));
-        } else {
-            this.enemies.push(new RangedEnemy( this,x,y,this.defenders,this.stronghold)
-            );
-        }
+    const roll = Math.random();
+
+    // 10% chance of spawning a Crusher
+    if (roll < 0.10) {
+        this.enemies.push(
+            new CrusherEnemy(this, x, y)
+        );
+
+    } else if (Math.random() < SETTINGS.waves.meleeSpawnProbability) {
+        this.enemies.push(
+            new MeleeEnemy(this, x, y)
+        );
+
+    } else {
+        this.enemies.push(
+            new RangedEnemy(
+                this,
+                x,
+                y,
+                this.defenders,
+                this.stronghold
+            )
+        );
     }
+}
+
 
     create() {
 
