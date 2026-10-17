@@ -2,7 +2,7 @@
 import Phaser from "phaser";
 import { SETTINGS } from "../config/settings";
 
-type DefenderType = "shooter" | "generator" | "barricade";
+type DefenderType = "shooter" | "generator" | "barricade" | "dualbarrel";
 
 export class DefenderToolbar {
 
@@ -10,11 +10,9 @@ export class DefenderToolbar {
     private onSelect: (defender: string) => void;
     private buttons: Phaser.GameObjects.Rectangle[] = [];
 
-
-    private cooldownTexts: Record<string, Phaser.GameObjects.Text>= {};
+    private cooldownTexts: Record<string, Phaser.GameObjects.Text> = {};
     private defenderButtons: Record<string, Phaser.GameObjects.Rectangle> = {};
     private selectedType: string | null = null;
-
 
     constructor(
         scene: Phaser.Scene,
@@ -31,21 +29,27 @@ export class DefenderToolbar {
         const toolbarX = 65;
 
         // Toolbar background
-        this.scene.add.rectangle(toolbarX,225,120,365,0x263447,0.95).setDepth(10);
+        this.scene.add.rectangle(
+            toolbarX, 280, 120, 475, 0x263447, 0.95
+        ).setDepth(10);
 
-        this.scene.add.text(toolbarX,65,"DEFENDERS", {fontSize: "14px",color: "#ffffff"}).setOrigin(0.5).setDepth(11);
+        this.scene.add.text(
+            toolbarX, 65, "DEFENDERS",
+            { fontSize: "14px", color: "#ffffff" }
+        ).setOrigin(0.5).setDepth(11);
 
         // Defender buttons
         this.addButton(toolbarX, 125, "Shooter", "shooter");
         this.addButton(toolbarX, 235, "Generator", "generator");
         this.addButton(toolbarX, 345, "Barricade", "barricade");
+        this.addButton(toolbarX, 455, "Dual Barrel", "dualbarrel");
     }
 
     private addButton(
         x: number,
         y: number,
         name: string,
-        type: "shooter" | "generator" | "barricade"
+        type: DefenderType
     ) {
 
         // Button background
@@ -65,13 +69,30 @@ export class DefenderToolbar {
         icon.setDepth(12);
 
         // Defender name
-        this.scene.add.text(x,y + 22,name,{fontSize: "14px",color: "#ffffff"}).setOrigin(0.5).setDepth(12);
+        this.scene.add.text(
+            x, y + 22, name,
+            { fontSize: "14px", color: "#ffffff" }
+        ).setOrigin(0.5).setDepth(12);
 
         // Energy cost from CSV settings
-        this.scene.add.text(x,y + 40,SETTINGS.defenders[type].cost + " Energy",{fontSize: "12px",color: "#00ccff"}).setOrigin(0.5).setDepth(12);
+        this.scene.add.text(
+            x,
+            y + 40,
+            SETTINGS.defenders[type].cost + " Energy",
+            { fontSize: "12px", color: "#00ccff" }
+        ).setOrigin(0.5).setDepth(12);
 
-        //Cooldown countdown displayed over the icon
-        const cooldownText = this.scene.add.text(x,y-17,"",{fontSize:"22px", color:"#ffffff", fontStyle: "bold", stroke:"#000000", strokeThickness:4});
+        // Cooldown countdown displayed over the icon
+        const cooldownText = this.scene.add.text(
+            x, y - 17, "",
+            {
+                fontSize: "22px",
+                color: "#ffffff",
+                fontStyle: "bold",
+                stroke: "#000000",
+                strokeThickness: 4
+            }
+        );
 
         cooldownText.setOrigin(0.5);
         cooldownText.setDepth(13);
@@ -97,28 +118,42 @@ export class DefenderToolbar {
         });
     }
 
-    updateCooldowns(now: number,lastPlaced: Record<string, number>) {
-        const types: DefenderType[] = ["shooter","generator","barricade"];
+    updateCooldowns(
+        now: number,
+        lastPlaced: Record<string, number>
+    ) {
+        const types: DefenderType[] = [
+            "shooter",
+            "generator",
+            "barricade",
+            "dualbarrel"
+        ];
 
         for (const type of types) {
 
             const last = lastPlaced[type];
             const cooldown = SETTINGS.defenders[type].cooldownMs;
 
-            const remaining = last === undefined ? 0 : Math.max(0, cooldown - (now - last));
+            const remaining = last === undefined
+                ? 0
+                : Math.max(0, cooldown - (now - last));
 
             const button = this.defenderButtons[type];
             const text = this.cooldownTexts[type];
 
             if (remaining > 0) {
-                //darken buttons
+
+                // Darken buttons during cooldown
                 button.setFillStyle(0x303846);
                 button.setStrokeStyle();
 
-                text.setText( (remaining / 1000).toFixed(1) + "s");
+                text.setText(
+                    (remaining / 1000).toFixed(1) + "s"
+                );
                 text.setVisible(true);
 
             } else {
+
                 text.setVisible(false);
 
                 if (this.selectedType === type) {

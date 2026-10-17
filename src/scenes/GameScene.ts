@@ -7,6 +7,7 @@ import { Defender } from "../defenders/Defender";
 import { Shooter } from "../defenders/Shooter";
 import { Generator } from "../defenders/Generator";
 import { Barricade } from "../defenders/Barricade";
+import { DualBarrel } from "../defenders/DualBarrel";
 
 import { Enemy } from "../enemies/Enemy";
 import { MeleeEnemy } from "../enemies/MeleeEnemy";
@@ -60,16 +61,13 @@ export class GameScene extends Phaser.Scene {
 
         // Defender images
         this.load.image( "shooter", "assets/defenders/shooterdefender.png" );
-
         this.load.image( "generator", "assets/defenders/generator.png" );
-
         this.load.image("barricade","assets/defenders/barricade.png" );
+        this.load.image("dualbarrel", "assets/defenders/dualbarrel.png");
 
         // Enemy images
         this.load.image( "meleeEnemy", "assets/enemies/meleerobot.png" );
-
         this.load.image( "rangedEnemy", "assets/enemies/rangedEnemy.png");
-
         this.load.image("crusherEnemy", "assets/enemies/crusherrobot.png");
 
         // Effects
@@ -133,7 +131,7 @@ export class GameScene extends Phaser.Scene {
         const type = this.selectedDefender;
 
         // Allowed defenders
-        if (type !== "shooter" &&type !== "generator" &&type !== "barricade") {
+        if (type !== "shooter" && type !== "generator" && type !== "barricade" && type !== "dualbarrel") {
             return;
         }
 
@@ -165,6 +163,9 @@ export class GameScene extends Phaser.Scene {
 
         } else if (type === "barricade") {
             defender = new Barricade(this, x, y);
+
+        } else if (type === "dualbarrel") {
+            defender = new DualBarrel(this, x, y, this.enemies);
 
         } else {
             defender = new Shooter(this,x,y,this.enemies);

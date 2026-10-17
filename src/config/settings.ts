@@ -61,7 +61,18 @@ export const SETTINGS = {
             fireIntervalMs: 0,
             projectileSpeed: 0,
             projectileDamage: 0
+        },
+
+        dualbarrel: {
+            health: 300,
+            damage: 40,
+            cost: 200,
+            cooldownMs: 12000,
+            fireIntervalMs: 1000,
+        projectileSpeed: 300,
+        projectileDamage: 20
         }
+
     },
 
     energy: {
