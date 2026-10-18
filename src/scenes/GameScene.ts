@@ -228,7 +228,7 @@ private spawnEnemy() {
         if (this.cache.audio.exists("backgroundMusic")) {
 
             const music = this.sound.add("backgroundMusic", {
-                volume: 0.1,
+                volume: 0.04,
                 loop: true
             });
 
