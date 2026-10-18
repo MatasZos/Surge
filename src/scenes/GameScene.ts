@@ -224,6 +224,31 @@ private spawnEnemy() {
 
     create() {
 
+        // Highlight the grid cell when hovering
+        const highlight = this.add.rectangle(0, 0, CELL_WIDTH, CELL_HEIGHT, 0x00ccff, 0.2);
+
+        highlight.setVisible(false);
+
+        this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
+
+            const col = Math.floor((pointer.x - GRID_X) / CELL_WIDTH);
+            const row = Math.floor((pointer.y - GRID_Y) / CELL_HEIGHT);
+
+            if (row >= 0 && row < GRID_ROWS &&
+                col >= 0 && col < GRID_COLS) {
+
+                highlight.setPosition(
+                    GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2,
+                    GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2
+                );
+
+                highlight.setVisible(true);
+
+            } else {
+                highlight.setVisible(false);
+            }
+        });
+
         // Background music
         if (this.cache.audio.exists("backgroundMusic")) {
 
@@ -347,6 +372,7 @@ private spawnEnemy() {
             }
         );
     }
+    
 
     update(_time: number, delta: number) {
 
