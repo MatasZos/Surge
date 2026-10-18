@@ -75,7 +75,7 @@ export class GameScene extends Phaser.Scene {
         this.load.image("energy", "assets/effects/energy.png");
 
         // Stronghold and battlefield
-        this.load.image( "stronghold","assets/stronghold/stronghold.png");
+        this.load.image("stronghold","assets/stronghold/stronghold_wall.png");
 
         this.load.image("battlefield","assets/backgrounds/battlefield.png" );
 
@@ -332,11 +332,21 @@ private spawnEnemy() {
         this.energyText.setDepth(20);
 
         // Stronghold
-        this.stronghold = new Stronghold(this,SIDEBAR_WIDTH + 110,405,"stronghold");
+        const strongholdWidth = 150;
+        const strongholdHeight = GRID_ROWS * CELL_HEIGHT + 40;
 
-        const strongholdScale = Math.min( 180 / this.stronghold.width,430 / this.stronghold.height);
+        this.stronghold = new Stronghold(
+        this,
+        GRID_X - strongholdWidth / 2,
+        GRID_Y + (GRID_ROWS * CELL_HEIGHT) / 2,
+        "stronghold"
+        );
 
-        this.stronghold.setScale(strongholdScale);
+        this.stronghold.setDisplaySize(
+        strongholdWidth,
+        strongholdHeight
+        );
+
         this.stronghold.setDepth(2);
 
         // Game over when stronghold is destroyed
