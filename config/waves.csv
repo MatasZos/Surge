@@ -1,6 +1,6 @@
 setting,value
 first_enemy_delay_ms,20000
-enemy_spawn_interval_ms,15000
-melee_spawn_probability,0.45
-ranged_spawn_probability,0.45
-crusher_spawn_probability,0.1
+enemy_spawn_interval_ms,5000
+melee_spawn_probability,0.6
+ranged_spawn_probability,0.35
+crusher_spawn_probability,0.05
