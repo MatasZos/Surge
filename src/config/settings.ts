@@ -80,18 +80,23 @@ export const SETTINGS = {
         generatorPickupValue: 0,
         generatorFirstProductionMs: 0,
         generatorProductionIntervalMs: 0,
-        pickupLifetimeMs: 0
+        pickupLifetimeMs: 0,
+        enemyDropChance: 0,
+        enemyDropValue: 0
+
     },
 
     stronghold: {
         startingHealth: 0,
-        meleeAttackIntervalMs: 0
+        meleeAttackIntervalMs: 0,
+        retaliationDamage:0
     },
 
     waves: {
         firstEnemyDelayMs: 0,
         enemySpawnIntervalMs: 0,
         meleeSpawnProbability: 0.0,
-        rangedSpawnProbability: 0.0
+        rangedSpawnProbability: 0.0,
+        crusherSpawnProbability: 0.0
     }
 };

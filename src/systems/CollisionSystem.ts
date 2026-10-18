@@ -158,8 +158,14 @@ export class CollisionSystem {
 
                     this.stronghold.takeDamage(enemy.damage);
 
-                    if (this.stronghold.health <= 0) {
-                        this.stopAttack(enemy);
+                    //stronghold will retaliate if it survives
+                    if (this.stronghold.health > 0 && enemy.active) {
+                        enemy.takeDamage(SETTINGS.stronghold.retaliationDamage)
+                    }
+
+                    //stop attack if either is destroyed
+                    if (!enemy.active || this.stronghold.health<=0){
+                        this.stopAttack(enemy)
                     }
                 },
                 loop: true

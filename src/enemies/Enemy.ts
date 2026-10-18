@@ -74,6 +74,9 @@ export class Enemy extends Phaser.GameObjects.Sprite {
 
             this.health = 0;
 
+            //informs gamescene that an enemy was killed
+            this.scene.events.emit("enemy-killed", this.x, this.y);
+
             // Play explosion sound when enemy dies
             if (this.scene.cache.audio.exists("explosionSound")) {
                 this.scene.sound.play("explosionSound", { volume: 0.5 });

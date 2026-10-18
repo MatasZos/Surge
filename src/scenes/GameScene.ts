@@ -22,6 +22,8 @@ import { EnergyManager } from "../managers/EnergyManager";
 import { CollisionSystem } from "../systems/CollisionSystem";
 import { DefenderToolbar } from "../ui/DefenderToolbar";
 
+import { WaveManager } from "../managers/WaveManager";
+
 import {
     GAME_HEIGHT,
     GRID_ROWS,
@@ -52,6 +54,8 @@ export class GameScene extends Phaser.Scene {
 
     private lastPlaced: Record<string, number> = {};
     private defenderToolbar!: DefenderToolbar;
+
+    private waveManager = new WaveManager;
 
     constructor() {
         super("GameScene");
@@ -195,28 +199,20 @@ private spawnEnemy() {
     const x = GRID_X + GRID_COLS * CELL_WIDTH + 50;
     const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
 
-    const roll = Math.random();
+    const enemyType = this.waveManager.chooseEnemyType();
 
-    // 10% chance of spawning a Crusher
-    if (roll < 0.10) {
+    if (enemyType === "crusher") {
         this.enemies.push(
-            new CrusherEnemy(this, x, y)
+            new CrusherEnemy(this,x,y)
         );
-
-    } else if (Math.random() < SETTINGS.waves.meleeSpawnProbability) {
+    }else if(enemyType ==="melee"){
         this.enemies.push(
-            new MeleeEnemy(this, x, y)
+            new MeleeEnemy(this,x,y)
         );
+    } else{
 
-    } else {
         this.enemies.push(
-            new RangedEnemy(
-                this,
-                x,
-                y,
-                this.defenders,
-                this.stronghold
-            )
+            new RangedEnemy(this, x, y,this.defenders, this.stronghold)
         );
     }
 }
@@ -319,6 +315,36 @@ private spawnEnemy() {
 
         // Collect generator energy
         this.events.on("energy-collected",(amount: number) => {this.energyManager.addEnergy(amount);this.updateEnergyText(); });
+        
+        // Chance to drop energy when an enemy is defeated
+        this.events.on("enemy-killed", (x: number, y: number) => {
+
+            // Drop chance from CSV
+            if (Math.random() >= SETTINGS.energy.enemyDropChance) {
+                return;
+            }
+
+            // Create an energy pickup on the enemy death point
+            const energy = this.add.image(x,y,"energy");
+            energy.setDisplaySize(35, 35);
+            energy.setDepth(15);
+            energy.setInteractive({useHandCursor:true});
+
+            // Collect energy when clicked
+            energy.on("pointerdown", () => {
+                if (!energy.active) return;
+                this.events.emit("energy-collected",SETTINGS.energy.enemyDropValue);
+                energy.destroy();
+            });
+
+            // Remove energy if it is not collected
+            this.time.delayedCall(SETTINGS.energy.pickupLifetimeMs,() => {
+                    if (energy.active) {
+                        energy.destroy();
+                    }
+                }
+            );
+        });
 
         this.drawGrid();
 
@@ -326,7 +352,7 @@ private spawnEnemy() {
        this.defenderToolbar = new DefenderToolbar(this,(defender:string) => {this.selectedDefender = defender;});
 
         // Energy display
-        this.energyText = this.add.text(100,460,"Energy: " + this.energyManager.getEnergy(),{fontSize: "22px",color: "#00ccff",backgroundColor: "#162536",padding: { x: 10, y: 8 }});
+        this.energyText = this.add.text(85,575,"Energy: " + this.energyManager.getEnergy(),{fontSize: "22px",color: "#00ccff",backgroundColor: "#162536",padding: { x: 10, y: 8 }});
 
         this.energyText.setOrigin(0.5);
         this.energyText.setDepth(20);
