@@ -201,6 +201,10 @@ private spawnEnemy() {
 
     const enemyType = this.waveManager.chooseEnemyType();
 
+    if (this.waveManager.isLevelComplete()) {
+        return;
+    }
+
     if (enemyType === "crusher") {
         this.enemies.push(
             new CrusherEnemy(this,x,y)
@@ -215,6 +219,7 @@ private spawnEnemy() {
             new RangedEnemy(this, x, y,this.defenders, this.stronghold)
         );
     }
+    this.waveManager.enemySpawned();
 }
 
 
@@ -288,6 +293,7 @@ private spawnEnemy() {
         this.energyManager = new EnergyManager();
         this.selectedDefender = null;
 
+        this.waveManager.reset();
         this.enemies = [];
         this.projectiles = [];
         this.enemyProjectiles = [];
@@ -437,5 +443,13 @@ private spawnEnemy() {
 
         // Handle collisions
         this.collisionSystem.update();
+ 
+        if (this.waveManager.isLevelComplete() &&
+            this.enemies.every(enemy => !enemy.active) &&
+            this.stronghold.health > 0) {
+
+            this.scene.launch("LevelComplete");
+            this.scene.pause();
+        }
     }
 }
