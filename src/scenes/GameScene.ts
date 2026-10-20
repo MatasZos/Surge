@@ -1,43 +1,25 @@
-
 import Phaser from "phaser";
 import { SETTINGS } from "../config/settings";
+import { GRID_ROWS, GRID_COLS, CELL_HEIGHT, GRID_X, GRID_Y } from "../constants";
+
+import { loadGameAssets } from "../helpers/GameAssets";
+import { BattlefieldView } from "../helpers/BattlefieldView";
+import { DefenderPlacement } from "../helpers/DefenderPlacement";
+import { EnemySpawner } from "../helpers/EnemySpawner";
+import { EnergyDrops } from "../helpers/EnergyDrops";
 
 import { Grid } from "../grid/Grid";
 import { Defender } from "../defenders/Defender";
-import { Shooter } from "../defenders/Shooter";
-import { Generator } from "../defenders/Generator";
-import { Barricade } from "../defenders/Barricade";
-import { DualBarrel } from "../defenders/DualBarrel";
-
 import { Enemy } from "../enemies/Enemy";
-import { MeleeEnemy } from "../enemies/MeleeEnemy";
-import { RangedEnemy } from "../enemies/RangedEnemy";
-import { CrusherEnemy } from "../enemies/CrusherEnemy";
-
 import { EnemyProjectile } from "../objects/EnemyProjectile";
 import { Projectile } from "../objects/projectile";
 import { Stronghold } from "../objects/Stronghold";
-
 import { EnergyManager } from "../managers/EnergyManager";
+import { WaveManager } from "../managers/WaveManager";
 import { CollisionSystem } from "../systems/CollisionSystem";
 import { DefenderToolbar } from "../ui/DefenderToolbar";
 
-import { WaveManager } from "../managers/WaveManager";
-
-import {
-    GAME_HEIGHT,
-    GRID_ROWS,
-    GRID_COLS,
-    CELL_WIDTH,
-    CELL_HEIGHT,
-    GRID_X,
-    GRID_Y,
-    SIDEBAR_WIDTH,
-    BATTLEFIELD_WIDTH
-} from "../constants";
-
 export class GameScene extends Phaser.Scene {
-
     private grid!: Grid;
     private selectedDefender: string | null = null;
 
@@ -48,337 +30,175 @@ export class GameScene extends Phaser.Scene {
 
     private stronghold!: Stronghold;
     private collisionSystem!: CollisionSystem;
-
     private energyManager!: EnergyManager;
     private energyText!: Phaser.GameObjects.Text;
-
-    private lastPlaced: Record<string, number> = {};
+    private waveText!: Phaser.GameObjects.Text;
     private defenderToolbar!: DefenderToolbar;
-
-    private waveManager = new WaveManager;
+    private defenderPlacement!: DefenderPlacement;
+    private enemySpawner!: EnemySpawner;
+    private lastPlaced: Record<string, number> = {};
+    private waveManager = new WaveManager();
 
     constructor() {
         super("GameScene");
     }
 
-    preload() {
-
-        // Defender images
-        this.load.image( "shooter", "assets/defenders/shooterdefender.png" );
-        this.load.image( "generator", "assets/defenders/generator.png" );
-        this.load.image("barricade","assets/defenders/barricade.png" );
-        this.load.image("dualbarrel", "assets/defenders/dualbarrel.png");
-
-        // Enemy images
-        this.load.image( "meleeEnemy", "assets/enemies/meleerobot.png" );
-        this.load.image( "rangedEnemy", "assets/enemies/rangedEnemy.png");
-        this.load.image("crusherEnemy", "assets/enemies/crusherrobot.png");
-
-        // Effects
-        this.load.image("laser", "assets/effects/projectile.png");
-        this.load.image("energy", "assets/effects/energy.png");
-
-        // Stronghold and battlefield
-        this.load.image("stronghold","assets/stronghold/stronghold_wall.png");
-
-        this.load.image("battlefield","assets/backgrounds/battlefield.png" );
-
-        // Audio
-        this.load.audio("backgroundMusic","assets/sounds/backgroundMusic.m4a");
-
-        this.load.audio("laserSound","assets/sounds/laser.m4a");
-
-        this.load.audio("enemyHitSound","assets/sounds/enemyhit.m4a");
-
-        this.load.audio( "explosionSound","assets/sounds/explosion.m4a");
+    preload(): void {
+        loadGameAssets(this);
     }
 
-    private drawGrid() {
-
-        const graphics = this.add.graphics();
-        graphics.lineStyle(2, 0xffffff, 0.5);
-
-        for (let row = 0; row < GRID_ROWS; row++) {
-            for (let col = 0; col < GRID_COLS; col++) {
-
-                graphics.strokeRect(
-                    GRID_X + col * CELL_WIDTH,
-                    GRID_Y + row * CELL_HEIGHT,
-                    CELL_WIDTH,
-                    CELL_HEIGHT
-                );
-            }
-        }
-    }
-
-    private updateEnergyText() {
-        this.energyText.setText("Energy: " + this.energyManager.getEnergy());
-    }
-
-    private handleGridClick(pointer: Phaser.Input.Pointer) {
-
-        const col = Math.floor( (pointer.x - GRID_X) / CELL_WIDTH);
-
-        const row = Math.floor( (pointer.y - GRID_Y) / CELL_HEIGHT);
-
-        if ( row < 0 || row >= GRID_ROWS || col < 0 || col >= GRID_COLS){
-         return;
-        }
-
-        if (!this.grid.getCell(row, col).isEmpty()) {
-            return;
-        }
-        if (this.selectedDefender === null) {
-            return;
-        }
-
-        const type = this.selectedDefender;
-
-        // Allowed defenders
-        if (type !== "shooter" && type !== "generator" && type !== "barricade" && type !== "dualbarrel") {
-            return;
-        }
-
-        // Stats loaded from CSV
-        const cost = SETTINGS.defenders[type].cost;
-        const cooldown = SETTINGS.defenders[type].cooldownMs;
-
-        if (!this.energyManager.canAfford(cost)) {
-            console.log("Not enough energy");
-            return;
-        }
-
-        const now = this.time.now;
-        const last = this.lastPlaced[type];
-
-        if ( last !== undefined &&now - last < cooldown) {
-            console.log("Defender on cooldown");
-            return;
-        }
-
-        const x = GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2;
-        const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
-
-        let defender: Defender;
-
-        // Create selected defender
-        if (type === "generator") {
-            defender = new Generator(this, x, y);
-
-        } else if (type === "barricade") {
-            defender = new Barricade(this, x, y);
-
-        } else if (type === "dualbarrel") {
-            defender = new DualBarrel(this, x, y, this.enemies);
-
-        } else {
-            defender = new Shooter(this,x,y,this.enemies);
-        }
-
-        // Place defender on grid
-        this.grid.placeHuman(row, col, defender);
-
-        defender.setData("gridRow", row);
-        defender.setData("gridCol", col);
-
-        this.defenders.push(defender);
-
-        // Spend energy
-        this.energyManager.spendEnergy(cost);
-        this.updateEnergyText();
-
-        // Start cooldown
-        this.lastPlaced[type] = now;
-    }
-
-    
-private spawnEnemy() {
-
-    const row = Phaser.Math.Between(0, GRID_ROWS - 1);
-
-    const x = GRID_X + GRID_COLS * CELL_WIDTH + 50;
-    const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
-
-    const enemyType = this.waveManager.chooseEnemyType();
-
-    if (enemyType === "crusher") {
-        this.enemies.push(
-            new CrusherEnemy(this,x,y)
-        );
-    }else if(enemyType ==="melee"){
-        this.enemies.push(
-            new MeleeEnemy(this,x,y)
-        );
-    } else{
-
-        this.enemies.push(
-            new RangedEnemy(this, x, y,this.defenders, this.stronghold)
-        );
-    }
-}
-
-
-    create() {
-
-        // Highlight the grid cell when hovering
-        const highlight = this.add.rectangle(0, 0, CELL_WIDTH, CELL_HEIGHT, 0x00ccff, 0.2);
-
-        highlight.setVisible(false);
-
-        this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
-
-            const col = Math.floor((pointer.x - GRID_X) / CELL_WIDTH);
-            const row = Math.floor((pointer.y - GRID_Y) / CELL_HEIGHT);
-
-            if (row >= 0 && row < GRID_ROWS &&
-                col >= 0 && col < GRID_COLS) {
-
-                highlight.setPosition(
-                    GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2,
-                    GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2
-                );
-
-                highlight.setVisible(true);
-
-            } else {
-                highlight.setVisible(false);
-            }
-        });
-
-        // Background music
-        if (this.cache.audio.exists("backgroundMusic")) {
-
-            const music = this.sound.add("backgroundMusic", {
-                volume: 0.04,
-                loop: true
-            });
-
-            const startMusic = () => {
-                if (!music.isPlaying) {
-                    music.play();
-                }
-            };
-
-            if (this.sound.locked) {
-                this.sound.once(
-                    Phaser.Sound.Events.UNLOCKED,
-                    startMusic
-                );
-            } else {
-                startMusic();
-            }
-
-            this.events.once(
-                Phaser.Scenes.Events.SHUTDOWN,
-                () => {
-                    this.sound.off(
-                        Phaser.Sound.Events.UNLOCKED,
-                        startMusic
-                    );
-
-                    music.stop();
-                    music.destroy();
-                }
-            );
-        }
-
-        document.body.classList.remove("menu-active");
-
-        // Reset game state
+    private resetGameState(): void {
         this.energyManager = new EnergyManager();
         this.selectedDefender = null;
-
+        this.waveManager.reset();
         this.enemies = [];
         this.projectiles = [];
         this.enemyProjectiles = [];
         this.defenders = [];
         this.lastPlaced = {};
+    }
 
-        // Battlefield background
-        const background = this.add.image(SIDEBAR_WIDTH + BATTLEFIELD_WIDTH / 2,GAME_HEIGHT / 2,"battlefield");
+    private startBackgroundMusic(): void {
+        if (!this.cache.audio.exists("backgroundMusic")) return;
 
-        background.setDisplaySize(BATTLEFIELD_WIDTH,GAME_HEIGHT);
-
-        background.setDepth(-10);
-
-        // Sidebar background
-        this.add.rectangle(SIDEBAR_WIDTH / 2,GAME_HEIGHT / 2,SIDEBAR_WIDTH,GAME_HEIGHT,0x1b2838).setDepth(-9);
-
-        // Create grid
-        this.grid = new Grid(GRID_ROWS, GRID_COLS);
-
-        // Track player projectiles
-        this.events.on("projectile-created", (projectile: Projectile) => { this.projectiles.push(projectile); });
-
-        // Track enemy projectiles
-        this.events.on("enemy-projectile-created",(projectile: EnemyProjectile) => { this.enemyProjectiles.push(projectile);});
-
-        // Collect generator energy
-        this.events.on("energy-collected",(amount: number) => {this.energyManager.addEnergy(amount);this.updateEnergyText(); });
-        
-        // Chance to drop energy when an enemy is defeated
-        this.events.on("enemy-killed", (x: number, y: number) => {
-
-            // Drop chance from CSV
-            if (Math.random() >= SETTINGS.energy.enemyDropChance) {
-                return;
-            }
-
-            // Create an energy pickup on the enemy death point
-            const energy = this.add.image(x,y,"energy");
-            energy.setDisplaySize(35, 35);
-            energy.setDepth(15);
-            energy.setInteractive({useHandCursor:true});
-
-            // Collect energy when clicked
-            energy.on("pointerdown", () => {
-                if (!energy.active) return;
-                this.events.emit("energy-collected",SETTINGS.energy.enemyDropValue);
-                energy.destroy();
-            });
-
-            // Remove energy if it is not collected
-            this.time.delayedCall(SETTINGS.energy.pickupLifetimeMs,() => {
-                    if (energy.active) {
-                        energy.destroy();
-                    }
-                }
-            );
+        const music = this.sound.add("backgroundMusic", {
+            volume: 0.04,
+            loop: true
         });
 
-        this.drawGrid();
+        const startMusic = () => {
+            if (!music.isPlaying) music.play();
+        };
 
-        // Defender selection toolbar
-       this.defenderToolbar = new DefenderToolbar(this,(defender:string) => {this.selectedDefender = defender;});
+        if (this.sound.locked) {
+            this.sound.once(Phaser.Sound.Events.UNLOCKED, startMusic);
+        } else {
+            startMusic();
+        }
 
-        // Energy display
-        this.energyText = this.add.text(85,575,"Energy: " + this.energyManager.getEnergy(),{fontSize: "22px",color: "#00ccff",backgroundColor: "#162536",padding: { x: 10, y: 8 }});
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+            this.sound.off(Phaser.Sound.Events.UNLOCKED, startMusic);
+            music.stop();
+            music.destroy();
+        });
+    }
 
+    private updateEnergyText(): void {
+        this.energyText.setText("Energy: " + this.energyManager.getEnergy());
+    }
+
+    private createUI(): void {
+        this.defenderToolbar = new DefenderToolbar(this, (defender: string) => {
+            this.selectedDefender = defender;
+        });
+
+        this.energyText = this.add.text(
+            85, 575,
+            "Energy: " + this.energyManager.getEnergy(),
+            {
+                fontSize: "22px",
+                color: "#00ccff",
+                backgroundColor: "#162536",
+                padding: { x: 10, y: 8 }
+            }
+        );
         this.energyText.setOrigin(0.5);
         this.energyText.setDepth(20);
 
-        // Stronghold
+        this.waveText = this.add.text(20, 620, "Wave 1/3", {
+            fontSize: "22px",
+            color: "#00ccff"
+        });
+    }
+
+    private createStronghold(): void {
         const strongholdWidth = 150;
         const strongholdHeight = GRID_ROWS * CELL_HEIGHT + 40;
 
         this.stronghold = new Stronghold(
-        this,
-        GRID_X - strongholdWidth / 2,
-        GRID_Y + (GRID_ROWS * CELL_HEIGHT) / 2,
-        "stronghold"
+            this,
+            GRID_X - strongholdWidth / 2,
+            GRID_Y + (GRID_ROWS * CELL_HEIGHT) / 2,
+            "stronghold"
         );
-
-        this.stronghold.setDisplaySize(
-        strongholdWidth,
-        strongholdHeight
-        );
-
+        this.stronghold.setDisplaySize(strongholdWidth, strongholdHeight);
         this.stronghold.setDepth(2);
 
-        // Game over when stronghold is destroyed
-        this.events.once( "stronghold-destroyed", () => {this.scene.start("GameOver");});
+        this.events.once("stronghold-destroyed", () => {
+            this.scene.start("GameOver");
+        });
+    }
 
-        // Collision system
+    private setupGameEvents(): void {
+        this.events.on("projectile-created", (projectile: Projectile) => {
+            this.projectiles.push(projectile);
+        });
+
+        this.events.on("enemy-projectile-created", (projectile: EnemyProjectile) => {
+            this.enemyProjectiles.push(projectile);
+        });
+
+        this.events.on("energy-collected", (amount: number) => {
+            this.energyManager.addEnergy(amount);
+            this.updateEnergyText();
+        });
+
+        new EnergyDrops(this).setup();
+    }
+
+    private handleGridClick(pointer: Phaser.Input.Pointer): void {
+        this.defenderPlacement.place(pointer, this.selectedDefender);
+    }
+
+    private spawnEnemy(): void {
+        this.enemySpawner.spawnEnemy();
+    }
+
+    private startEnemySpawning(): void {
+        this.time.delayedCall(SETTINGS.waves.firstEnemyDelayMs, () => {
+            this.spawnEnemy();
+            this.time.addEvent({
+                delay: Math.max(1000, SETTINGS.waves.enemySpawnIntervalMs),
+                callback: this.spawnEnemy,
+                callbackScope: this,
+                loop: true
+            });
+        });
+    }
+
+    create(): void {
+        document.body.classList.remove("menu-active");
+        this.resetGameState();
+        this.startBackgroundMusic();
+
+        const battlefieldView = new BattlefieldView(this);
+        battlefieldView.setupGridHighlight();
+        battlefieldView.createBackground();
+        battlefieldView.drawGrid();
+
+        this.grid = new Grid(GRID_ROWS, GRID_COLS);
+        this.defenderPlacement = new DefenderPlacement(
+            this,
+            this.grid,
+            this.defenders,
+            this.enemies,
+            this.energyManager,
+            this.lastPlaced,
+            () => this.updateEnergyText()
+        );
+
+        this.setupGameEvents();
+        this.createUI();
+        this.createStronghold();
+
+        this.enemySpawner = new EnemySpawner(
+            this,
+            this.enemies,
+            this.defenders,
+            this.stronghold,
+            this.waveManager
+        );
+
         this.collisionSystem = new CollisionSystem(
             this,
             this.grid,
@@ -389,53 +209,41 @@ private spawnEnemy() {
             this.enemyProjectiles
         );
 
-        // Grid placement
-        this.input.on("pointerdown",this.handleGridClick,this);
-        // First enemy spawn
-        this.time.delayedCall(
-            SETTINGS.waves.firstEnemyDelayMs,
-            () => {
-
-                this.spawnEnemy();
-
-                // Repeated enemy spawning
-                this.time.addEvent({
-                delay: Math.max(1000, SETTINGS.waves.enemySpawnIntervalMs),
-                callback: this.spawnEnemy,
-                callbackScope: this,
-                loop: true
-            });
-            }
-        );
+        this.input.on("pointerdown", this.handleGridClick, this);
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+            this.input.off("pointerdown", this.handleGridClick, this);
+        });
+        this.startEnemySpawning();
     }
-    
 
-    update(_time: number, delta: number) {
+    private updateWaveProgress(): void {
+        if (!this.waveManager.isWaveFinished() ||
+            !this.enemies.every(enemy => !enemy.active) ||
+            this.stronghold.health <= 0) return;
 
+        if (this.waveManager.isLevelComplete()) {
+            this.scene.launch("LevelComplete");
+            this.scene.pause();
+        } else {
+            this.waveManager.nextWave();
+            this.waveText.setText("Wave " + this.waveManager.getWave() + "/3");
+        }
+    }
+
+    update(_time: number, delta: number): void {
         this.defenderToolbar.updateCooldowns(this.time.now, this.lastPlaced);
 
-        // Move enemies
         for (const enemy of this.enemies) {
-            if (enemy.active) {
-                enemy.move(delta);
-            }
+            if (enemy.active) enemy.move(delta);
         }
-
-        // Move player projectiles
         for (const projectile of this.projectiles) {
-            if (projectile.active) {
-                projectile.move(delta);
-            }
+            if (projectile.active) projectile.move(delta);
         }
-
-        // Move enemy projectiles
         for (const projectile of this.enemyProjectiles) {
-            if (projectile.active) {
-                projectile.move(delta);
-            }
+            if (projectile.active) projectile.move(delta);
         }
 
-        // Handle collisions
         this.collisionSystem.update();
+        this.updateWaveProgress();
     }
 }

@@ -3,6 +3,7 @@ import Phaser from "phaser";
 import { GameScene } from "./scenes/GameScene";
 import { MainMenu } from "./scenes/MainMenu";
 import { GameOver } from "./scenes/GameOver";
+import { LevelComplete } from "./scenes/LevelComplete";
 
 import { loadConfig } from "./config/config";
 import { SETTINGS } from "./config/settings";
@@ -32,7 +33,7 @@ async function startGame(){
             }
         },
 
-        scene: [MainMenu,GameScene, GameOver]
+        scene: [MainMenu,GameScene, GameOver, LevelComplete]
     });
 
 }

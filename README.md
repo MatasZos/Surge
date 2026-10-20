@@ -19,19 +19,21 @@ SURGE is inspired by tower-defence games such as Plants vs. Zombies, in particul
 
 #### 1.4 Core Gameplay
 
-The player:
+The player can:
 - Select defenders from a vertical toolbar
 - Places defenders on available battlefield grid cells
 - Spend energy to place defenders
-- Defends against waves of machine enemies
-- Use Shooters to attack enemies automatically
+- Use Shooters and Dual Barrel defenders to attack enemies automatically
+- Use Generators to produce additional energy
+- Use Barricades to block approaching machines
+- Collect energy pickups produced by Generators or dropped by defeated enemies
 - Aim is to protect the Stronghold from enemy attacks
 
 ## 2 Game Design
 
 ### 2.1 Battlefield / Grid
 
-The game uses a 7-column by 5-row grid
+The game uses a 9-column by 5-row grid
 
 The defenders can be placed on available cells, and each cell can hold on defender at a time
 
@@ -44,27 +46,31 @@ The grid tracks occupied cells, allowing destroyed defenders to be removed and r
 A vertical defender selection toolbar that is connected to the main game scene.
 
 The toolbar includes:
-- Shooter and Gnerator selection
+- Shooter, Generator, Barricade and Dual Barrel selection
 - Defender sprite icons
 - Energy cost labels
 - Visual highlighting for the selected defender
 - A dedicated sidebar seperated from the battlefield
 - A display showing the players current spendable energy
+- Individual placement cooldown countdowns for each defender
 
 ### 2.3 Energy System / Generation
 
 The main resource for the defenders is energy. Each defender will have a different cost of energy. 
 
-The player begins with 200 energy.
+The player begins with 500 energy.
 
 Shooter - 100 Energy Cost
 Generator - 50 Energy Cost
+Barricade - 125 Energy Cost
+Dual Barrel - 200 Energy Cost
 
 Energy is managed through a separate EnergyManager class.
 
 The system checks whether the player has enough energy before allowing a defender to be placed.
+Each defender also has its own placement cooldown
 
-Both defender types currently have a 7.5 second placement cooldown
+Starting energy, defender costs, and cooldown duration can be adjusted in the Excel gameplay configuration.
 
 ### 2.4 Generator Defender
 The Generator produces collectible energy pickups.
@@ -83,7 +89,25 @@ It automatically fires projectiles at approaching enemies
 
 Projectiles deal damage when they collide with enemies, and enemies are destroyed when their health reaches zero
 
-### 2.6 Melee Enemy
+### 2.6 Barricade Defender
+
+The Barricade is a defensive unit that is designed to block approaching machine enemies.
+
+It has significantly more health than attacking defenders.
+
+The Barricade does not attack enemies directly.
+
+### 2.7 Dual Barrel Defender
+
+The Dual Barrel is an attacking defender that fires two projectiles during one interval.
+
+The Dual Barrel:
+- Detects enemies approaching within its row
+- Fires two projectiles per firing cycle
+- Fires its second projectile shortly after the first
+- Damages any unit hit by the projectile
+  
+### 2.8 Melee Enemy
 The Melee Enemy is the currently implemented machine enemy type
 
 The Melee Enemy:
@@ -92,10 +116,11 @@ The Melee Enemy:
 -  Attacks defenders blocking its path
 -  Stops moving while attacking
 -  Can damage the Stronghold upon reaching it
+-  Also receives retaliation damage from the Stronghold
 
   The current Melee Enemy has 200 health and deals 25 damage per attack
 
-### 2.7 Ranged Enemy
+### 2.9 Ranged Enemy
 The Ranged Enemy is the currently implemented machine enemy type that attacks from a distance.
 
 The Ranged Enemy:
@@ -108,21 +133,66 @@ The Ranged Enemy:
 
   The current Ranged Enemy has 150 health and deals 20 damage per projectile
 
-### 2.8 Health and Damage (Stats)
+### 2.10 Crusher Enemy
+The Crusher is a larger, heavily armoured machine enemy
+
+It moves much slower than standard enemies but has significantly more health and deals greater damage during close-range attacks.
+
+The Crusher:
+- Attacks defenders at close range
+- Can damage the stronghold
+- Receives retaliation damage when attacking the Stronghold (similarly to Melee Enemy)
+
+The Crusher provides an additional challenge compared to the other Enemy types.
+
+### 2.11 Health and Damage (Stats)
 
 The game supports health and damage interactions between projectiles, enemies, defenders and the Stronghold.
 
-- Defenders and Enemies now have projectile damage units
-- Defenders deal damage to enemies with a visual healthbar
-- Enemies damage defenders when they reach them (Melee enemy) and Shoot at defenders
-  when they are close by to them (Ranged enemy)
-- Destroyed defenders are removed from their grid cells
-- Enemies can damage the stronghold once they reach its collision area
-  and once the ranged enemy is within the the shooting range.
+- Defenders and Enemies have individual health values
+- Enemy and defender health bar display remaining health
+- Projectile damage enemies when collision occurs
+- Ranged Enemies attack using projectiles
+- Destroyed defenders are removed from their grid
+- Destroyed enemies have an explosion effect and a simple shrinking animation
+- Enemies stop moving while performing their attacks (current state)
   
-Enemies attacking the Stronghold deal damage at regular intervals (currently one attack cycle per second)
+Health and damage statistics can be adjusted in the gameplay spreadsheet
 
-### 2.9 Stronghold Destruction and Game Over
+### 2.12 Stronghold Health and Retaliation
+
+The Stronghold is the player's main structure and must be protected
+
+Its current and maximum health is displayed using a health bar positioned above the Stronghold
+
+When enemies damage the Stronghold, the health bar decreases
+
+Stronghold retaliation has also been implemented
+- When Melee or Crusher enemies attack the Stronghold directly, the Stronghold deals damage back to the enemy if it survives the attack
+- Ranged Enemies are not affected by this retaliation because they attack from a distance
+
+### 2.13 Energy Drops from Defeated Enemies
+Enemies have a chance to drop collectible energy when defeated
+
+In the current state:
+- Each defeated enemy has a 40% chance to drop an energy pickup
+- The pickup appears near the enemy's death position
+- Collecting the pickup rewards the player with 20 bonus energy
+- Uncollected pickups disappear after a period of time (similarly to how the energy pickup disappears on the Generator)
+
+### 2.14 Enemy Spawning and WaveManager
+Enemy spawning is currently continuous rather than being divided into numbered waves
+
+The current probabilities are:
+Melee - 60% spawn probability
+Ranged - 35% spawn probability
+Crusher - 5% spawn probability
+
+There is an initial spawn delay to allow the user to place down their units (current state)
+
+A full wave progression system, including numbered waves and increasing difficulty, is planned for future development
+
+### 2.15 Stronghold Destruction and Game Over
 When Stronghold health reaches zero, a destruction event is triggered.
 
 The game transitions to as Game Over scene.
@@ -131,14 +201,22 @@ The game over screen provides two options:
 - Restart: Starts a new game/instance
 - Main Menu: Returns to the title scree
 
-### 2.10 Main Menu
+### 2.16 Main Menu
 SURGE includes a main menu featuring a background (artwork), a game title, subtitle and Play button
 
 The menu uses a separate webpage layout whereas the gameplay uses its own interface.
 
-### 2.11 Sound Effects
+### 2.17 Sound Effects
 
 Basic sound effects have been added to the game to add a bit more liveliness to the game.
+
+These include:
+- Background music
+- Defender shooting sounds
+- Enemy hit sounds
+- Enemy destruction sounds
+
+
 
 ## 3 Player Input/Controls
 
@@ -162,61 +240,97 @@ The project uses:
 - Phaser 4
 - Deno
 - HTML & CSS for webpage layout
+- Python for spreadsheet configuration export script
+- Excel for gameplay configuration and statistics
 - Git and GitHub for version control
 - GitHub project for task allocation and management
 - Celbridge IDE for development
 
+
 ### 4.2 Project Structure
 
-| Directory | Responsibility |
+| Directory / File | Responsibility |
 |---|---|
 | `src/scenes/` | Contains the Main Menu, Game Scene and Game Over scenes. |
-| `src/defenders/` | Contains defender classes such as Shooter and Generator. |
-| `src/enemies/` | Contains enemy classes and their movement and attack behaviour. |
+| `src/defenders/` | Contains defender classes such as Shooter, Generator, Barricade and Dual Barrel. |
+| `src/enemies/` | Contains Melee, Ranged and Crusher enemy classes, including their movement and combat behaviour. |
 | `src/grid/` | Manages the battlefield grid, individual cells and defender placement. |
-| `src/managers/` | Contains resource management and wave management modules. |
+| `src/managers/` | Contains EnergyManager for managing energy and WaveManager for enemy spawn selection. |
 | `src/systems/` | Handles collision detection and combat interactions. |
 | `src/objects/` | Contains game objects such as the Stronghold and projectiles. |
-| `src/ui/` | Contains the Phaser defender selection toolbar. |
-| `src/constants.ts` | Stores game dimensions, grid settings, defender costs and cooldowns.
+| `src/ui/` | Contains the defender selection toolbar and cooldown indicators. |
+| `src/config/` | Contains default gameplay settings and CSV configuration loading. |
+| `src/constants.ts` | Stores game dimensions and grid layout constants. |
+| `config/gameplay.xlsx` | Excel spreadsheet containing gameplay statistics and settings. |
+| `config/export_config.py` | Python script that exports Excel settings to CSV files. |
+| `config/gameplay.csv` | Generated CSV containing gameplay settings used by the game. |
+| `build.ts` | Builds and checks the project and copies files into the distribution folder. |
+
+
+### 4.3 Excel and CSV Gameplay Configuration
+
+SURGE uses an Excel-based gameplay configuration system
+
+The spreadsheet contains separate worksheets for:
+- Enemies
+- Defenders
+- Energy
+- Stronghold
+- Waves and enemy spawning
+
+This allows us to adjust any of these values such as health, damage, movement speed, energy costs, cooldowns and spawn probabilities to be adjusted instantly
+
+
   
+
 
 ## 5 Game Features (Implemented and Planned)
 
-| Feature | Priority | Description |
-|---|:---:|---|
-| Grid System | 1 | Create the battlefield grid and individual cells used for placing defenders. |
-| Toolbar | 1 | Allow the player to select the type of defender they want to place. |
-| Energy System | 2 | Create a resource system used to purchase and place defenders. |
-| Shooter Defender | 1 | Basic attacking human defender that shoots approaching machines. |
-| Barricade Defender | 2 | Defensive unit used to block or slow enemies. |
-| Generator Defender | 3 | Produces additional energy for the player. |
-| Melee Enemy | 1 | Basic machine enemy that moves towards and attacks defenders at close range. |
-| Shooter Enemy | 2 | Machine enemy capable of attacking defenders from a distance. |
-| Boss Enemy | 3 | Strong enemy intended for later levels. |
-| Health / Damage System | 1 | Allow defenders and enemies to take damage and be destroyed. |
-| Input Mechanics | 1 | Allow the player to interact with the grid and place defenders. |
-| Multiple Levels | 3 | Add additional levels with increasing difficulty. |
-| Level Complete Screen | 3 | Display a completion screen when the player successfully finishes a level. |
+| Feature | Priority | Description | Status |
+|---|:---:|---|---|
+| Grid System | 1 | Create the battlefield grid and individual cells used for placing defenders. | Implemented |
+| Defender Toolbar | 1 | Allow players to select defenders and view their energy costs. | Implemented |
+| Energy System | 2 | Resource system used to purchase and place defenders. | Implemented |
+| Shooter Defender | 1 | Basic attacking defender that fires projectiles at approaching enemies. | Implemented |
+| Barricade Defender | 2 | Defensive unit with high health used to block approaching enemies. | Implemented |
+| Generator Defender | 3 | Produces collectible energy pickups for the player. | Implemented |
+| Dual Barrel Defender | 2 | Attacking defender that fires two projectiles in quick succession. | Implemented |
+| Melee Enemy | 1 | Basic machine enemy that attacks defenders and the Stronghold at close range. | Implemented |
+| Ranged Enemy | 2 | Machine enemy capable of firing projectiles from a distance. | Implemented |
+| Crusher Enemy | 2 | Larger machine enemy with increased health and damage. | Implemented |
+| Health / Damage System | 1 | Allow defenders, enemies and the Stronghold to take damage. | Implemented |
+| Health Bars | 2 | Display remaining health for defenders, enemies and the Stronghold. | Implemented |
+| Cooldown Indicators | 2 | Display countdown timers for defender placement cooldowns. | Implemented |
+| Stronghold Retaliation | 2 | Stronghold deals damage back to Melee and Crusher enemies attacking it. | Implemented |
+| Energy Drops | 2 | Defeated enemies have a chance to drop collectible energy. | Implemented |
+| Excel / CSV Configuration | 2 | Configure gameplay statistics through Excel using Python and CSV files. | Implemented |
+| WaveManager Enemy Selection | 2 | Select enemy types using spawn probabilities configured in Excel. | Implemented |
+| Input Mechanics | 1 | Allow players to select defenders, place units and collect energy. | Implemented |
+| Sound Effects | 2 | Add sounds for shooting, enemy damage and destruction. | Implemented |
+| Destruction Animations | 2 | Add explosion and shrinking effects when units are destroyed. | Implemented |
+| Full Wave System | 2 | Introduce numbered waves and wave progression. | Planned |
+| Boss Enemy | 3 | Strong enemy intended for later stages of the game. | Planned |
+| Multiple Levels | 3 | Add additional levels with increasing difficulty. | Planned |
+| Level Completion Screen | 3 | Display a completion screen when the player successfully finishes a level. | Planned |
+| Victory Conditions | 3 | Introduce objectives that allow the player to win. | Planned |
+| Defender Unlock System | 3 | Unlock additional defenders as the player progresses. | Planned |
 
 ## 6 Development Progress
 Completed development work includes:
-- Setting up the project
-- Typescript and Phaser configuration
-- Grid and cell management
-- Defender placement
-- Shooter and Generator defenders
-- Melee enemy movement and combat
+- Project setup#
+- Battlefield grid and cell management
+- Shooter, Generator, Barricade, and Dual Barrel defenders
+- Melee, Ranged, and Crusher enemies
 - Projectile collision detection
 - Energy management and collection
-- Health and damage interactions
-- Stronghold implementation and collisions
-- Vertical toolbar and defender icons
+- Health bar for enemies, defender and the stronghold
+- Stronghold retaliations against close-range attackers
+- Defender placement cooldowns and visual countdown indicators
 - Main menu and Game Over scenes
 - Stronghold destruction and restart functionality
-- Basic sound effects
-- Health bars implemented (Enemy, ...)
-- Ranged enemy movement and shooting
+- Sound effects and destruction animations
+- Excel to CSV gameplay config
+- WaveManager integration for enemy spawn logic
 
 
 
