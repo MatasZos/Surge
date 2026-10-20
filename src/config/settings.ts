@@ -97,6 +97,9 @@ export const SETTINGS = {
         enemySpawnIntervalMs: 0,
         meleeSpawnProbability: 0.0,
         rangedSpawnProbability: 0.0,
-        crusherSpawnProbability: 0.0
+        crusherSpawnProbability: 0.0,
+        level1WaveCount: 0,
+        startingEnemiesPerWave:0,
+        level2WaveCount:0
     }
 };

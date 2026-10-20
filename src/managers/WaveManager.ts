@@ -5,9 +5,9 @@ import { SETTINGS } from "../config/settings";
 export class WaveManager{
 
     private enemiesSpawned = 0;
-    private maxEnemies = 3;
+    private maxEnemies = SETTINGS.waves.startingEnemiesPerWave;
     private currentWave = 1;
-    private maxWaves = 3;
+    private maxWaves = SETTINGS.waves.level1WaveCount;
 
     chooseEnemyType(): "melee" | "ranged" | "crusher" {
         
@@ -32,8 +32,8 @@ export class WaveManager{
     }
 
     isWaveFinished(): boolean {
-        return this.enemiesSpawned >= this.maxEnemies;
-    }
+    return this.maxEnemies > 0 && this.enemiesSpawned > 0 && this.enemiesSpawned >= this.maxEnemies;
+}
 
     // Check if all enemies have spawned
     isLevelComplete(): boolean {
@@ -50,10 +50,23 @@ export class WaveManager{
         return this.currentWave;
     }
 
-    // Reset when restarting the game
-    reset() {
+    getMaxWaves(): number{
+        return this.maxWaves;
+    }
+
+    startLevel(level: number){
+        this.currentWave = 1;
         this.enemiesSpawned = 0;
-        this.maxEnemies = 3;
-        this.currentWave = 1
+        this.maxEnemies = SETTINGS.waves.startingEnemiesPerWave;
+
+        if(level === 2){
+            this.maxWaves = SETTINGS.waves.level2WaveCount;
+        } else{
+            this.maxWaves = SETTINGS.waves.level1WaveCount
+        }
+    }
+    
+    reset() {
+        this.startLevel(1);
     }
 }

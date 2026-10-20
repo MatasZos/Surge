@@ -54,6 +54,6 @@ function applySetting(name: string, value: number) {
 }
 
 function toCamelCase(word: string) {
-    return word.replace(/_([a-z])/g,
+    return word.replace(/_([a-z0-9])/g,
         (_match, letter: string) => letter.toUpperCase());
 }

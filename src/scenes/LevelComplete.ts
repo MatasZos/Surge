@@ -3,8 +3,14 @@ import Phaser from "phaser";
 
 export class LevelComplete extends Phaser.Scene {
 
+    private completedLevel = 1;
+
     constructor() {
         super("LevelComplete");
+    }
+
+    init(data: {completedLevel?: number}) {
+        this.completedLevel = data.completedLevel ?? 1;
     }
 
     create() {
@@ -56,12 +62,17 @@ export class LevelComplete extends Phaser.Scene {
 
         button.on("pointerout", () => {
             button.setFillStyle(0x0077aa);
-        });
+        })
 
-        // Start game
+        //advance to the next level
         button.on("pointerdown", () => {
-            this.scene.stop("GameScene");
-            this.scene.start("GameScene");
+
+            const gameScene = this.scene.get("GameScene");
+
+            gameScene.events.emit("next-level",this.completedLevel + 1);
+
+            this.scene.resume("GameScene");
+            this.scene.stop();
         });
     }
 }

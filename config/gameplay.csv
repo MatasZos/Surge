@@ -60,6 +60,9 @@ stronghold.melee_attack_interval_ms,1000
 stronghold.retaliation_damage,50
 waves.first_enemy_delay_ms,20000
 waves.enemy_spawn_interval_ms,5000
-waves.melee_spawn_probability,0.6
-waves.ranged_spawn_probability,0.35
-waves.crusher_spawn_probability,0.05
+waves.melee_spawn_probability,1
+waves.ranged_spawn_probability,0
+waves.crusher_spawn_probability,0
+waves.level_1_wave_count,1
+waves.starting_enemies_per_wave,3
+waves.level_2_wave_count,2

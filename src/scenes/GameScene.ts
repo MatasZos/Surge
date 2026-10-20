@@ -38,9 +38,14 @@ export class GameScene extends Phaser.Scene {
     private enemySpawner!: EnemySpawner;
     private lastPlaced: Record<string, number> = {};
     private waveManager = new WaveManager();
+    private currentLevel = 1;
 
     constructor() {
         super("GameScene");
+    }
+
+    init(data: {level?: number}){
+        this.currentLevel = data.level ?? 1;
     }
 
     preload(): void {
@@ -51,6 +56,7 @@ export class GameScene extends Phaser.Scene {
         this.energyManager = new EnergyManager();
         this.selectedDefender = null;
         this.waveManager.reset();
+        console.log( "Enemies per wave:",SETTINGS.waves.startingEnemiesPerWave);
         this.enemies = [];
         this.projectiles = [];
         this.enemyProjectiles = [];
@@ -92,35 +98,18 @@ export class GameScene extends Phaser.Scene {
             this.selectedDefender = defender;
         });
 
-        this.energyText = this.add.text(
-            85, 575,
-            "Energy: " + this.energyManager.getEnergy(),
-            {
-                fontSize: "22px",
-                color: "#00ccff",
-                backgroundColor: "#162536",
-                padding: { x: 10, y: 8 }
-            }
-        );
+        this.energyText = this.add.text(85, 575,"Energy: " + this.energyManager.getEnergy(),{fontSize: "22px",color: "#00ccff",backgroundColor: "#162536",padding: { x: 10, y: 8 }});
         this.energyText.setOrigin(0.5);
         this.energyText.setDepth(20);
 
-        this.waveText = this.add.text(20, 620, "Wave 1/3", {
-            fontSize: "22px",
-            color: "#00ccff"
-        });
+        this.waveText = this.add.text(20, 620, "Wave" + this.waveManager.getWave() + "/" + this.waveManager.getMaxWaves(), { fontSize: "22px", color: "#00ccff"});
     }
 
     private createStronghold(): void {
         const strongholdWidth = 150;
         const strongholdHeight = GRID_ROWS * CELL_HEIGHT + 40;
 
-        this.stronghold = new Stronghold(
-            this,
-            GRID_X - strongholdWidth / 2,
-            GRID_Y + (GRID_ROWS * CELL_HEIGHT) / 2,
-            "stronghold"
-        );
+        this.stronghold = new Stronghold(this,GRID_X - strongholdWidth / 2,GRID_Y + (GRID_ROWS * CELL_HEIGHT) / 2,"stronghold");
         this.stronghold.setDisplaySize(strongholdWidth, strongholdHeight);
         this.stronghold.setDepth(2);
 
@@ -130,6 +119,13 @@ export class GameScene extends Phaser.Scene {
     }
 
     private setupGameEvents(): void {
+        this.events.on("next-level", (level:number) =>{
+            this.currentLevel = level;
+            this.waveManager.startLevel(level)
+
+            this.waveText.setText("Wave " + this.waveManager.getWave() +"/" + this.waveManager.getMaxWaves());
+        })
+
         this.events.on("projectile-created", (projectile: Projectile) => {
             this.projectiles.push(projectile);
         });
@@ -222,11 +218,13 @@ export class GameScene extends Phaser.Scene {
             this.stronghold.health <= 0) return;
 
         if (this.waveManager.isLevelComplete()) {
-            this.scene.launch("LevelComplete");
+            this.scene.launch("LevelComplete",{
+                completedLevel: this.currentLevel
+            });
             this.scene.pause();
         } else {
             this.waveManager.nextWave();
-            this.waveText.setText("Wave " + this.waveManager.getWave() + "/3");
+            this.waveText.setText("Wave " + this.waveManager.getWave() + "/" + this.waveManager.getMaxWaves());
         }
     }
 
