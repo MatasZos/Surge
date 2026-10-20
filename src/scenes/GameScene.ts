@@ -56,6 +56,7 @@ export class GameScene extends Phaser.Scene {
     private defenderToolbar!: DefenderToolbar;
 
     private waveManager = new WaveManager;
+    private waveText!: Phaser.GameObjects.Text;
 
     constructor() {
         super("GameScene");
@@ -201,7 +202,7 @@ private spawnEnemy() {
 
     const enemyType = this.waveManager.chooseEnemyType();
 
-    if (this.waveManager.isLevelComplete()) {
+    if (this.waveManager.isWaveFinished()) {
         return;
     }
 
@@ -363,6 +364,9 @@ private spawnEnemy() {
         this.energyText.setOrigin(0.5);
         this.energyText.setDepth(20);
 
+        // Wave display 
+        this.waveText = this.add.text(20, 620, "Wave 1/3", {fontSize: "22px", color: "#00ccff" });
+
         // Stronghold
         const strongholdWidth = 150;
         const strongholdHeight = GRID_ROWS * CELL_HEIGHT + 40;
@@ -444,12 +448,17 @@ private spawnEnemy() {
         // Handle collisions
         this.collisionSystem.update();
  
-        if (this.waveManager.isLevelComplete() &&
+        if (this.waveManager.isWaveFinished() &&
             this.enemies.every(enemy => !enemy.active) &&
             this.stronghold.health > 0) {
 
-            this.scene.launch("LevelComplete");
-            this.scene.pause();
+            if (this.waveManager.isLevelComplete()) {
+                this.scene.launch("LevelComplete");
+                this.scene.pause();
+            } else {
+                this.waveManager.nextWave();
+                this.waveText.setText("Wave " + this.waveManager.getWave() + "/3");
+            }
         }
     }
 }
