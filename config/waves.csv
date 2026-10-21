@@ -1,9 +1,12 @@
 setting,value
 first_enemy_delay_ms,20000
 enemy_spawn_interval_ms,5000
-melee_spawn_probability,1
-ranged_spawn_probability,0
-crusher_spawn_probability,0
+melee_spawn_probability,0.6
+ranged_spawn_probability,0.3
+crusher_spawn_probability,0.1
 level_1_wave_count,1
 starting_enemies_per_wave,3
 level_2_wave_count,2
+level_3_wave_count,3
+level_4_wave_count,3
+level_5_wave_count,3

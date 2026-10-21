@@ -100,6 +100,9 @@ export const SETTINGS = {
         crusherSpawnProbability: 0.0,
         level1WaveCount: 0,
         startingEnemiesPerWave:0,
-        level2WaveCount:0
+        level2WaveCount:0,
+        level3WaveCount:0,
+        level4WaveCount:0,
+        level5WaveCount:0
     }
 };
