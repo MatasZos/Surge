@@ -98,11 +98,25 @@ export class GameScene extends Phaser.Scene {
             this.selectedDefender = defender;
         });
 
-        this.energyText = this.add.text(85, 685,"Energy: " + this.energyManager.getEnergy(),{fontSize: "22px",color: "#00ccff",backgroundColor: "#162536",padding: { x: 10, y: 8 }});
+        // Compact HUD separate from the defender-card panel.
+        this.add.rectangle(161, 61, 290, 75, 0x263447, 0.95).setDepth(10);
+        this.energyText = this.add.text(161, 46,"Energy: " + this.energyManager.getEnergy(),{fontSize: "22px",color: "#00ccff",backgroundColor: "#162536",padding: { x: 10, y: 8 }});
         this.energyText.setOrigin(0.5);
         this.energyText.setDepth(20);
 
-        this.waveText = this.add.text(20, 735, "Wave" + this.waveManager.getWave() + "/" + this.waveManager.getMaxWaves(), { fontSize: "22px", color: "#00ccff"});
+        this.waveText = this.add.text(
+            this.scale.width - 25,
+            this.scale.height - 25,
+            "Wave " + this.waveManager.getWave() + "/" + this.waveManager.getMaxWaves(),
+            {
+                fontSize: "22px",
+                color: "#00ccff",
+                backgroundColor: "#162536",
+                padding: { x: 12, y: 8 }
+            }
+        );
+        this.waveText.setOrigin(1, 1);
+        this.waveText.setDepth(20);
     }
 
     private createStronghold(): void {

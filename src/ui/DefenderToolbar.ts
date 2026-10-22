@@ -28,25 +28,34 @@ export class DefenderToolbar {
     }
 
     private drawToolbar(): void {
-        const x = 65;
-        this.scene.add.rectangle(x, 335, 120, 620, 0x263447, 0.95).setDepth(10);
-        this.scene.add.text(x, 60, "DEFENDERS", {
-            fontSize: "14px", color: "#ffffff"
-        }).setOrigin(0.5).setDepth(11);
+        // Horizontal toolbar above the battlefield; existing sprite cards are unchanged.
+        const startX = 380;
+        const spacing = 112;
+        const cardCount = TYPES.length + 1; // Includes Recall
+        const panelLeft = startX - 60;
+        const panelWidth = (cardCount - 1) * spacing + 120;
+        this.scene.add.rectangle(
+            panelLeft + panelWidth / 2, 62, panelWidth, 112, 0x263447, 0.95
+        ).setDepth(10);
+        this.scene.add.text(panelLeft + 12, 12, "DEFENDERS", {
+            fontSize: "12px", color: "#ffffff"
+        }).setDepth(11);
 
+
+        const cardY = 62;
         const names = ["Shooter", "Generator", "Barricade", "Dual Barrel", "Cryo Gunner"];
-        TYPES.forEach((type, i) => this.addButton(x, 116 + i * 95, names[i], type));
+        TYPES.forEach((type, i) => this.addButton(startX + i * spacing, cardY, names[i], type));
 
-        const recallY = 592;
+        const recallX = startX + TYPES.length * spacing;
         const recallBackground = this.scene.add.rectangle(
-            x, recallY, 100, 65, 0x40536b
+            recallX, cardY, 100, 88, 0x40536b
         ).setDepth(11).setInteractive({ useHandCursor: true });
         this.buttons.push(recallBackground);
 
-        const recallIcon = this.scene.add.image(x, recallY - 8, "recall")
+        const recallIcon = this.scene.add.image(recallX, cardY - 13, "recall")
             .setDisplaySize(42, 42).setDepth(12)
             .setInteractive({ useHandCursor: true });
-        this.scene.add.text(x, recallY + 24, "Recall", {
+        this.scene.add.text(recallX, cardY + 28, "Recall", {
             fontSize: "12px", color: "#ffffff"
         }).setOrigin(0.5).setDepth(12);
 
