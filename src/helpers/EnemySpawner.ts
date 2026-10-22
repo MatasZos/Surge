@@ -35,12 +35,19 @@ export class EnemySpawner {
             return;
         }
 
+        const enemyType = this.waveManager.chooseEnemyType();
+
+        //no affordable enemy remains
+        if(enemyType === null){
+            return;
+        }
+
         const row = Phaser.Math.Between(0, GRID_ROWS - 1);
 
         const x = GRID_X + GRID_COLS * CELL_WIDTH + 50;
         const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
 
-        const enemyType = this.waveManager.chooseEnemyType();
+     
 
         let enemy: Enemy;
 
@@ -51,16 +58,10 @@ export class EnemySpawner {
             enemy = new MeleeEnemy(this.scene, x, y);
 
         } else {
-            enemy = new RangedEnemy(
-                this.scene,
-                x,
-                y,
-                this.defenders,
-                this.stronghold
-            );
+            enemy = new RangedEnemy(this.scene,x, y,this.defenders,this.stronghold);
         }
 
         this.enemies.push(enemy);
-        this.waveManager.enemySpawned();
+        this.waveManager.enemySpawned(enemyType);
     }
 }
