@@ -30,7 +30,7 @@ export class DefenderToolbar {
 
         // Toolbar background
         this.scene.add.rectangle(
-            toolbarX, 280, 120, 475, 0x263447, 0.95
+            toolbarX, 315, 120, 545, 0x263447, 0.95
         ).setDepth(10);
 
         this.scene.add.text(
@@ -43,6 +43,37 @@ export class DefenderToolbar {
         this.addButton(toolbarX, 235, "Generator", "generator");
         this.addButton(toolbarX, 345, "Barricade", "barricade");
         this.addButton(toolbarX, 455, "Dual Barrel", "dualbarrel");
+
+        // Recall button
+        const recallButton = this.scene.add.rectangle(
+            toolbarX, 550, 100, 45, 0x40536b
+        );
+
+        recallButton.setDepth(11);
+        recallButton.setInteractive({ useHandCursor: true });
+
+        this.buttons.push(recallButton);
+
+        this.scene.add.text(
+            toolbarX, 550, "RECALL",
+            { fontSize: "17px", color: "#ffffff", fontStyle: "bold" }
+        ).setOrigin(0.5).setDepth(12);
+
+        recallButton.on("pointerdown", () => {
+
+            this.selectedType = "recall";
+            this.onSelect("recall");
+
+            // Reset button colours
+            for (const button of this.buttons) {
+                button.setFillStyle(0x40536b);
+                button.setStrokeStyle();
+            }
+
+            // Highlight Recall button
+            recallButton.setFillStyle(0x286b55);
+            recallButton.setStrokeStyle(2, 0x00ff99);
+        });
     }
 
     private addButton(

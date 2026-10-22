@@ -143,6 +143,12 @@ export class GameScene extends Phaser.Scene {
     }
 
     private handleGridClick(pointer: Phaser.Input.Pointer): void {
+
+        if (this.selectedDefender === "recall") {
+            this.defenderPlacement.recall(pointer);
+            return;
+        }
+
         this.defenderPlacement.place(pointer, this.selectedDefender);
     }
 

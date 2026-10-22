@@ -91,4 +91,27 @@ export class DefenderPlacement {
 
         this.lastPlaced[type] = now;
     }
+
+    recall(pointer: Phaser.Input.Pointer): void {
+        const col = Math.floor((pointer.x - GRID_X) / CELL_WIDTH);
+        const row = Math.floor((pointer.y - GRID_Y) / CELL_HEIGHT);
+
+        if (row < 0 || row >= GRID_ROWS || col < 0 || col >= GRID_COLS) return;
+
+        const defender = this.defenders.find(d =>
+            d.active &&
+            d.getData("gridRow") === row &&
+            d.getData("gridCol") === col
+        );
+
+        if (!defender) return;
+
+        defender.destroy();
+        this.grid.removeOccupant(row, col);
+
+        const index = this.defenders.indexOf(defender);
+        if (index !== -1) {
+            this.defenders.splice(index, 1);
+        }
+    }
 }
