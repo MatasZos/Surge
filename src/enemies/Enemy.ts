@@ -8,6 +8,20 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     damage: number;
     isAttacking: boolean = false;
 
+    private slowMultiplier = 1;
+    private slowedUntil = 0;
+
+    applySlow(multiplier: number, durationMs: number): void {
+    if (!this.active) return;
+
+    this.slowMultiplier = Math.min(this.slowMultiplier, multiplier);
+
+    this.slowedUntil = Math.max(
+        this.slowedUntil,
+        this.scene.time.now + durationMs
+    );
+}
+
     private maxHealth: number;
     private healthBar: Phaser.GameObjects.Graphics;
 
@@ -130,9 +144,13 @@ export class Enemy extends Phaser.GameObjects.Sprite {
             return;
         }
 
-        this.x -= this.speed * (delta / 1000);
+        if (this.scene.time.now >= this.slowedUntil) {
+        this.slowMultiplier = 1;
+        }
+
+        this.x -= this.speed * this.slowMultiplier * (delta / 1000);
         this.updateHealthBar();
-    }
+        }
 
     destroy(fromScene?: boolean) {
         if (this.healthBar?.active) {

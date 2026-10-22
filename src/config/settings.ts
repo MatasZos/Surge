@@ -63,6 +63,16 @@ export const SETTINGS = {
             projectileDamage: 0
         },
 
+        cryogunner: {
+            health: 300,
+            damage: 20,
+            cost: 175,
+            cooldownMs: 10000,
+            fireIntervalMs: 1000,
+            projectileSpeed: 300,
+            projectileDamage: 20
+        },
+
         dualbarrel: {
             health: 300,
             damage: 40,

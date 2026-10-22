@@ -8,6 +8,7 @@ export function loadGameAssets(scene: Phaser.Scene): void {
     scene.load.image("generator", "assets/defenders/generator.png");
     scene.load.image("barricade", "assets/defenders/barricade.png");
     scene.load.image("dualbarrel", "assets/defenders/dualbarrel.png");
+    scene.load.image("cryogunner", "assets/defenders/cryogunner.png");
 
     // Enemies
     scene.load.image("meleeEnemy", "assets/enemies/meleerobot.png");

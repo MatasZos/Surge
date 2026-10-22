@@ -7,6 +7,7 @@ import { Shooter } from "../defenders/Shooter";
 import { Generator } from "../defenders/Generator";
 import { Barricade } from "../defenders/Barricade";
 import { DualBarrel } from "../defenders/DualBarrel";
+import { CryoGunner } from "../defenders/CryoGunner";
 import { Enemy } from "../enemies/Enemy";
 import { EnergyManager } from "../managers/EnergyManager";
 
@@ -19,7 +20,7 @@ import {
     CELL_HEIGHT
 } from "../constants";
 
-type DefenderType = "shooter" | "generator" | "barricade" | "dualbarrel";
+type DefenderType = "shooter" | "generator" | "barricade" | "dualbarrel" | "cryogunner";
 
 export class DefenderPlacement {
     constructor(
@@ -44,7 +45,8 @@ export class DefenderPlacement {
             selectedDefender !== "shooter" &&
             selectedDefender !== "generator" &&
             selectedDefender !== "barricade" &&
-            selectedDefender !== "dualbarrel"
+            selectedDefender !== "dualbarrel" &&
+            selectedDefender !== "cryogunner"
         ) return;
 
         const type = selectedDefender as DefenderType;
@@ -75,6 +77,8 @@ export class DefenderPlacement {
             defender = new Barricade(this.scene, x, y);
         } else if (type === "dualbarrel") {
             defender = new DualBarrel(this.scene, x, y, this.enemies);
+        } else if (type === "cryogunner") {
+            defender = new CryoGunner(this.scene, x, y, this.enemies);
         } else {
             defender = new Shooter(this.scene, x, y, this.enemies);
         }
