@@ -26,13 +26,15 @@ export class BattlefieldView {
         background.setDisplaySize(BATTLEFIELD_WIDTH, GAME_HEIGHT);
         background.setDepth(-10);
 
-        this.scene.add.rectangle(
+        // Decorative fortress extension fills the former left sidebar.
+        // Keep it behind the stronghold and HUD; do not move the gameplay grid.
+        const fortress = this.scene.add.image(
             SIDEBAR_WIDTH / 2,
             GAME_HEIGHT / 2,
-            SIDEBAR_WIDTH,
-            GAME_HEIGHT,
-            0x1b2838
-        ).setDepth(-9);
+            "fortressExtension"
+        );
+        fortress.setDisplaySize(SIDEBAR_WIDTH, GAME_HEIGHT);
+        fortress.setDepth(-9);
     }
 
     drawGrid(): void {

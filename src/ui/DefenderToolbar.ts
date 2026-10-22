@@ -12,6 +12,8 @@ export class DefenderToolbar {
     private cooldownTexts: Partial<Record<DefenderType, Phaser.GameObjects.Text>> = {};
     private defenderButtons: Partial<Record<DefenderType, Phaser.GameObjects.Rectangle>> = {};
     private selectedType: string | null = null;
+    private readonly normalColor = 0x34465c;
+    private readonly selectedColor = 0x205d60;
 
     constructor(
         private scene: Phaser.Scene,
@@ -22,34 +24,53 @@ export class DefenderToolbar {
 
     private resetButtons(): void {
         for (const button of this.buttons) {
-            button.setFillStyle(0x40536b);
+            button.setFillStyle(this.normalColor);
             button.setStrokeStyle();
         }
     }
 
     private drawToolbar(): void {
-        // Horizontal toolbar above the battlefield; existing sprite cards are unchanged.
+        // Industrial metal frame around the five defender cards.
         const startX = 380;
         const spacing = 112;
-        const cardCount = TYPES.length + 1; // Includes Recall
+        const cardCount = TYPES.length;
         const panelLeft = startX - 60;
         const panelWidth = (cardCount - 1) * spacing + 120;
-        this.scene.add.rectangle(
-            panelLeft + panelWidth / 2, 62, panelWidth, 112, 0x263447, 0.95
-        ).setDepth(10);
-        this.scene.add.text(panelLeft + 12, 12, "DEFENDERS", {
-            fontSize: "12px", color: "#ffffff"
-        }).setDepth(11);
+        const panelCenter = panelLeft + panelWidth / 2;
 
+        this.scene.add.rectangle(panelCenter, 62, panelWidth + 10, 122, 0x101b2a)
+            .setStrokeStyle(3, 0x647589).setDepth(9);
+        this.scene.add.rectangle(panelCenter, 62, panelWidth, 112, 0x243348, 0.98)
+            .setStrokeStyle(1, 0x0c131e).setDepth(10);
+
+        // Small metallic rivets at each corner.
+        for (const x of [panelLeft - 3, panelLeft + panelWidth + 3]) {
+            for (const y of [7, 117]) {
+                this.scene.add.circle(x, y, 3, 0x9aa7b6)
+                    .setStrokeStyle(1, 0x0b1725).setDepth(11);
+            }
+        }
 
         const cardY = 62;
         const names = ["Shooter", "Generator", "Barricade", "Dual Barrel", "Cryo Gunner"];
         TYPES.forEach((type, i) => this.addButton(startX + i * spacing, cardY, names[i], type));
 
-        const recallX = startX + TYPES.length * spacing;
+        // Recall has its own metal frame, separated from the defender cards.
+        const recallX = startX + TYPES.length * spacing + 20;
+        this.scene.add.rectangle(recallX, cardY, 116, 122, 0x101b2a)
+            .setStrokeStyle(3, 0x647589).setDepth(9);
+        this.scene.add.rectangle(recallX, cardY, 106, 112, 0x243348, 0.98)
+            .setStrokeStyle(1, 0x0c131e).setDepth(10);
+        for (const x of [recallX - 55, recallX + 55]) {
+            for (const y of [7, 117]) {
+                this.scene.add.circle(x, y, 3, 0x9aa7b6)
+                    .setStrokeStyle(1, 0x0b1725).setDepth(11);
+            }
+        }
         const recallBackground = this.scene.add.rectangle(
-            recallX, cardY, 100, 88, 0x40536b
-        ).setDepth(11).setInteractive({ useHandCursor: true });
+            recallX, cardY, 100, 88, this.normalColor
+        ).setStrokeStyle(1, 0x72839a)
+            .setDepth(11).setInteractive({ useHandCursor: true });
         this.buttons.push(recallBackground);
 
         const recallIcon = this.scene.add.image(recallX, cardY - 13, "recall")
@@ -63,7 +84,7 @@ export class DefenderToolbar {
             this.selectedType = "recall";
             this.onSelect("recall");
             this.resetButtons();
-            recallBackground.setFillStyle(0x286b55);
+            recallBackground.setFillStyle(this.selectedColor);
             recallBackground.setStrokeStyle(2, 0x00ff99);
         };
         recallBackground.on("pointerdown", selectRecall);
@@ -71,7 +92,7 @@ export class DefenderToolbar {
     }
 
     private addButton(x: number, y: number, name: string, type: DefenderType): void {
-        const button = this.scene.add.rectangle(x, y, 100, 88, 0x40536b)
+        const button = this.scene.add.rectangle(x, y, 100, 88, this.normalColor)
             .setDepth(11).setInteractive({ useHandCursor: true });
         this.buttons.push(button);
         this.defenderButtons[type] = button;
@@ -95,7 +116,7 @@ export class DefenderToolbar {
             this.selectedType = type;
             this.onSelect(type);
             this.resetButtons();
-            button.setFillStyle(0x286b55);
+            button.setFillStyle(this.selectedColor);
             button.setStrokeStyle(2, 0x00ff99);
         });
     }
@@ -109,17 +130,17 @@ export class DefenderToolbar {
             const text = this.cooldownTexts[type]!;
 
             if (remaining > 0) {
-                button.setFillStyle(0x303846);
+                button.setFillStyle(0x27303d);
                 button.setStrokeStyle();
                 text.setText((remaining / 1000).toFixed(1) + "s");
                 text.setVisible(true);
             } else {
                 text.setVisible(false);
                 if (this.selectedType === type) {
-                    button.setFillStyle(0x286b55);
+                    button.setFillStyle(this.selectedColor);
                     button.setStrokeStyle(2, 0x00ff99);
                 } else {
-                    button.setFillStyle(0x40536b);
+                    button.setFillStyle(this.normalColor);
                     button.setStrokeStyle();
                 }
             }

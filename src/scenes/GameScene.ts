@@ -99,8 +99,17 @@ export class GameScene extends Phaser.Scene {
         });
 
         // Compact HUD separate from the defender-card panel.
-        this.add.rectangle(161, 61, 290, 75, 0x263447, 0.95).setDepth(10);
-        this.energyText = this.add.text(161, 46,"Energy: " + this.energyManager.getEnergy(),{fontSize: "22px",color: "#00ccff",backgroundColor: "#162536",padding: { x: 10, y: 8 }});
+        // Matching metallic energy HUD; kept separate from the defender toolbar.
+        this.add.rectangle(161, 61, 290, 75, 0x101b2a)
+            .setStrokeStyle(3, 0x647589).setDepth(10);
+        this.add.rectangle(161, 61, 280, 65, 0x243348)
+            .setStrokeStyle(1, 0x0c131e).setDepth(11);
+        this.add.text(41, 61, "⚡", { fontSize: "27px", color: "#38cfff" })
+            .setOrigin(0.5).setDepth(20);
+        this.energyText = this.add.text(
+            179, 61, "Energy: " + this.energyManager.getEnergy(),
+            { fontSize: "22px", color: "#00ccff" }
+        );
         this.energyText.setOrigin(0.5);
         this.energyText.setDepth(20);
 

@@ -25,6 +25,7 @@ export function loadGameAssets(scene: Phaser.Scene): void {
     // Stronghold and battlefield
     scene.load.image("stronghold", "assets/stronghold/stronghold_wall.png");
     scene.load.image("battlefield", "assets/backgrounds/battlefield.png");
+    scene.load.image("fortressExtension", "assets/backgrounds/fortress_extension.png");
 
     // Audio
     scene.load.audio("backgroundMusic", "assets/sounds/backgroundMusic.m4a");
