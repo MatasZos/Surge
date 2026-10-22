@@ -98,11 +98,11 @@ export class GameScene extends Phaser.Scene {
             this.selectedDefender = defender;
         });
 
-        this.energyText = this.add.text(85, 575,"Energy: " + this.energyManager.getEnergy(),{fontSize: "22px",color: "#00ccff",backgroundColor: "#162536",padding: { x: 10, y: 8 }});
+        this.energyText = this.add.text(85, 685,"Energy: " + this.energyManager.getEnergy(),{fontSize: "22px",color: "#00ccff",backgroundColor: "#162536",padding: { x: 10, y: 8 }});
         this.energyText.setOrigin(0.5);
         this.energyText.setDepth(20);
 
-        this.waveText = this.add.text(20, 620, "Wave" + this.waveManager.getWave() + "/" + this.waveManager.getMaxWaves(), { fontSize: "22px", color: "#00ccff"});
+        this.waveText = this.add.text(20, 735, "Wave" + this.waveManager.getWave() + "/" + this.waveManager.getMaxWaves(), { fontSize: "22px", color: "#00ccff"});
     }
 
     private createStronghold(): void {

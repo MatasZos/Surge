@@ -18,6 +18,9 @@ export function loadGameAssets(scene: Phaser.Scene): void {
     scene.load.image("laser", "assets/effects/projectile.png");
     scene.load.image("energy", "assets/effects/energy.png");
 
+    // UI
+    scene.load.image("recall", "assets/ui/recall button.png");
+
     // Stronghold and battlefield
     scene.load.image("stronghold", "assets/stronghold/stronghold_wall.png");
     scene.load.image("battlefield", "assets/backgrounds/battlefield.png");

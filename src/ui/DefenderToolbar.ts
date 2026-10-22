@@ -13,6 +13,7 @@ export class DefenderToolbar {
     private cooldownTexts: Record<string, Phaser.GameObjects.Text> = {};
     private defenderButtons: Record<string, Phaser.GameObjects.Rectangle> = {};
     private selectedType: string | null = null;
+    private recallButton!: Phaser.GameObjects.Image;
 
     constructor(
         scene: Phaser.Scene,
@@ -30,7 +31,7 @@ export class DefenderToolbar {
 
         // Toolbar background
         this.scene.add.rectangle(
-            toolbarX, 315, 120, 545, 0x263447, 0.95
+            toolbarX, 335, 120, 620, 0x263447, 0.95
         ).setDepth(10);
 
         this.scene.add.text(
@@ -44,23 +45,27 @@ export class DefenderToolbar {
         this.addButton(toolbarX, 345, "Barricade", "barricade");
         this.addButton(toolbarX, 455, "Dual Barrel", "dualbarrel");
 
-        // Recall button
         const recallButton = this.scene.add.rectangle(
-            toolbarX, 550, 100, 45, 0x40536b
-        );
-
-        recallButton.setDepth(11);
-        recallButton.setInteractive({ useHandCursor: true });
+            toolbarX, 565, 100, 100, 0x40536b
+        ).setDepth(11);
 
         this.buttons.push(recallButton);
+        recallButton.setInteractive({ useHandCursor: true });
+
+        // Recall button
+        this.recallButton = this.scene.add.image(
+            toolbarX, 565, "recall");
+
+        this.recallButton.setDisplaySize(90, 90);
+        this.recallButton.setDepth(12);
+        this.recallButton.setInteractive({ useHandCursor: true });
 
         this.scene.add.text(
-            toolbarX, 550, "RECALL",
-            { fontSize: "17px", color: "#ffffff", fontStyle: "bold" }
+            toolbarX, 630, "Recall",
+            { fontSize: "14px", color: "#ffffff" }
         ).setOrigin(0.5).setDepth(12);
 
-        recallButton.on("pointerdown", () => {
-
+        const selectRecall = () => {
             this.selectedType = "recall";
             this.onSelect("recall");
 
@@ -73,7 +78,9 @@ export class DefenderToolbar {
             // Highlight Recall button
             recallButton.setFillStyle(0x286b55);
             recallButton.setStrokeStyle(2, 0x00ff99);
-        });
+        };
+        recallButton.on("pointerdown", selectRecall);
+        this.recallButton.on("pointerdown", selectRecall);
     }
 
     private addButton(
