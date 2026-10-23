@@ -6,3 +6,5 @@ generator_production_interval_ms,24000
 pickup_lifetime_ms,15000
 enemy_drop_chance,0.4
 enemy_drop_value,20
+passive_energy_value,25
+passive_energy_interval_ms,15000

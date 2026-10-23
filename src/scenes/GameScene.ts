@@ -92,6 +92,33 @@ export class GameScene extends Phaser.Scene {
         });
     }
 
+    private startPassiveEnergy(): void {
+        this.time.addEvent({
+            delay: SETTINGS.energy.passiveEnergyIntervalMs,
+            callback: () => {
+                const amount = SETTINGS.energy.passiveEnergyValue;
+
+                this.energyManager.addEnergy(amount);
+                this.updateEnergyText();
+
+                const bonus = this.add.text(
+                    179, 25,
+                    "+" + amount + " ⚡",
+                    {
+                        fontSize: "18px",
+                        color: "#00ff99",
+                        fontStyle: "bold"
+                    }
+                ).setOrigin(0.5).setDepth(30);
+
+                this.time.delayedCall(1200, () => {
+                    bonus.destroy();
+                });
+            },
+            loop: true
+        });
+    }
+
     private updateEnergyText(): void {
         this.energyText.setText("Energy: " + this.energyManager.getEnergy());
     }
@@ -275,6 +302,7 @@ export class GameScene extends Phaser.Scene {
         this.setupGameEvents();
         this.createUI();
         this.createStronghold();
+        this.startPassiveEnergy();
 
         this.enemySpawner = new EnemySpawner(
             this,

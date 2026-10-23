@@ -92,8 +92,9 @@ export const SETTINGS = {
         generatorProductionIntervalMs: 0,
         pickupLifetimeMs: 0,
         enemyDropChance: 0,
-        enemyDropValue: 0
-
+        enemyDropValue: 0,
+        passiveEnergyValue: 25,
+        passiveEnergyIntervalMs: 15000
     },
 
     stronghold: {
