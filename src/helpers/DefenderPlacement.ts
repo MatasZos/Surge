@@ -33,6 +33,25 @@ export class DefenderPlacement {
         private updateEnergyText: () => void
     ) {}
 
+    private showWarning(message: string): void {
+        const warning = this.scene.add.text(
+            this.scene.scale.width / 2,
+            this.scene.scale.height / 2,
+            message,
+            {
+                fontSize: "30px",
+                color: "#ff4444",
+                fontStyle: "bold",
+                stroke: "#000000",
+                strokeThickness: 4
+            }
+        ).setOrigin(0.5).setDepth(200);
+
+        this.scene.time.delayedCall(1200, () => {
+            warning.destroy();
+        });
+    }
+
     place(pointer: Phaser.Input.Pointer, selectedDefender: string | null): void {
         const col = Math.floor((pointer.x - GRID_X) / CELL_WIDTH);
         const row = Math.floor((pointer.y - GRID_Y) / CELL_HEIGHT);
@@ -54,7 +73,7 @@ export class DefenderPlacement {
         const cooldown = SETTINGS.defenders[type].cooldownMs;
 
         if (!this.energyManager.canAfford(cost)) {
-            console.log("Not enough energy");
+            this.showWarning("Not Enough Energy");
             return;
         }
 
@@ -62,7 +81,7 @@ export class DefenderPlacement {
         const last = this.lastPlaced[type];
 
         if (last !== undefined && now - last < cooldown) {
-            console.log("Defender on cooldown");
+            this.showWarning("Not Ready Yet");
             return;
         }
 
