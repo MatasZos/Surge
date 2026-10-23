@@ -84,3 +84,10 @@ waves.level_4_wave_3_budget,80
 waves.level_5_wave_1_budget,70
 waves.level_5_wave_2_budget,90
 waves.level_5_wave_3_budget,110
+
+defenders.landmine.health,300
+defenders.landmine.damage,1800
+defenders.landmine.cost,25
+defenders.landmine.cooldown_ms,30000
+defenders.landmine.arming_ms,15000
+defenders.landmine.blast_radius,90

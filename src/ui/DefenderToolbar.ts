@@ -1,10 +1,10 @@
 import Phaser from "phaser";
 import { SETTINGS } from "../config/settings";
 
-type DefenderType = "shooter" | "generator" | "barricade" | "dualbarrel" | "cryogunner";
+type DefenderType = "shooter" | "generator" | "barricade" | "dualbarrel" | "cryogunner" | "landmine";
 
 const TYPES: DefenderType[] = [
-    "shooter", "generator", "barricade", "dualbarrel", "cryogunner"
+    "shooter", "generator", "barricade", "dualbarrel", "cryogunner", "landmine"
 ];
 
 export class DefenderToolbar {
@@ -53,7 +53,7 @@ export class DefenderToolbar {
         }
 
         const cardY = 62;
-        const names = ["Shooter", "Generator", "Barricade", "Dual Barrel", "Cryo Gunner"];
+        const names = ["Shooter", "Generator", "Barricade", "Dual Barrel", "Cryo Gunner", "Landmine"];
         TYPES.forEach((type, i) => this.addButton(startX + i * spacing, cardY, names[i], type));
 
         // Recall has its own metal frame, separated from the defender cards.

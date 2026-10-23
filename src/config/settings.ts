@@ -73,6 +73,15 @@ export const SETTINGS = {
             projectileDamage: 20
         },
 
+        landmine: {
+            health: 300,
+            damage: 1800,
+            cost: 25,
+            cooldownMs: 30000,
+            armingMs: 15000,
+            blastRadius: 90
+        },
+
         dualbarrel: {
             health: 300,
             damage: 40,
