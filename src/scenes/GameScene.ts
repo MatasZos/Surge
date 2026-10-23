@@ -213,6 +213,8 @@ export class GameScene extends Phaser.Scene {
     private finishDefenderDrag(pointer: Phaser.Input.Pointer): void {
         if (!this.draggedDefender) return;
 
+        this.selectedDefender = null;
+
         this.defenderPlacement.place(pointer, this.draggedDefender);
 
         this.dragImage?.destroy();
@@ -230,10 +232,7 @@ export class GameScene extends Phaser.Scene {
 
         if (this.selectedDefender === "recall") {
             this.defenderPlacement.recall(pointer);
-            return;
         }
-
-        this.defenderPlacement.place(pointer, this.selectedDefender);
     }
 
     private spawnEnemy(): void {
@@ -298,11 +297,11 @@ export class GameScene extends Phaser.Scene {
         this.input.on("pointerdown", this.handleGridClick, this);
         this.input.on("pointermove", this.moveDefenderDrag, this);
         this.input.on("pointerup", this.finishDefenderDrag, this);
+
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             this.input.off("pointerdown", this.handleGridClick, this);
             this.input.off("pointermove", this.moveDefenderDrag, this);
             this.input.off("pointerup", this.finishDefenderDrag, this);
-            this.selectedDefender = null;
         });
         this.startEnemySpawning();
     }
