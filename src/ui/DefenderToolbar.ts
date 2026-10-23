@@ -17,7 +17,8 @@ export class DefenderToolbar {
 
     constructor(
         private scene: Phaser.Scene,
-        private onSelect: (defender: string) => void
+        private onSelect: (defender: string) => void,
+        private onDragStart: (type: string, pointer: Phaser.Input.Pointer) => void
     ) {
         this.drawToolbar();
     }
@@ -95,7 +96,13 @@ export class DefenderToolbar {
         const button = this.scene.add.rectangle(x, y, 100, 88, this.normalColor)
             .setDepth(11).setInteractive({ useHandCursor: true });
         this.buttons.push(button);
+        
         this.defenderButtons[type] = button;
+        this.scene.input.setDraggable(button);
+
+        button.on("dragstart", (pointer: Phaser.Input.Pointer) => {
+            this.onDragStart(type, pointer);
+        });
 
         const icon = this.scene.add.image(x, y - 21, type)
             .setDisplaySize(43, 43).setDepth(12);

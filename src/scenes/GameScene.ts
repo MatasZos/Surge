@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { SETTINGS } from "../config/settings";
-import { GRID_ROWS, GRID_COLS, CELL_HEIGHT, GRID_X, GRID_Y } from "../constants";
+import { GRID_ROWS, GRID_COLS, CELL_WIDTH, CELL_HEIGHT, GRID_X, GRID_Y } from "../constants";
 
 import { loadGameAssets } from "../helpers/GameAssets";
 import { BattlefieldView } from "../helpers/BattlefieldView";
@@ -22,6 +22,9 @@ import { DefenderToolbar } from "../ui/DefenderToolbar";
 export class GameScene extends Phaser.Scene {
     private grid!: Grid;
     private selectedDefender: string | null = null;
+    private draggedDefender: string | null = null;
+    private dragImage: Phaser.GameObjects.Image | null = null;
+    private dragHighlight: Phaser.GameObjects.Rectangle | null = null;
 
     private enemies: Enemy[] = [];
     private enemyProjectiles: EnemyProjectile[] = [];
@@ -94,9 +97,10 @@ export class GameScene extends Phaser.Scene {
     }
 
     private createUI(): void {
-        this.defenderToolbar = new DefenderToolbar(this, (defender: string) => {
-            this.selectedDefender = defender;
-        });
+        this.defenderToolbar = new DefenderToolbar(this,
+            (defender: string) => {this.selectedDefender = defender;},
+            (type: string, pointer: Phaser.Input.Pointer) => {this.startDefenderDrag(type, pointer);}
+        );
 
         // Compact HUD separate from the defender-card panel.
         // Matching metallic energy HUD; kept separate from the defender toolbar.
@@ -165,7 +169,64 @@ export class GameScene extends Phaser.Scene {
         new EnergyDrops(this).setup();
     }
 
+    
+    private startDefenderDrag(
+        type: string,
+        pointer: Phaser.Input.Pointer
+    ): void {
+        this.draggedDefender = type;
+
+        this.dragImage = this.add.image(pointer.x, pointer.y, type)
+            .setDisplaySize(65, 65)
+            .setDepth(100);
+
+        this.dragHighlight = this.add.rectangle(
+            0, 0, CELL_WIDTH, CELL_HEIGHT, 0x00ff99, 0.25
+        ).setDepth(3).setVisible(false);
+    }
+
+    private moveDefenderDrag(pointer: Phaser.Input.Pointer): void {
+        if (!this.dragImage || !this.dragHighlight) return;
+
+        this.dragImage.setPosition(pointer.x, pointer.y);
+
+        const col = Math.floor((pointer.x - GRID_X) / CELL_WIDTH);
+        const row = Math.floor((pointer.y - GRID_Y) / CELL_HEIGHT);
+
+        if (
+            row < 0 || row >= GRID_ROWS ||
+            col < 0 || col >= this.grid.cols ||
+            !this.grid.getCell(row, col).isEmpty()
+        ) {
+            this.dragHighlight.setVisible(false);
+            return;
+        }
+
+        this.dragHighlight.setPosition(
+            GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2,
+            GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2
+        );
+
+        this.dragHighlight.setVisible(true);
+    }
+
+    private finishDefenderDrag(pointer: Phaser.Input.Pointer): void {
+        if (!this.draggedDefender) return;
+
+        this.defenderPlacement.place(pointer, this.draggedDefender);
+
+        this.dragImage?.destroy();
+        this.dragHighlight?.destroy();
+
+        this.dragImage = null;
+        this.dragHighlight = null;
+        this.draggedDefender = null;
+    }
+
+
     private handleGridClick(pointer: Phaser.Input.Pointer): void {
+
+        if (this.draggedDefender) return;
 
         if (this.selectedDefender === "recall") {
             this.defenderPlacement.recall(pointer);
@@ -235,8 +296,13 @@ export class GameScene extends Phaser.Scene {
         );
 
         this.input.on("pointerdown", this.handleGridClick, this);
+        this.input.on("pointermove", this.moveDefenderDrag, this);
+        this.input.on("pointerup", this.finishDefenderDrag, this);
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             this.input.off("pointerdown", this.handleGridClick, this);
+            this.input.off("pointermove", this.moveDefenderDrag, this);
+            this.input.off("pointerup", this.finishDefenderDrag, this);
+            this.selectedDefender = null;
         });
         this.startEnemySpawning();
     }
