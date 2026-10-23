@@ -47,14 +47,21 @@ export class DefenderCollision {
             for (const defender of this.defenders) {
                 if (!defender.active || defender instanceof Landmine) continue;
 
-                const hit = Phaser.Geom.Intersects.RectangleToRectangle(
-                    enemy.getBounds(),
-                    defender.getBounds()
-                );
+                // Detect a defender immediately ahead in the same lane.
+                // Using sprite overlap alone can miss collisions because
+                // defender artwork has varying transparent margins/sizes.
+                // Grid-centre positions are authoritative, not sprite image bounds.
+                // Enemies travel right-to-left and must stop before crossing the tile.
+                const sameLane = Math.abs(enemy.y - defender.y) < 45;
+                const distanceAhead = enemy.x - defender.x;
+                const inAttackRange = distanceAhead >= -12 && distanceAhead <= 75;
 
-                if (!hit) continue;
+                if (!sameLane || !inAttackRange) continue;
 
                 enemy.isAttacking = true;
+                // Hold the enemy at the defender's front edge.
+                // Prevents fast enemies from stepping through while attacking.
+                if (enemy.x < defender.x + 34) enemy.x = defender.x + 34;
 
                 const row = defender.getData("gridRow");
                 const col = defender.getData("gridCol");
