@@ -43,6 +43,10 @@ export class GameScene extends Phaser.Scene {
     private waveManager = new WaveManager();
     private currentLevel = 1;
 
+    private intermissionActive = false;
+    private intermissionCountdown?: Phaser.Time.TimerEvent;
+    private intermissionEnd?: Phaser.Time.TimerEvent;
+
     constructor() {
         super("GameScene");
     }
@@ -65,6 +69,12 @@ export class GameScene extends Phaser.Scene {
         this.enemyProjectiles = [];
         this.defenders = [];
         this.lastPlaced = {};
+
+        this.intermissionCountdown?.remove();
+        this.intermissionEnd?.remove();
+        this.intermissionCountdown= undefined;
+        this.intermissionEnd = undefined;
+        this.intermissionActive = false;
     }
 
     private startBackgroundMusic(): void {
@@ -263,7 +273,67 @@ export class GameScene extends Phaser.Scene {
     }
 
     private spawnEnemy(): void {
+        //dont spawn enemies during intermission
+        if(this.intermissionActive){
+            return;
+        }
         this.enemySpawner.spawnEnemy();
+    }
+
+    private startWaveIntermission(): void{
+        //prevent intermission from starting twice
+        if(this.intermissionActive){
+            return;
+        }
+
+        this.intermissionActive = true;
+
+        //read the duration from excel
+
+        const configuredDelay = SETTINGS.waves.waveIntermissionMs;
+
+        //this fallback prevenmts broken config from freezing progress
+        const durationMs = Number.isFinite(configuredDelay) && configuredDelay > 0 ? configuredDelay: 10000;
+
+        let secondsRemaining = Math.ceil(durationMs / 1000)
+
+        const completedWave = this.waveManager.getWave();
+
+        //show countdown using wave hud
+        const updateCountdown = () => { 
+            this.waveText.setText( `Wave ${completedWave}/${this.waveManager.getMaxWaves()} - Next in ${secondsRemaining}s`);
+        };
+        updateCountdown();
+
+        //update countdown once per second
+        this.intermissionCountdown = this.time.addEvent({
+            delay: 1000,
+            loop: true,
+            callback: () => {
+                if(!this.intermissionActive){
+                    return;
+                }
+                secondsRemaining = Math.max(0, secondsRemaining - 1);
+
+                if (secondsRemaining > 0){
+                    updateCountdown();
+                }
+            }
+        });
+
+        //start the next wave after the intermission
+        this.intermissionEnd = this.time.delayedCall(durationMs, () => {
+            this.intermissionCountdown?.remove();
+            this.intermissionCountdown = undefined;
+            this.intermissionEnd = undefined;
+
+            this.waveManager.nextWave();
+
+            this.waveText.setText("Wave "+this.waveManager.getWave()+ "/"+ this.waveManager.getMaxWaves());
+
+            this.intermissionActive = false;
+
+        });
     }
 
     private startEnemySpawning(): void {
@@ -335,9 +405,17 @@ export class GameScene extends Phaser.Scene {
     }
 
     private updateWaveProgress(): void {
+
+        if(this.intermissionActive){
+            return;
+        }
+
+
         if (!this.waveManager.isWaveFinished() ||
             !this.enemies.every(enemy => !enemy.active) ||
-            this.stronghold.health <= 0) return;
+            this.stronghold.health <= 0){
+                return;
+            } 
 
         if (this.waveManager.isLevelComplete()) {
             this.scene.launch("LevelComplete",{
@@ -345,8 +423,8 @@ export class GameScene extends Phaser.Scene {
             });
             this.scene.pause();
         } else {
-            this.waveManager.nextWave();
-            this.waveText.setText("Wave " + this.waveManager.getWave() + "/" + this.waveManager.getMaxWaves());
+           //start the countdown before advancing
+           this.startWaveIntermission();
         }
     }
 

@@ -117,6 +117,7 @@ export const SETTINGS = {
     waves: {
         firstEnemyDelayMs: 0,
         enemySpawnIntervalMs: 0,
+        waveIntermissionMs: 0,
         meleeSpawnProbability: 0.0,
         rangedSpawnProbability: 0.0,
         crusherSpawnProbability: 0.0,
@@ -140,6 +141,6 @@ export const SETTINGS = {
         level5Wave3Budget: 0,
         meleeWaveCost: 0,
         rangedWaveCost: 0,
-        crusherWaveCost: 0,
+        crusherWaveCost: 0
     }
 };
