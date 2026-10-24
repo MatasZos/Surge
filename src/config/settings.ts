@@ -64,32 +64,34 @@ export const SETTINGS = {
         },
 
         cryogunner: {
-            health: 300,
-            damage: 20,
-            cost: 175,
-            cooldownMs: 10000,
-            fireIntervalMs: 1000,
-            projectileSpeed: 300,
-            projectileDamage: 20
+            health: 0,
+            damage: 0,
+            cost: 0,
+            cooldownMs: 0,
+            fireIntervalMs: 0,
+            projectileSpeed: 0,
+            projectileDamage: 0,
+            slowMultiplier: 0,
+            slowDurationMs: 0
         },
 
         landmine: {
-            health: 300,
-            damage: 1800,
-            cost: 25,
-            cooldownMs: 30000,
-            armingMs: 15000,
-            blastRadius: 90
+            health: 0,
+            damage: 0,
+            cost: 0,
+            cooldownMs: 0,
+            armingMs: 0,
+            blastRadius: 0
         },
 
         dualbarrel: {
-            health: 300,
-            damage: 40,
-            cost: 200,
-            cooldownMs: 12000,
-            fireIntervalMs: 1000,
-        projectileSpeed: 300,
-        projectileDamage: 20
+            health: 0,
+            damage: 0,
+            cost: 0,
+            cooldownMs: 0,
+            fireIntervalMs: 0,
+        projectileSpeed: 0,
+        projectileDamage: 0
         }
 
     },
@@ -102,8 +104,8 @@ export const SETTINGS = {
         pickupLifetimeMs: 0,
         enemyDropChance: 0,
         enemyDropValue: 0,
-        passiveEnergyValue: 25,
-        passiveEnergyIntervalMs: 15000
+        passiveEnergyValue: 0,
+        passiveEnergyIntervalMs: 0
     },
 
     stronghold: {

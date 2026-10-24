@@ -66,11 +66,15 @@ export class DualBarrel extends Defender {
             });
         }
 
-        new Projectile(
+        const projectile = new Projectile(
             this.scene,
             this.x + 25,
             this.y - 2
         );
+
+        //use dual barrel own projectile stats
+        projectile.damage = SETTINGS.defenders.dualbarrel.projectileDamage;
+        projectile.speed = SETTINGS.defenders.dualbarrel.projectileSpeed;
     }
 
     destroy(fromScene?: boolean) {

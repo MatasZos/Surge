@@ -3,8 +3,8 @@ import { Projectile } from "./projectile";
 import { SETTINGS } from "../config/settings";
 
 export class CryoProjectile extends Projectile {
-    readonly slowMultiplier = 0.5;
-    readonly slowDurationMs = 3000;
+    readonly slowMultiplier = SETTINGS.defenders.cryogunner.slowMultiplier;
+    readonly slowDurationMs =  SETTINGS.defenders.cryogunner.slowDurationMs;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y);

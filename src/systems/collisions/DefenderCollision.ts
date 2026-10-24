@@ -21,7 +21,9 @@ export class DefenderCollision {
         if (enemy instanceof CrusherEnemy) {
             return Math.max(1, SETTINGS.enemies.crusher.attackIntervalMs);
         }
-        return 1000;
+
+        //melee enemy csv attack interval  value
+        return Math.max(1, SETTINGS.enemies.melee.attackIntervalMs);
     }
 
     update(): void {

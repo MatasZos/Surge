@@ -24,7 +24,7 @@ export class Shooter extends Defender {
         this.enemies = enemies;
 
         this.shootTimer = scene.time.addEvent({
-            delay: 1000,
+            delay: Math.max(1, SETTINGS.defenders.shooter.fireIntervalMs),
             callback: () => {
                 if (this.hasEnemyInRow()) {
                     this.shoot();
