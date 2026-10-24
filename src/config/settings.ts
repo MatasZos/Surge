@@ -29,6 +29,20 @@ export const SETTINGS = {
             attackRange: 0,
             projectileSpeed: 0,
             projectileDamage: 0
+        },
+    
+
+     overlord: {
+            health: 15000,
+            shield: 4000,
+            speed: 0,
+            damage: 200,
+            attackIntervalMs: 2000,
+            empCooldownMs: 20000,
+            empDurationMs: 4000,
+            reinforcementCooldownMs: 25000,
+            shieldRechargeDelayMs: 15000,
+            overdriveThreshold: 0.5
         }
     },
 

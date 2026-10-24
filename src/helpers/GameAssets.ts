@@ -16,6 +16,7 @@ export function loadGameAssets(scene: Phaser.Scene): void {
     scene.load.image("meleeEnemy", "assets/enemies/meleerobot.png");
     scene.load.image("rangedEnemy", "assets/enemies/rangedEnemy.png");
     scene.load.image("crusherEnemy", "assets/enemies/crusherrobot.png");
+    scene.load.image("overlord", "assets/enemies/overlord.png");
 
     // Effects
     scene.load.image("laser", "assets/effects/projectile.png");

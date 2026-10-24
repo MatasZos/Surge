@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { Enemy } from "../../enemies/Enemy";
 import { Projectile } from "../../objects/projectile";
+import { BossEnemy } from "../../enemies/BossEnemy";
 import { CryoProjectile } from "../../objects/CryoProjectile";
 
 export class ProjectileCollision {
@@ -26,7 +27,11 @@ export class ProjectileCollision {
 
                enemy.takeDamage(projectile.damage);
 
-    if (projectile instanceof CryoProjectile && enemy.active) {
+    if (
+        projectile instanceof CryoProjectile && 
+        enemy.active && 
+        !(enemy instanceof BossEnemy)
+    ) {
         enemy.applySlow(
              projectile.slowMultiplier,
             projectile.slowDurationMs
