@@ -47,6 +47,9 @@ export class GameScene extends Phaser.Scene {
     private intermissionCountdown?: Phaser.Time.TimerEvent;
     private intermissionEnd?: Phaser.Time.TimerEvent;
 
+    private notificationQueue: string[] = [];
+    private notificationShowing = false;
+
     constructor() {
         super("GameScene");
     }
@@ -75,6 +78,8 @@ export class GameScene extends Phaser.Scene {
         this.intermissionCountdown= undefined;
         this.intermissionEnd = undefined;
         this.intermissionActive = false;
+        this.notificationQueue = [];
+        this.notificationShowing = false;
     }
 
     private startBackgroundMusic(): void {
@@ -133,6 +138,63 @@ export class GameScene extends Phaser.Scene {
         this.energyText.setText("Energy: " + this.energyManager.getEnergy());
     }
 
+    private showNotification(message: string): void{
+        this.notificationQueue.push(message);
+        this.displayNextNotification();
+
+    }
+
+    private displayNextNotification():void{
+        //wait until last notification is finished
+        if(this.notificationShowing){
+            return;
+        }
+
+        const message = this.notificationQueue.shift();
+
+        if(!message){
+            return
+        }
+
+        //notification banner
+        const notification = this.add.text(this.scale.width/2,110,
+        message,
+        {fontSize: "26px",
+        color:"#ffffff",
+        fontStyle:"bold",
+        backgroundColor:"#1012ba",
+        padding:{
+            x:25,
+            y:15
+        },
+        align:"center"
+        });
+
+        notification.setOrigin(0.5);
+        notification.setDepth(100);
+        notification.setScrollFactor(0);
+        notification.setAlpha(0);
+
+        //fade in and fade out animation for the notification
+        this.tweens.add({
+            targets:notification,
+            alpha:1,
+            duration:250,
+            hold:1800,
+            yoyo:true,
+
+            onComplete: () => {
+                notification.destroy();
+
+                this.notificationShowing = false;
+
+                //display the next queued message
+                this.displayNextNotification();
+            }
+        });
+    
+    }
+
     private createUI(): void {
         this.defenderToolbar = new DefenderToolbar(this,
             (defender: string) => {this.selectedDefender = defender;},
@@ -188,7 +250,19 @@ export class GameScene extends Phaser.Scene {
             this.waveManager.startLevel(level)
 
             this.waveText.setText("Wave " + this.waveManager.getWave() +"/" + this.waveManager.getMaxWaves());
-        })
+
+            //new level notif
+             this.showNotification(`LEVEL ${level} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
+
+             // first ranged enemy notif
+             if (level === 2) {
+                this.showNotification("NEW ENEMY: RANGED ROBOT!");
+            }
+            // first crusher notif
+            if (level === 3) {
+                this.showNotification("WARNING: CRUSHER INCOMING!");
+            }
+        });
 
         this.events.on("projectile-created", (projectile: Projectile) => {
             this.projectiles.push(projectile);
@@ -287,6 +361,7 @@ export class GameScene extends Phaser.Scene {
         }
 
         this.intermissionActive = true;
+        this.showNotification(`WAVE ${this.waveManager.getWave()} CLEARED!`);
 
         //read the duration from excel
 
@@ -328,6 +403,7 @@ export class GameScene extends Phaser.Scene {
             this.intermissionEnd = undefined;
 
             this.waveManager.nextWave();
+            this.showNotification(`WAVE ${this.waveManager.getWave()} INCOMING!`);
 
             this.waveText.setText("Wave "+this.waveManager.getWave()+ "/"+ this.waveManager.getMaxWaves());
 
@@ -402,6 +478,7 @@ export class GameScene extends Phaser.Scene {
             this.input.off("pointerup", this.finishDefenderDrag, this);
         });
         this.startEnemySpawning();
+        this.showNotification(`LEVEL ${this.currentLevel} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
     }
 
     private updateWaveProgress(): void {
