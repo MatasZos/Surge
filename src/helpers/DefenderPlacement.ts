@@ -9,6 +9,7 @@ import { Barricade } from "../defenders/Barricade";
 import { DualBarrel } from "../defenders/DualBarrel";
 import { CryoGunner } from "../defenders/CryoGunner";
 import { Landmine } from "../defenders/Landmine";
+import { Scrapper } from "../defenders/Scrapper";
 import { Enemy } from "../enemies/Enemy";
 import { EnergyManager } from "../managers/EnergyManager";
 
@@ -21,7 +22,7 @@ import {
     CELL_HEIGHT
 } from "../constants";
 
-type DefenderType = "shooter" | "generator" | "barricade" | "dualbarrel" | "cryogunner" | "landmine";
+type DefenderType = "shooter" | "generator" | "barricade" | "dualbarrel" | "cryogunner" | "landmine" | "scrapper";
 
 export class DefenderPlacement {
     constructor(
@@ -67,7 +68,8 @@ export class DefenderPlacement {
             selectedDefender !== "barricade" &&
             selectedDefender !== "dualbarrel" &&
             selectedDefender !== "cryogunner" &&
-            selectedDefender !== "landmine"
+            selectedDefender !== "landmine" &&
+            selectedDefender !== "scrapper"
 
         ) return;
 
@@ -93,7 +95,9 @@ export class DefenderPlacement {
 
         let defender: Defender;
 
-        if (type === "landmine") {
+        if (type === "scrapper") {
+            defender = new Scrapper(this.scene, x, y);
+        } else if (type === "landmine") {
             defender = new Landmine(this.scene, x, y);
         } else if (type === "generator") {
             defender = new Generator(this.scene, x, y);

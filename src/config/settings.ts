@@ -84,6 +84,14 @@ export const SETTINGS = {
             blastRadius: 0
         },
 
+        scrapper: {
+            health: 300,
+            damage: 500,
+            cost: 150,
+            cooldownMs: 7500,
+            recoveryMs: 42000
+        },
+
         dualbarrel: {
             health: 0,
             damage: 0,

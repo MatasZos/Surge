@@ -6,6 +6,7 @@ import { Enemy } from "../../enemies/Enemy";
 import { RangedEnemy } from "../../enemies/RangedEnemy";
 import { CrusherEnemy } from "../../enemies/CrusherEnemy";
 import { Landmine } from "../../defenders/Landmine";
+import { Scrapper } from "../../defenders/Scrapper";
 
 export class DefenderCollision {
     constructor(
@@ -39,6 +40,18 @@ export class DefenderCollision {
             if (index !== -1) this.defenders.splice(index, 1);
             for (const enemy of this.enemies) {
                 if (!enemy.active) this.stopAttack(enemy);
+            }
+        }
+
+        // Scrapper's short-range bite is checked every frame, independently
+        // of enemy melee attacks. Its own class handles the recovery timer.
+        for (const defender of this.defenders) {
+            if (!(defender instanceof Scrapper) || !defender.active) continue;
+            if (defender.tryBite(this.enemies)) {
+                // If Scrapper killed an enemy currently attacking, clear its timer.
+                for (const enemy of this.enemies) {
+                    if (!enemy.active) this.stopAttack(enemy);
+                }
             }
         }
 
