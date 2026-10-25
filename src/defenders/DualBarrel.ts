@@ -4,6 +4,7 @@ import { Defender } from "./Defender";
 import { Projectile } from "../objects/projectile";
 import { Enemy } from "../enemies/Enemy";
 import { SETTINGS } from "../config/settings";
+import { BossEnemy } from "../enemies/BossEnemy";
 
 export class DualBarrel extends Defender {
 
@@ -50,13 +51,26 @@ export class DualBarrel extends Defender {
     }
 
     private hasEnemyInRow(): boolean {
-        return this.enemies.some(enemy =>
-            enemy.active &&
-            enemy.x > this.x &&
-            Math.abs(enemy.y - this.y) < 20
-        );
-    }
+        return this.enemies.some(enemy => {
 
+            if (!enemy.active || enemy.x <= this.x) {
+                return false;
+            }
+
+            //boss spans across all 5 lanes
+            if (enemy instanceof BossEnemy) {
+                const bounds = enemy.getBounds();
+
+                return (
+                    this.y >= bounds.top &&
+                    this.y <= bounds.bottom
+                );
+            }
+
+            //normal enemies
+            return Math.abs(enemy.y - this.y) < 20;
+        });
+    }
     private shoot() {
         if (!this.active) return;
 

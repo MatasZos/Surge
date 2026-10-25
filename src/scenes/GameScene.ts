@@ -6,11 +6,14 @@ import { loadGameAssets } from "../helpers/GameAssets";
 import { BattlefieldView } from "../helpers/BattlefieldView";
 import { DefenderPlacement } from "../helpers/DefenderPlacement";
 import { EnemySpawner } from "../helpers/EnemySpawner";
+
 import { EnergyDrops } from "../helpers/EnergyDrops";
 
 import { Grid } from "../grid/Grid";
 import { Defender } from "../defenders/Defender";
 import { Enemy } from "../enemies/Enemy";
+import { BossEnemy } from "../enemies/BossEnemy";
+
 import { EnemyProjectile } from "../objects/EnemyProjectile";
 import { Projectile } from "../objects/projectile";
 import { Stronghold } from "../objects/Stronghold";
@@ -50,6 +53,12 @@ export class GameScene extends Phaser.Scene {
     private notificationQueue: string[] = [];
     private notificationShowing = false;
 
+    //final boss enemy encounter
+    private bossEnemy: BossEnemy | null = null;
+    private bossWaveActive = false;
+    private bossAttackTimer?: Phaser.Time.TimerEvent;
+    private bossAttackLane = 0;
+
     constructor() {
         super("GameScene");
     }
@@ -80,6 +89,13 @@ export class GameScene extends Phaser.Scene {
         this.intermissionActive = false;
         this.notificationQueue = [];
         this.notificationShowing = false;
+
+        //reset boss encounter state
+        this.bossAttackTimer?.remove();
+        this.bossAttackTimer = undefined;
+        this.bossEnemy = null;
+        this.bossWaveActive = false;
+        this.bossAttackLane = 0;
     }
 
     private startBackgroundMusic(): void {
@@ -348,13 +364,15 @@ export class GameScene extends Phaser.Scene {
 
     private spawnEnemy(): void {
         //dont spawn enemies during intermission
-        if(this.intermissionActive){
+        if(this.intermissionActive || this.bossWaveActive){
             return;
         }
         this.enemySpawner.spawnEnemy();
     }
 
-    private startWaveIntermission(): void{
+
+
+    private startWaveIntermission(bossNext = false): void{
         //prevent intermission from starting twice
         if(this.intermissionActive){
             return;
@@ -376,7 +394,7 @@ export class GameScene extends Phaser.Scene {
 
         //show countdown using wave hud
         const updateCountdown = () => { 
-            this.waveText.setText( `Wave ${completedWave}/${this.waveManager.getMaxWaves()} - Next in ${secondsRemaining}s`);
+            this.waveText.setText( bossNext ? `BOSS IN ${secondsRemaining}s`:`Wave ${completedWave}/${this.waveManager.getMaxWaves()} - Next in ${secondsRemaining}s`);
         };
         updateCountdown();
 
@@ -401,16 +419,55 @@ export class GameScene extends Phaser.Scene {
             this.intermissionCountdown?.remove();
             this.intermissionCountdown = undefined;
             this.intermissionEnd = undefined;
-
-            this.waveManager.nextWave();
-            this.showNotification(`WAVE ${this.waveManager.getWave()} INCOMING!`);
-
-            this.waveText.setText("Wave "+this.waveManager.getWave()+ "/"+ this.waveManager.getMaxWaves());
-
+            
+            if (bossNext) {
+                this.startBossWave();
+            } 
+            else {
+                this.waveManager.nextWave();
+                this.showNotification(`WAVE ${this.waveManager.getWave()} INCOMING!` );
+                this.waveText.setText("Wave " + this.waveManager.getWave() +"/" + this.waveManager.getMaxWaves());
+            }
             this.intermissionActive = false;
-
         });
     }
+    
+    
+
+    
+private startBossWave(): void {
+    const x = GRID_X + GRID_COLS * CELL_WIDTH + 15;
+    const y = GRID_Y + GRID_ROWS * CELL_HEIGHT / 2;
+
+    const boss = new BossEnemy(this, x, y);
+    boss.setDepth(5);
+
+    this.bossEnemy = boss;
+    this.bossWaveActive = true;
+
+    this.enemies.push(boss);
+    this.waveText.setText("BOSS WAVE");
+
+    this.showNotification("WARNING: OVERLORD INCOMING!");
+    this.bossAttackLane = 0;
+
+    this.bossAttackTimer?.remove();
+
+    this.bossAttackTimer = this.time.addEvent({delay: BossEnemy.ATTACK_INTERVAL_MS,callback: () => {
+        if (!boss.active || this.stronghold.health <= 0) {
+            return;
+        }
+        const row = this.bossAttackLane % GRID_ROWS;
+        this.bossAttackLane++;
+        
+        const shotY =GRID_Y +row * CELL_HEIGHT +CELL_HEIGHT / 2;
+        const projectile = new EnemyProjectile(this,boss.x - boss.displayWidth / 2,shotY);projectile.damage = BossEnemy.DAMAGE;
+        
+        },
+        loop: true
+    });
+}
+
 
     private startEnemySpawning(): void {
         this.time.delayedCall(SETTINGS.waves.firstEnemyDelayMs, () => {
@@ -481,29 +538,49 @@ export class GameScene extends Phaser.Scene {
         this.showNotification(`LEVEL ${this.currentLevel} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
     }
 
-    private updateWaveProgress(): void {
+    
+private updateWaveProgress(): void {
+    if (this.bossWaveActive) {
 
-        if(this.intermissionActive){
-            return;
-        }
+        if (
+            this.bossEnemy &&
+            !this.bossEnemy.active &&
+            this.stronghold.health > 0
+        ) {
+            this.bossAttackTimer?.remove();
+            this.bossAttackTimer = undefined;
 
+            this.bossWaveActive = false;
 
-        if (!this.waveManager.isWaveFinished() ||
-            !this.enemies.every(enemy => !enemy.active) ||
-            this.stronghold.health <= 0){
-                return;
-            } 
-
-        if (this.waveManager.isLevelComplete()) {
-            this.scene.launch("LevelComplete",{
-                completedLevel: this.currentLevel
-            });
+            // boss defeated - level is complete
+            this.scene.launch("LevelComplete", {completedLevel: 5});
             this.scene.pause();
-        } else {
-           //start the countdown before advancing
-           this.startWaveIntermission();
         }
+
+        return;
     }
+    if (this.intermissionActive) {
+        return;
+    }
+    if (!this.waveManager.isWaveFinished() ||!this.enemies.every(enemy => !enemy.active) ||this.stronghold.health <= 0) {
+        return;
+    }
+
+    if (this.waveManager.isLevelComplete()) {
+        if (this.currentLevel === 5) {
+            this.startWaveIntermission(true);
+
+        } else {
+            //level 1-4
+            this.scene.launch("LevelComplete", { completedLevel: this.currentLevel});
+            this.scene.pause();
+        }
+
+    } else {
+        this.startWaveIntermission();
+    }
+}
+
 
     update(_time: number, delta: number): void {
         this.defenderToolbar.updateCooldowns(this.time.now, this.lastPlaced);

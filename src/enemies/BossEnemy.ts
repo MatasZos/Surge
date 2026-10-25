@@ -1,16 +1,8 @@
 import Phaser from "phaser";
 import { Enemy } from "./Enemy";
+import { GRID_Y, GRID_ROWS, CELL_HEIGHT } from "../constants";
 
-/**
- * The Overlord — SURGE's final-level boss.
- *
- * IMPORTANT: This file only defines the boss. Do not register it with
- * EnemySpawner, waves, or GameScene until the final boss fight is implemented.
- * The "overlord" texture will also need loading before it is ever spawned.
- *
- * Multi-lane projectile targeting, EMP effects, reinforcements and the boss
- * health UI require separate integration; they are NOT active in this class.
- */
+
 export class BossEnemy extends Enemy {
     static readonly HEALTH = 15000;
     static readonly MAX_SHIELD = 4000;
@@ -27,11 +19,14 @@ export class BossEnemy extends Enemy {
     isOverdrive = false;
     private shieldRechargeTimer?: Phaser.Time.TimerEvent;
 
+    
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, "overlord", BossEnemy.HEALTH, 0, BossEnemy.DAMAGE);
-        // Visual dimensions only. Actual five-lane collision logic comes later.
-        this.setDisplaySize(130, 350);
+        const bossWidth = 130;
+        const bossHeight = GRID_ROWS * CELL_HEIGHT + 40;
+        this.setDisplaySize(bossWidth, bossHeight);
     }
+
 
     // The Overlord must never walk towards the stronghold.
     override move(_delta: number): void {

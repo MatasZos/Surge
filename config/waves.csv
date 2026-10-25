@@ -1,6 +1,6 @@
 setting,value
-first_enemy_delay_ms,20000
-enemy_spawn_interval_ms,5000
+first_enemy_delay_ms,1000
+enemy_spawn_interval_ms,1000
 melee_spawn_probability,0.6
 ranged_spawn_probability,0.3
 crusher_spawn_probability,0.1
