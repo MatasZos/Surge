@@ -299,8 +299,9 @@ SURGE is primarily controlled using the mouse.
 
 | Action | Control |
 |---|---|
-| Select Defender | Left-click a defender in the toolbar |
-| Place Defender | Left-click an empty battlefield grid cell |
+| Drag and Drop Defender - Place | Drag a defender from the toolbar onto an available grid cell |
+| Preview Placement | Drag a defender over the battlefield to see available cells |
+| Remove Defender | Use the Recall button to remove a placed unit |
 | Collect Energy | Left-click an energy pickup |
 | Start Game | Click the Play button |
 | Restart Game | Click the Restart button on the Game Over screen |
@@ -326,11 +327,11 @@ The project uses:
 
 | Directory / File | Responsibility |
 |---|---|
-| `src/scenes/` | Contains the Main Menu, Game Scene and Game Over scenes. |
-| `src/defenders/` | Contains defender classes such as Shooter, Generator, Barricade and Dual Barrel. |
-| `src/enemies/` | Contains Melee, Ranged and Crusher enemy classes, including their movement and combat behaviour. |
+| `src/scenes/` | Contains the Main Menu, Game Scene Game Over scenes and Level Completion Scenes. |
+| `src/defenders/` | Contains defender classes such as Shooter, Generator, Barricade Dual Barrel Cryo Gunner, Landmine and Scrapper. |
+| `src/enemies/` | Contains Melee, Ranged and Crusher enemy classes, Overlord Boss enemy classes including their movement and combat behaviour. |
 | `src/grid/` | Manages the battlefield grid, individual cells and defender placement. |
-| `src/managers/` | Contains EnergyManager for managing energy and WaveManager for enemy spawn selection. |
+| `src/managers/` | Contains EnergyManager for managing energy and WaveManager for enemy spawning and wave progression. |
 | `src/systems/` | Handles collision detection and combat interactions. |
 | `src/objects/` | Contains game objects such as the Stronghold and projectiles. |
 | `src/ui/` | Contains the defender selection toolbar and cooldown indicators. |
@@ -355,11 +356,12 @@ The spreadsheet contains separate worksheets for:
 
 This allows us to adjust any of these values such as health, damage, movement speed, energy costs, cooldowns and spawn probabilities to be adjusted instantly
 
-
+The configuration also allows gameplay values to be adjusted as new defenders, enemies and levels are added.
   
 
+## 5 Game Features
 
-## 5 Game Features (Implemented and Planned)
+### 5.1 Implemented Features
 
 | Feature | Priority | Description | Status |
 |---|:---:|---|---|
@@ -383,16 +385,36 @@ This allows us to adjust any of these values such as health, damage, movement sp
 | Input Mechanics | 1 | Allow players to select defenders, place units and collect energy. | Implemented |
 | Sound Effects | 2 | Add sounds for shooting, enemy damage and destruction. | Implemented |
 | Destruction Animations | 2 | Add explosion and shrinking effects when units are destroyed. | Implemented |
-| Full Wave System | 2 | Introduce numbered waves and wave progression. | Planned |
-| Boss Enemy | 3 | Strong enemy intended for later stages of the game. | Planned |
-| Multiple Levels | 3 | Add additional levels with increasing difficulty. | Planned |
-| Level Completion Screen | 3 | Display a completion screen when the player successfully finishes a level. | Planned |
-| Victory Conditions | 3 | Introduce objectives that allow the player to win. | Planned |
-| Defender Unlock System | 3 | Unlock additional defenders as the player progresses. | Planned |
+| Cryo Gunner Defender | 2 | Additional attacking defender. | Implemented |
+| Landmine Defender | 2 | Defensive unit placed on the battlefield. | Implemented |
+| Scrapper Defender | 2 | Additional defender available to the player. | Implemented |
+| Overlord Boss | 3 | Final Boss Enemy in Level 5. | Implemented |
+| Passive Energy Regeneration | 2 | Automatically generates energy over time. | Implemented |
+| Wave Display and Intermissions | 2 | Displays the current wave and allows preparation between waves. | Implemented |
+| Drag and Drop | 2 | Allows defenders to be dragged onto the grid. | Implemented |
+| Placement Preview | 2 | Highlights available cells during placement. | Implemented |
+| Defender Recall | 2 | Removes placed units and frees up grid cells. | Implemented |
+| Full Wave System | 2 | Introduce numbered waves and wave progression. | Implemented |
+| Victory Conditions | 3 | Introduce objectives that allow the player to win. | Implemented |
+| Level Completion Screen | 3 | Display a completion screen when the player successfully finishes a level. | Implemented |
+| Multiple Levels | 3 | Add additional levels with increasing difficulty. | Implemented |
+
+### 5.2 Planned Features
+
+| Feature | Priority | Description | Status |
+|---|:---:|---|---|
+| Defender Unlock System | 3 | Unlock new defenders as the player progresses. | Planned |
+| Defender Wave Unlocks | 3 | Unlock defenders after reaching certain waves. | Planned |
+| Locked Defender Indicators | 3 | Show locked defenders in the toolbar. | Planned |
+| Increasing Enemy Difficulty | 2 | Make enemies stronger as the game progresses. | Planned |
+| Defender Upgrades | 2 | Allow players to upgrade their defenders. | Planned |
+| Defender Upgrade UI | 2 | Add a menu for upgrading defenders. | Planned |
+| Defender Upgrade Indicators | 2 | Show when a defender has been upgraded. | Planned |
+| Pause and Resume | 2 | Allow players to pause and resume the game. | Planned |
 
 ## 6 Development Progress
 Completed development work includes:
-- Project setup#
+- Project setup
 - Battlefield grid and cell management
 - Shooter, Generator, Barricade, and Dual Barrel defenders
 - Melee, Ranged, and Crusher enemies
@@ -406,6 +428,17 @@ Completed development work includes:
 - Sound effects and destruction animations
 - Excel to CSV gameplay config
 - WaveManager integration for enemy spawn logic
+- Full wave progression system with wave display and intermissions
+- Five levels with level completion and victory conditions
+- Overlord Boss added to the final wave of Level 5
+- Cryo Gunner, Landmine and Scrapper defenders
+- Defender drag and drop with placement preview
+- Defender recall system for removing placed units
+- Passive energy regeneration
+- Separate projectile statistics for Dual Barrel
+- Improved enemy detection and collision handling
+- Fixed energy pickup and defender placement bugs
+- Refactored GameScene and collision code
 
 
 
