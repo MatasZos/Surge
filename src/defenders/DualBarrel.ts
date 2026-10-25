@@ -4,7 +4,7 @@ import { Defender } from "./Defender.ts";
 import { Projectile } from "../objects/projectile.ts";
 import { Enemy } from "../enemies/Enemy.ts";
 import { SETTINGS } from "../config/settings.ts";
-import { BossEnemy } from "../enemies/BossEnemy.ts";
+
 
 export class DualBarrel extends Defender {
 
@@ -35,12 +35,12 @@ export class DualBarrel extends Defender {
                 SETTINGS.defenders.dualbarrel.fireIntervalMs
             ),
             callback: () => {
-                if (this.active && this.hasEnemyInRow()) {
+                if (this.active && this.hasEnemyInRow(this.enemies)) {
                     this.shoot();
 
                     // Second shot after 150ms
                     this.scene.time.delayedCall(150, () => {
-                        if (this.active && this.hasEnemyInRow()) {
+                        if (this.active && this.hasEnemyInRow(this.enemies)) {
                             this.shoot();
                         }
                     });
@@ -50,27 +50,6 @@ export class DualBarrel extends Defender {
         });
     }
 
-    private hasEnemyInRow(): boolean {
-        return this.enemies.some(enemy => {
-
-            if (!enemy.active || enemy.x <= this.x) {
-                return false;
-            }
-
-            //boss spans across all 5 lanes
-            if (enemy instanceof BossEnemy) {
-                const bounds = enemy.getBounds();
-
-                return (
-                    this.y >= bounds.top &&
-                    this.y <= bounds.bottom
-                );
-            }
-
-            //normal enemies
-            return Math.abs(enemy.y - this.y) < 20;
-        });
-    }
     private shoot() {
         if (!this.active) return;
 

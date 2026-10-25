@@ -4,7 +4,7 @@ import { Defender } from "./Defender.ts";
 import { Projectile } from "../objects/projectile.ts";
 import { Enemy } from "../enemies/Enemy.ts";
 import { SETTINGS } from "../config/settings.ts";
-import { BossEnemy } from "../enemies/BossEnemy.ts";
+
 
 export class Shooter extends Defender {
 
@@ -27,36 +27,14 @@ export class Shooter extends Defender {
         this.shootTimer = scene.time.addEvent({
             delay: Math.max(1, SETTINGS.defenders.shooter.fireIntervalMs),
             callback: () => {
-                if (this.hasEnemyInRow()) {
-                    this.shoot();
+               if (this.hasEnemyInRow(this.enemies)) {
+                this.shoot();
                 }
             },
             loop: true
         });
     }
 
-    
-    private hasEnemyInRow(): boolean {
-        return this.enemies.some(enemy => {
-
-            if (!enemy.active || enemy.x <= this.x) {
-                return false;
-            }
-
-            //boss spans across all 5 lanes
-            if (enemy instanceof BossEnemy) {
-                const bounds = enemy.getBounds();
-
-                return (
-                    this.y >= bounds.top &&
-                    this.y <= bounds.bottom
-                );
-            }
-
-            //normal enemies
-            return Math.abs(enemy.y - this.y) < 20;
-        });
-    }
 
     private shoot() {
         if (!this.active) return;

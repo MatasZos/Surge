@@ -3,7 +3,7 @@ import { Defender } from "./Defender.ts";
 import { Enemy } from "../enemies/Enemy.ts";
 import { CryoProjectile } from "../objects/CryoProjectile.ts";
 import { SETTINGS } from "../config/settings.ts";
-import { BossEnemy } from "../enemies/BossEnemy.ts";
+
 
 export class CryoGunner extends Defender {
     private shootTimer: Phaser.Time.TimerEvent;
@@ -23,33 +23,11 @@ export class CryoGunner extends Defender {
         this.shootTimer = scene.time.addEvent({
             delay: SETTINGS.defenders.cryogunner.fireIntervalMs,
             callback: () => {
-                if (this.active && this.hasEnemyInRow()) {
+                if (this.active && this.hasEnemyInRow(this.enemies)) {
                     this.shoot();
                 }
             },
             loop: true
-        });
-    }
-
-    private hasEnemyInRow(): boolean {
-        return this.enemies.some(enemy => {
-
-            if (!enemy.active || enemy.x <= this.x) {
-                return false;
-            }
-
-            //boss spans across all 5 lanes
-            if (enemy instanceof BossEnemy) {
-                const bounds = enemy.getBounds();
-
-                return (
-                    this.y >= bounds.top &&
-                    this.y <= bounds.bottom
-                );
-            }
-
-            //normal enemies
-            return Math.abs(enemy.y - this.y) < 20;
         });
     }
 

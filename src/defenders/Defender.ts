@@ -1,5 +1,7 @@
 
 import Phaser from "phaser";
+import type { Enemy } from "../enemies/Enemy.ts";
+import { BossEnemy } from "../enemies/BossEnemy.ts";
 
 export class Defender extends Phaser.GameObjects.Sprite {
 
@@ -74,6 +76,26 @@ export class Defender extends Phaser.GameObjects.Sprite {
         );
     }
 
+
+    protected hasEnemyInRow(enemies: Enemy[]): boolean {
+        return enemies.some(enemy => {
+            if (!enemy.active || enemy.x <= this.x) {
+                return false;
+            }
+
+            // Boss spans across all five lanes
+            if (enemy instanceof BossEnemy) {
+                const bounds = enemy.getBounds();
+
+                return (
+                    this.y >= bounds.top &&
+                    this.y <= bounds.bottom
+                );
+            }
+            //normal enemies stay in their own lane
+            return Math.abs(enemy.y - this.y) < 20;
+        });
+    }
     takeDamage(amount: number) {
 
         if (!this.active) return;
