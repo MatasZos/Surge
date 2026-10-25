@@ -9,6 +9,8 @@ The Player must defend their stronghold from waves of machines by placing differ
 
 Players must manage energy, position defenders effectively, and prevent enemies from reaching and destroying their Stronghold.
 
+The game now includes multiple levels, a full wave progression system and different enemy types including a final Boss Enemy. Players must defeat all the required waves to complete each level and progress through the game.
+
 ### 1.2 Genre
 
 2D Tower Defence/Strategy
@@ -21,13 +23,23 @@ SURGE is inspired by tower-defence games such as Plants vs. Zombies, in particul
 
 The player can:
 - Select defenders from a vertical toolbar
-- Places defenders on available battlefield grid cells
+- Place defenders on available battlefield grid cells
 - Spend energy to place defenders
 - Use Shooters and Dual Barrel defenders to attack enemies automatically
 - Use Generators to produce additional energy
 - Use Barricades to block approaching machines
 - Collect energy pickups produced by Generators or dropped by defeated enemies
 - Aim is to protect the Stronghold from enemy attacks
+- Drag and drop defenders onto available battlefield cells
+- Preview defender placement before placing them
+- Use Cryo Gunners, Landmines and Scrappers as additional defensive units
+- Receive passive energy regeneration over time
+- Remove placed defenders using the recall button
+- Defend against increasingly difficult enemy waves
+- View the current wave number and receive wave notifications
+- Prepare for the next wave during intermissions
+- Complete levels by defeating the required enemies
+- Fight the Overlord Boss Enemy in the final level
 
 ## 2 Game Design
 
@@ -53,6 +65,11 @@ The toolbar includes:
 - A dedicated sidebar seperated from the battlefield
 - A display showing the players current spendable energy
 - Individual placement cooldown countdowns for each defender
+- Additional defender options including Cryo Gunner, Landmine and Scrapper
+- Drag and drop functionality for placing defenders onto the battlefield
+- A placement preview showing where defenders can be placed
+- Placement messages when a defender cannot be placed
+- A recall button for removing placed defenders and freeing up grid cells
 
 ### 2.3 Energy System / Generation
 
@@ -71,6 +88,8 @@ The system checks whether the player has enough energy before allowing a defende
 Each defender also has its own placement cooldown
 
 Starting energy, defender costs, and cooldown duration can be adjusted in the Excel gameplay configuration.
+
+Passive energy regeneration has also been implemented. The player now receives energy automatically over time, providing an additional way to gain energy alongside Generators and energy drops from defeated enemies.
 
 ### 2.4 Generator Defender
 The Generator produces collectible energy pickups.
@@ -106,6 +125,7 @@ The Dual Barrel:
 - Fires two projectiles per firing cycle
 - Fires its second projectile shortly after the first
 - Damages any unit hit by the projectile
+- The Dual Barrel now uses separate projectile statistics, allowing its projectile damage and speed to be configured independently.
   
 ### 2.8 Melee Enemy
 The Melee Enemy is the currently implemented machine enemy type
@@ -181,16 +201,15 @@ In the current state:
 - Uncollected pickups disappear after a period of time (similarly to how the energy pickup disappears on the Generator)
 
 ### 2.14 Enemy Spawning and WaveManager
-Enemy spawning is currently continuous rather than being divided into numbered waves
+Enemy spawning is controlled through a full wave progression system.
 
-The current probabilities are:
-Melee - 60% spawn probability
-Ranged - 35% spawn probability
-Crusher - 5% spawn probability
+Enemies spawn in numbered waves rather than continuously, with increasing enemy counts and difficulty.
 
-There is an initial spawn delay to allow the user to place down their units (current state)
+The current wave number is displayed during gameplay, and notifications inform the player when a new wave begins.
 
-A full wave progression system, including numbered waves and increasing difficulty, is planned for future development
+A short intermission takes place between waves, allowing the player to prepare for the next attack.
+
+The WaveManager manages enemy spawning and wave progression throughout the game.
 
 ### 2.15 Stronghold Destruction and Game Over
 When Stronghold health reaches zero, a destruction event is triggered.
@@ -216,7 +235,63 @@ These include:
 - Enemy hit sounds
 - Enemy destruction sounds
 
+### 2.18 Cryo Gunner Defender
 
+The Cryo Gunner is another attacking defender that can be placed on the battlefield grid.
+
+It gives the player another option for dealing with approaching machine enemies.
+
+### 2.19 Landmine Defender
+
+The Landmine is a defensive unit that can be placed on available grid cells.
+
+It helps the player deal with approaching enemies and provides another way to protect the Stronghold.
+
+### 2.20 Scrapper Defender
+
+The Scrapper is another defender type available to the player.
+
+It gives the player more options when placing defenders and planning their defence.
+
+### 2.21 Defender Recall System
+
+The recall system allows players to remove defenders and generators that have already been placed.
+
+- Players can use the recall button to remove a unit
+- The occupied grid cell becomes available again
+- Another defender can then be placed in that cell
+
+### 2.22 Defender Drag and Drop
+
+Players can drag defenders from the toolbar onto available battlefield cells.
+
+- Available cells are highlighted during placement
+- A placement preview shows where the defender can be placed
+- Messages appear when a defender cannot be placed
+
+### 2.23 Multiple Levels and Level Completion
+
+SURGE includes five levels with increasing difficulty.
+
+Each level contains enemy waves that the player must defeat while protecting the Stronghold.
+
+Once the required enemies have been defeated, the level completion condition is triggered.
+
+### 2.24 Overlord Boss Enemy
+
+The Overlord is a Boss Enemy that appears during the final wave of Level 5.
+
+It provides an additional challenge for the player, and defenders from all five lanes can attack it.
+
+### 2.25 Gameplay Improvements and Bug Fixes
+
+Several improvements have been made to the gameplay.
+
+- Improved enemy detection and collision handling
+- Fixed accidental defender placement when collecting energy
+- Fixed energy pickups remaining after a Generator was destroyed
+- Improved defender placement and cooldown messages
+- Refactored GameScene and collision code
 
 ## 3 Player Input/Controls
 
