@@ -5,6 +5,7 @@ export class Defender extends Phaser.GameObjects.Sprite {
 
     health: number;
     damage: number;
+    upgradeLevel: number = 1;
 
     private maxHealth: number;
     private healthBar: Phaser.GameObjects.Graphics;
@@ -34,6 +35,19 @@ export class Defender extends Phaser.GameObjects.Sprite {
         this.maxHealth = health;
 
         this.updateHealthBar();
+    }
+
+   upgrade(): boolean {
+        if (!this.canUpgrade()) {
+            return false;
+        }
+
+        this.upgradeLevel = 2;
+        return true;
+    }
+
+    canUpgrade(): boolean {
+        return this.active && this.upgradeLevel < 2;
     }
 
     private updateHealthBar() {
