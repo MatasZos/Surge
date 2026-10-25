@@ -441,5 +441,61 @@ Completed development work includes:
 - Refactored GameScene and collision code
 
 
+## 7 Game Screenshots
+
+The following screenshots show the current state of SURGE and some of the gameplay features that have been implemented.
+
+### 7.1 Main Menu
+
+*Screenshot of the SURGE main menu.*
+
+### 7.2 Gameplay
+
+*Screenshot showing defenders placed on the battlefield and enemies approaching the Stronghold.*
+
+### 7.3 Wave Progression
+
+*Screenshot showing the current wave number and enemy waves during gameplay.*
+
+### 7.4 Overlord Boss
+
+*Screenshot showing the Overlord Boss during the final level.*
+
+### 7.5 Level Completion
+
+*Screenshot showing the level completion screen after defeating the required enemies.*
+
+## 8 Gameplay Hints and Tips
+
+Here are some tips to help players defend their Stronghold:
+
+- Place Generators early to produce additional energy.
+- Use Shooters and Dual Barrels to attack approaching enemies.
+- Place Barricades in front of attacking defenders to protect them.
+- Collect energy pickups whenever they appear.
+- Keep an eye on defender placement cooldowns.
+- Use the recall button to remove defenders that are no longer needed.
+- Prepare your defence during the breaks between waves.
+- Try different defender combinations when dealing with stronger enemies.
+- Make sure all five lanes are defended when fighting the Overlord Boss.
+
+## 9 Development Team
+
+SURGE is being developed as part of our Game Development project.
+
+The team members are:
+
+- Vladyslav Brykaylo B00162071
+- Matas Zostautas B00163914
+- Mateusz Kietrys B00160065
 
 
+## 10 Resources and Credits
+
+This section contains the resources and references used during the development of SURGE.
+
+### 10.1 Code Related Resources
+
+This section includes any external code, tutorials, documentation or programming resources used.
+
+- Other code references or tutorials 
