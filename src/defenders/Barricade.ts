@@ -1,7 +1,7 @@
 
 import Phaser from "phaser";
-import { Defender } from "./Defender";
-import { SETTINGS } from "../config/settings";
+import { Defender } from "./Defender.ts";
+import { SETTINGS } from "../config/settings.ts";
 
 export class Barricade extends Defender {
 

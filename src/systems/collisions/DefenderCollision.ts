@@ -1,12 +1,12 @@
 import Phaser from "phaser";
-import { SETTINGS } from "../../config/settings";
-import { Grid } from "../../grid/Grid";
-import { Defender } from "../../defenders/Defender";
-import { Enemy } from "../../enemies/Enemy";
-import { RangedEnemy } from "../../enemies/RangedEnemy";
-import { CrusherEnemy } from "../../enemies/CrusherEnemy";
-import { Landmine } from "../../defenders/Landmine";
-import { Scrapper } from "../../defenders/Scrapper";
+import { SETTINGS } from "../../config/settings.ts";
+import { Grid } from "../../grid/Grid.ts";
+import { Defender } from "../../defenders/Defender.ts";
+import { Enemy } from "../../enemies/Enemy.ts";
+import { RangedEnemy } from "../../enemies/RangedEnemy.ts";
+import { CrusherEnemy } from "../../enemies/CrusherEnemy.ts";
+import { Landmine } from "../../defenders/Landmine.ts";
+import { Scrapper } from "../../defenders/Scrapper.ts";
 
 export class DefenderCollision {
     constructor(

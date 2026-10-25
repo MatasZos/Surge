@@ -1,7 +1,7 @@
 
 import Phaser from "phaser";
-import { Enemy } from "./Enemy";
-import { SETTINGS } from "../config/settings";
+import { Enemy } from "./Enemy.ts";
+import { SETTINGS } from "../config/settings.ts";
 
 export class MeleeEnemy extends Enemy {
 

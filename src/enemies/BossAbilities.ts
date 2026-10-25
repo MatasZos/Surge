@@ -1,4 +1,4 @@
-import { BossEnemy } from "./BossEnemy";
+import { BossEnemy } from "./BossEnemy.ts";
 
 /**
  * Overlord ability controller. Defining this class does NOT activate the boss.

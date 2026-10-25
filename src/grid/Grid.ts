@@ -1,4 +1,5 @@
-import { Cell } from "./Cell";
+import { Cell } from "./Cell.ts";
+import type { Defender } from "../defenders/Defender.ts";
 
 export class Grid {
     rows: number;
@@ -23,7 +24,7 @@ export class Grid {
         return this.cells[row][col];
     }
 
-    placeHuman(row: number, col: number, human: any): void {
+    placeHuman(row: number, col: number, human: Defender): void {
         const cell = this.getCell(row, col);
         if (cell.isEmpty()) {
             cell.setOccupant(human);

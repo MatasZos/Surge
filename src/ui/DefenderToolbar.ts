@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { SETTINGS } from "../config/settings";
+import { SETTINGS } from "../config/settings.ts";
 
 type DefenderType = "shooter" | "generator" | "barricade" | "dualbarrel" | "cryogunner" | "landmine" | "scrapper";
 
@@ -104,8 +104,7 @@ export class DefenderToolbar {
             this.onDragStart(type, pointer);
         });
 
-        const icon = this.scene.add.image(x, y - 21, type)
-            .setDisplaySize(43, 43).setDepth(12);
+        this.scene.add.image(x, y - 21, type).setDisplaySize(43, 43).setDepth(12);
         this.scene.add.text(x, y + 12, name, {
             fontSize: "12px", color: "#ffffff"
         }).setOrigin(0.5).setDepth(12);

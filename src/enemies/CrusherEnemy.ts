@@ -1,7 +1,7 @@
 
 import Phaser from "phaser";
-import { Enemy } from "./Enemy";
-import { SETTINGS } from "../config/settings";
+import { Enemy } from "./Enemy.ts";
+import { SETTINGS } from "../config/settings.ts";
 
 // Heavy, slow melee robot. CollisionSystem handles its mace attacks.
 export class CrusherEnemy extends Enemy {

@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import { Defender } from "./Defender";
-import { Enemy } from "../enemies/Enemy";
-import { SETTINGS } from "../config/settings";
+import { Defender } from "./Defender.ts";
+import { Enemy } from "../enemies/Enemy.ts";
+import { SETTINGS } from "../config/settings.ts";
 
 /** Potato Mine-inspired: arms after a delay and explodes on contact. */
 export class Landmine extends Defender {

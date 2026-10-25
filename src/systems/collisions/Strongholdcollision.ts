@@ -1,9 +1,9 @@
 import Phaser from "phaser";
-import { SETTINGS } from "../../config/settings";
-import { Enemy } from "../../enemies/Enemy";
-import { RangedEnemy } from "../../enemies/RangedEnemy";
-import { CrusherEnemy } from "../../enemies/CrusherEnemy";
-import { Stronghold } from "../../objects/Stronghold";
+import { SETTINGS } from "../../config/settings.ts";
+import { Enemy } from "../../enemies/Enemy.ts";
+import { RangedEnemy } from "../../enemies/RangedEnemy.ts";
+import { CrusherEnemy } from "../../enemies/CrusherEnemy.ts";
+import { Stronghold } from "../../objects/Stronghold.ts";
 
 export class StrongholdCollision {
     constructor(

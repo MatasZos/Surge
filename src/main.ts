@@ -1,14 +1,14 @@
 
 import Phaser from "phaser";
-import { GameScene } from "./scenes/GameScene";
-import { MainMenu } from "./scenes/MainMenu";
-import { GameOver } from "./scenes/GameOver";
-import { LevelComplete } from "./scenes/LevelComplete";
+import { GameScene } from "./scenes/GameScene.ts";
+import { MainMenu } from "./scenes/MainMenu.ts";
+import { GameOver } from "./scenes/GameOver.ts";
+import { LevelComplete } from "./scenes/LevelComplete.ts";
 
-import { loadConfig } from "./config/config";
-import { SETTINGS } from "./config/settings";
+import { loadConfig } from "./config/config.ts";
+import { SETTINGS } from "./config/settings.ts";
 
-import { GAME_WIDTH, GAME_HEIGHT } from "./constants";
+import { GAME_WIDTH, GAME_HEIGHT } from "./constants.ts";
 
 async function startGame(){
     await loadConfig();

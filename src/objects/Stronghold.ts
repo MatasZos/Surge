@@ -5,8 +5,8 @@ import {
     GRID_Y,
     GRID_ROWS,
     CELL_HEIGHT
-} from "../constants";
-import { SETTINGS } from "../config/settings";
+} from "../constants.ts";
+import { SETTINGS } from "../config/settings.ts";
 
 export class Stronghold extends Phaser.GameObjects.Sprite {
     health: number;

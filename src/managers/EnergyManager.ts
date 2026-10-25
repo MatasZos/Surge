@@ -1,4 +1,4 @@
-import { SETTINGS } from "../config/settings";
+import { SETTINGS } from "../config/settings.ts";
 export class EnergyManager {
 
     private energy: number;

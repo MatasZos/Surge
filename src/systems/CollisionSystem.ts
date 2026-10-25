@@ -1,16 +1,16 @@
 
 import Phaser from "phaser";
-import { Grid } from "../grid/Grid";
-import { Defender } from "../defenders/Defender";
-import { Enemy } from "../enemies/Enemy";
-import { Projectile } from "../objects/projectile";
-import { Stronghold } from "../objects/Stronghold";
-import { EnemyProjectile } from "../objects/EnemyProjectile";
+import { Grid } from "../grid/Grid.ts";
+import { Defender } from "../defenders/Defender.ts";
+import { Enemy } from "../enemies/Enemy.ts";
+import { Projectile } from "../objects/projectile.ts";
+import { Stronghold } from "../objects/Stronghold.ts";
+import { EnemyProjectile } from "../objects/EnemyProjectile.ts";
 
-import { ProjectileCollision } from "./collisions/ProjectileCollision";
-import { DefenderCollision } from "./collisions/DefenderCollision";
-import { StrongholdCollision } from "./collisions/Strongholdcollision";
-import { EnemyProjectileCollision } from "./collisions/EnemyProjectileCollision";
+import { ProjectileCollision } from "./collisions/ProjectileCollision.ts";
+import { DefenderCollision } from "./collisions/DefenderCollision.ts";
+import { StrongholdCollision } from "./collisions/Strongholdcollision.ts";
+import { EnemyProjectileCollision } from "./collisions/EnemyProjectileCollision.ts";
 
 export class CollisionSystem {
     private attackTimers = new Map<Enemy, Phaser.Time.TimerEvent>();

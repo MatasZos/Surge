@@ -1,9 +1,9 @@
 import Phaser from "phaser";
-import { Defender } from "./Defender";
-import { Enemy } from "../enemies/Enemy";
-import { CryoProjectile } from "../objects/CryoProjectile";
-import { SETTINGS } from "../config/settings";
-import { BossEnemy } from "../enemies/BossEnemy";
+import { Defender } from "./Defender.ts";
+import { Enemy } from "../enemies/Enemy.ts";
+import { CryoProjectile } from "../objects/CryoProjectile.ts";
+import { SETTINGS } from "../config/settings.ts";
+import { BossEnemy } from "../enemies/BossEnemy.ts";
 
 export class CryoGunner extends Defender {
     private shootTimer: Phaser.Time.TimerEvent;

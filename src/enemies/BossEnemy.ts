@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import { Enemy } from "./Enemy";
-import { GRID_Y, GRID_ROWS, CELL_HEIGHT } from "../constants";
+import { Enemy } from "./Enemy.ts";
+import { GRID_ROWS, CELL_HEIGHT } from "../constants.ts";
 
 
 export class BossEnemy extends Enemy {

@@ -1,17 +1,17 @@
 
 import Phaser from "phaser";
-import { SETTINGS } from "../config/settings";
-import { Grid } from "../grid/Grid";
-import { Defender } from "../defenders/Defender";
-import { Shooter } from "../defenders/Shooter";
-import { Generator } from "../defenders/Generator";
-import { Barricade } from "../defenders/Barricade";
-import { DualBarrel } from "../defenders/DualBarrel";
-import { CryoGunner } from "../defenders/CryoGunner";
-import { Landmine } from "../defenders/Landmine";
-import { Scrapper } from "../defenders/Scrapper";
-import { Enemy } from "../enemies/Enemy";
-import { EnergyManager } from "../managers/EnergyManager";
+import { SETTINGS } from "../config/settings.ts";
+import { Grid } from "../grid/Grid.ts";
+import { Defender } from "../defenders/Defender.ts";
+import { Shooter } from "../defenders/Shooter.ts";
+import { Generator } from "../defenders/Generator.ts";
+import { Barricade } from "../defenders/Barricade.ts";
+import { DualBarrel } from "../defenders/DualBarrel.ts";
+import { CryoGunner } from "../defenders/CryoGunner.ts";
+import { Landmine } from "../defenders/Landmine.ts";
+import { Scrapper } from "../defenders/Scrapper.ts";
+import { Enemy } from "../enemies/Enemy.ts";
+import { EnergyManager } from "../managers/EnergyManager.ts";
 
 import {
     GRID_ROWS,
@@ -20,7 +20,7 @@ import {
     GRID_Y,
     CELL_WIDTH,
     CELL_HEIGHT
-} from "../constants";
+} from "../constants.ts";
 
 type DefenderType = "shooter" | "generator" | "barricade" | "dualbarrel" | "cryogunner" | "landmine" | "scrapper";
 

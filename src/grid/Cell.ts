@@ -1,11 +1,12 @@
+import type { Defender } from "../defenders/Defender.ts";
 export class Cell {
-    occupant: any;
+    occupant: Defender | null;
 
     constructor() {
         this.occupant = null;
     }
 
-    setOccupant(o: any): void {
+    setOccupant(o: Defender | null): void {
         this.occupant = o;
     }
 

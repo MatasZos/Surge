@@ -1,7 +1,7 @@
 
 import Phaser from "phaser";
-import { Defender } from "./Defender";
-import { SETTINGS } from "../config/settings";
+import { Defender } from "./Defender.ts";
+import { SETTINGS } from "../config/settings.ts";
 
 export class Generator extends Defender {
   private energyTimer?: Phaser.Time.TimerEvent;

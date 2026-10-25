@@ -11,7 +11,7 @@ import {
     GRID_Y,
     CELL_WIDTH,
     CELL_HEIGHT
-} from "../constants";
+} from "../constants.ts";
 
 export class BattlefieldView {
     constructor(private scene: Phaser.Scene) {}

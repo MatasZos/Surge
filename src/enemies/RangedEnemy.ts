@@ -1,10 +1,10 @@
 
 import Phaser from "phaser";
-import { Enemy } from "./Enemy";
-import { Defender } from "../defenders/Defender";
-import { Stronghold } from "../objects/Stronghold";
-import { EnemyProjectile } from "../objects/EnemyProjectile";
-import { SETTINGS } from "../config/settings";
+import { Enemy } from "./Enemy.ts";
+import { Defender } from "../defenders/Defender.ts";
+import { Stronghold } from "../objects/Stronghold.ts";
+import { EnemyProjectile } from "../objects/EnemyProjectile.ts";
+import { SETTINGS } from "../config/settings.ts";
 
 export class RangedEnemy extends Enemy {
 

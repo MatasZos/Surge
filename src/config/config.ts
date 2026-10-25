@@ -1,5 +1,5 @@
 
-import { SETTINGS } from "./settings";
+import { SETTINGS } from "./settings.ts";
 
 const CONFIG_FILE = "config/gameplay.csv";
 

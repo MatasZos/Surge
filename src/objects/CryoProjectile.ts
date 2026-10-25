@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import { Projectile } from "./projectile";
-import { SETTINGS } from "../config/settings";
+import { Projectile } from "./projectile.ts";
+import { SETTINGS } from "../config/settings.ts";
 
 export class CryoProjectile extends Projectile {
     readonly slowMultiplier = SETTINGS.defenders.cryogunner.slowMultiplier;

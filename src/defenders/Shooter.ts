@@ -1,10 +1,10 @@
 
 import Phaser from "phaser";
-import { Defender } from "./Defender";
-import { Projectile } from "../objects/projectile";
-import { Enemy } from "../enemies/Enemy";
-import { SETTINGS } from "../config/settings";
-import { BossEnemy } from "../enemies/BossEnemy";
+import { Defender } from "./Defender.ts";
+import { Projectile } from "../objects/projectile.ts";
+import { Enemy } from "../enemies/Enemy.ts";
+import { SETTINGS } from "../config/settings.ts";
+import { BossEnemy } from "../enemies/BossEnemy.ts";
 
 export class Shooter extends Defender {
 

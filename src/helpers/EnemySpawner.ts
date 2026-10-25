@@ -1,14 +1,14 @@
 
 import Phaser from "phaser";
 
-import { Enemy } from "../enemies/Enemy";
-import { MeleeEnemy } from "../enemies/MeleeEnemy";
-import { RangedEnemy } from "../enemies/RangedEnemy";
-import { CrusherEnemy } from "../enemies/CrusherEnemy";
+import { Enemy } from "../enemies/Enemy.ts";
+import { MeleeEnemy } from "../enemies/MeleeEnemy.ts";
+import { RangedEnemy } from "../enemies/RangedEnemy.ts";
+import { CrusherEnemy } from "../enemies/CrusherEnemy.ts";
 
-import { Defender } from "../defenders/Defender";
-import { Stronghold } from "../objects/Stronghold";
-import { WaveManager } from "../managers/WaveManager";
+import { Defender } from "../defenders/Defender.ts";
+import { Stronghold } from "../objects/Stronghold.ts";
+import { WaveManager } from "../managers/WaveManager.ts";
 
 import {
     GRID_ROWS,
@@ -17,7 +17,7 @@ import {
     CELL_HEIGHT,
     GRID_X,
     GRID_Y
-} from "../constants";
+} from "../constants.ts";
 
 export class EnemySpawner {
 

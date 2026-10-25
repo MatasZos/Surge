@@ -1,6 +1,6 @@
 
 import Phaser from "phaser";
-import { SETTINGS } from "../config/settings";
+import { SETTINGS } from "../config/settings.ts";
 
 export class Projectile extends Phaser.GameObjects.Sprite {
 

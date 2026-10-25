@@ -1,6 +1,6 @@
 // Wave spawning and progressi
 
-import { SETTINGS } from "../config/settings";
+import { SETTINGS } from "../config/settings.ts";
 
 type EnemyType = "melee" | "ranged" | "crusher";
 

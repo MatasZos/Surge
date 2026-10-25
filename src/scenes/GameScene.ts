@@ -1,26 +1,26 @@
 import Phaser from "phaser";
-import { SETTINGS } from "../config/settings";
-import { GRID_ROWS, GRID_COLS, CELL_WIDTH, CELL_HEIGHT, GRID_X, GRID_Y } from "../constants";
+import { SETTINGS } from "../config/settings.ts";
+import { GRID_ROWS, GRID_COLS, CELL_WIDTH, CELL_HEIGHT, GRID_X, GRID_Y } from "../constants.ts";
 
-import { loadGameAssets } from "../helpers/GameAssets";
-import { BattlefieldView } from "../helpers/BattlefieldView";
-import { DefenderPlacement } from "../helpers/DefenderPlacement";
-import { EnemySpawner } from "../helpers/EnemySpawner";
+import { loadGameAssets } from "../helpers/GameAssets.ts";
+import { BattlefieldView } from "../helpers/BattlefieldView.ts";
+import { DefenderPlacement } from "../helpers/DefenderPlacement.ts";
+import { EnemySpawner } from "../helpers/EnemySpawner.ts";
 
-import { EnergyDrops } from "../helpers/EnergyDrops";
+import { EnergyDrops } from "../helpers/EnergyDrops.ts";
 
-import { Grid } from "../grid/Grid";
-import { Defender } from "../defenders/Defender";
-import { Enemy } from "../enemies/Enemy";
-import { BossEnemy } from "../enemies/BossEnemy";
+import { Grid } from "../grid/Grid.ts";
+import { Defender } from "../defenders/Defender.ts";
+import { Enemy } from "../enemies/Enemy.ts";
+import { BossEnemy } from "../enemies/BossEnemy.ts";
 
-import { EnemyProjectile } from "../objects/EnemyProjectile";
-import { Projectile } from "../objects/projectile";
-import { Stronghold } from "../objects/Stronghold";
-import { EnergyManager } from "../managers/EnergyManager";
-import { WaveManager } from "../managers/WaveManager";
-import { CollisionSystem } from "../systems/CollisionSystem";
-import { DefenderToolbar } from "../ui/DefenderToolbar";
+import { EnemyProjectile } from "../objects/EnemyProjectile.ts";
+import { Projectile } from "../objects/projectile.ts";
+import { Stronghold } from "../objects/Stronghold.ts";
+import { EnergyManager } from "../managers/EnergyManager.ts";
+import { WaveManager } from "../managers/WaveManager.ts";
+import { CollisionSystem } from "../systems/CollisionSystem.ts";
+import { DefenderToolbar } from "../ui/DefenderToolbar.ts";
 
 export class GameScene extends Phaser.Scene {
     private grid!: Grid;

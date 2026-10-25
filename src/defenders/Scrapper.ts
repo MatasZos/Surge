@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import { Defender } from "./Defender";
-import { Enemy } from "../enemies/Enemy";
-import { CrusherEnemy } from "../enemies/CrusherEnemy";
+import { Defender } from "./Defender.ts";
+import { Enemy } from "../enemies/Enemy.ts";
+import { CrusherEnemy } from "../enemies/CrusherEnemy.ts";
 
 /** Chomper-inspired close-range defender. */
 export class Scrapper extends Defender {

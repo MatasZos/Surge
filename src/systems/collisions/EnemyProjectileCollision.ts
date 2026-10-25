@@ -1,8 +1,8 @@
 import Phaser from "phaser";
-import { Grid } from "../../grid/Grid";
-import { Defender } from "../../defenders/Defender";
-import { EnemyProjectile } from "../../objects/EnemyProjectile";
-import { Stronghold } from "../../objects/Stronghold";
+import { Grid } from "../../grid/Grid.ts";
+import { Defender } from "../../defenders/Defender.ts";
+import { EnemyProjectile } from "../../objects/EnemyProjectile.ts";
+import { Stronghold } from "../../objects/Stronghold.ts";
 
 export class EnemyProjectileCollision {
     constructor(

@@ -1,8 +1,8 @@
 import Phaser from "phaser";
-import { Enemy } from "../../enemies/Enemy";
-import { Projectile } from "../../objects/projectile";
-import { BossEnemy } from "../../enemies/BossEnemy";
-import { CryoProjectile } from "../../objects/CryoProjectile";
+import { Enemy } from "../../enemies/Enemy.ts";
+import { Projectile } from "../../objects/projectile.ts";
+import { BossEnemy } from "../../enemies/BossEnemy.ts";
+import { CryoProjectile } from "../../objects/CryoProjectile.ts";
 
 export class ProjectileCollision {
 
