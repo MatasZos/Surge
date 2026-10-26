@@ -5,6 +5,7 @@ import { Defender } from "../../defenders/Defender.ts";
 import { Enemy } from "../../enemies/Enemy.ts";
 import { RangedEnemy } from "../../enemies/RangedEnemy.ts";
 import { CrusherEnemy } from "../../enemies/CrusherEnemy.ts";
+import { DroneEnemy } from "../../enemies/DroneEnemy.ts";
 import { Landmine } from "../../defenders/Landmine.ts";
 import { Scrapper } from "../../defenders/Scrapper.ts";
 
@@ -34,7 +35,12 @@ export class DefenderCollision {
             if (!(defender instanceof Landmine) || !defender.active) continue;
             const row = defender.getData("gridRow") as number;
             const col = defender.getData("gridCol") as number;
-            if (!defender.tryDetonate(this.enemies)) continue;
+
+            // Flying drones pass over mines and cannot trigger or be damaged by them.
+            if (!defender.tryDetonate(
+                 this.enemies.filter(enemy => !(enemy instanceof DroneEnemy))
+            )) continue;
+
             this.grid.removeOccupant(row, col);
             const index = this.defenders.indexOf(defender);
             if (index !== -1) this.defenders.splice(index, 1);
@@ -57,7 +63,9 @@ export class DefenderCollision {
 
         for (const enemy of this.enemies) {
             if (!enemy.active || enemy.isAttacking) continue;
-            if (enemy instanceof RangedEnemy) continue;
+            
+            // Drones fly past defenders instead of stopping to attack them.
+             if (enemy instanceof RangedEnemy || enemy instanceof DroneEnemy) continue;
 
             for (const defender of this.defenders) {
                 if (!defender.active || defender instanceof Landmine) continue;

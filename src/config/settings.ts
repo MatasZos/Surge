@@ -30,6 +30,16 @@ export const SETTINGS = {
             projectileSpeed: 0,
             projectileDamage: 0
         },
+
+        drone: {
+            health: 300,
+            speed: 18,
+            damage: 0,
+            attackIntervalMs: 0,
+            attackRange: 0,
+            projectileSpeed: 0,
+            projectileDamage: 0
+        },
     
 
      overlord: {
