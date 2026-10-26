@@ -1,4 +1,3 @@
-# SURGE
 
 ## 1. Game Overview
 
@@ -446,24 +445,23 @@ Completed development work includes:
 The following screenshots show the current state of SURGE and some of the gameplay features that have been implemented.
 
 ### 7.1 Main Menu
-
-*Screenshot of the SURGE main menu.*
+<img width="1825" height="1012" alt="image" src="https://github.com/user-attachments/assets/318b7ed1-abf8-48a4-9ac5-ba0db93dc6e5" />
 
 ### 7.2 Gameplay
-
-*Screenshot showing defenders placed on the battlefield and enemies approaching the Stronghold.*
+<img width="1706" height="965" alt="Gameplay" src="https://github.com/user-attachments/assets/45ecd918-7e59-4fb3-b7d3-7a9b0a937405" />
 
 ### 7.3 Wave Progression
-
-*Screenshot showing the current wave number and enemy waves during gameplay.*
+<img width="1701" height="962" alt="Wave" src="https://github.com/user-attachments/assets/2f71cefe-122c-493a-a2f5-232f11ed4d7c" />
 
 ### 7.4 Overlord Boss
-
-*Screenshot showing the Overlord Boss during the final level.*
+<img width="1702" height="956" alt="Boss" src="https://github.com/user-attachments/assets/5a0d5a76-b4df-43b9-9e55-c8f79a4ad6e9" />
 
 ### 7.5 Level Completion
+<img width="1565" height="882" alt="LevelComplete" src="https://github.com/user-attachments/assets/a4e8e867-fc7b-4039-b334-0c0cd75ff8e6" />
 
-*Screenshot showing the level completion screen after defeating the required enemies.*
+### 7.6 Victory Screen
+<img width="1427" height="842" alt="Victory" src="https://github.com/user-attachments/assets/a2e3dbcf-a62e-426c-b019-ce0c44c6e8c3" />
+
 
 ## 8 Gameplay Hints and Tips
 
@@ -492,10 +490,14 @@ The team members are:
 
 ## 10 Resources and Credits
 
-This section contains the resources and references used during the development of SURGE.
+This section contains the resources and references used.
 
 ### 10.1 Code Related Resources
 
 This section includes any external code, tutorials, documentation or programming resources used.
 
-- Other code references or tutorials 
+- No external code or resources used
+
+## 11 Licence
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
