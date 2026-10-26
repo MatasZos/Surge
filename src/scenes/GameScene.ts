@@ -22,23 +22,24 @@ import { EnergyManager } from "../managers/EnergyManager.ts";
 import { WaveManager } from "../managers/WaveManager.ts";
 import { CollisionSystem } from "../systems/CollisionSystem.ts";
 import { DefenderToolbar } from "../ui/DefenderToolbar.ts";
+import { PassiveEnergy } from "../helpers/PassiveEnergy";
+import { DefenderDrag } from "../helpers/DefenderDrag";
+import { EnergyHUD } from "../ui/EnergyHUD";
 
 export class GameScene extends Phaser.Scene {
     private grid!: Grid;
     private selectedDefender: string | null = null;
-    private draggedDefender: string | null = null;
-    private dragImage: Phaser.GameObjects.Image | null = null;
-    private dragHighlight: Phaser.GameObjects.Rectangle | null = null;
 
     private enemies: Enemy[] = [];
     private enemyProjectiles: EnemyProjectile[] = [];
     private projectiles: Projectile[] = [];
     private defenders: Defender[] = [];
+    private defenderDrag!: DefenderDrag;
 
     private stronghold!: Stronghold;
     private collisionSystem!: CollisionSystem;
     private energyManager!: EnergyManager;
-    private energyText!: Phaser.GameObjects.Text;
+    private energyHUD!: EnergyHUD;
     private waveText!: Phaser.GameObjects.Text;
     private defenderToolbar!: DefenderToolbar;
     private defenderPlacement!: DefenderPlacement;
@@ -124,35 +125,8 @@ export class GameScene extends Phaser.Scene {
         });
     }
 
-    private startPassiveEnergy(): void {
-        this.time.addEvent({
-            delay: SETTINGS.energy.passiveEnergyIntervalMs,
-            callback: () => {
-                const amount = SETTINGS.energy.passiveEnergyValue;
-
-                this.energyManager.addEnergy(amount);
-                this.updateEnergyText();
-
-                const bonus = this.add.text(
-                    179, 25,
-                    "+" + amount + " ⚡",
-                    {
-                        fontSize: "18px",
-                        color: "#00ff99",
-                        fontStyle: "bold"
-                    }
-                ).setOrigin(0.5).setDepth(30);
-
-                this.time.delayedCall(1200, () => {
-                    bonus.destroy();
-                });
-            },
-            loop: true
-        });
-    }
-
     private updateEnergyText(): void {
-        this.energyText.setText("Energy: " + this.energyManager.getEnergy());
+        this.energyHUD.update();
     }
 
     private showNotification(message: string): void{
@@ -215,23 +189,10 @@ export class GameScene extends Phaser.Scene {
     private createUI(): void {
         this.defenderToolbar = new DefenderToolbar(this,
             (defender: string) => {this.selectedDefender = defender;},
-            (type: string, pointer: Phaser.Input.Pointer) => {this.startDefenderDrag(type, pointer);}
+            (type: string, pointer: Phaser.Input.Pointer) => {this.defenderDrag.start(type, pointer);}
         );
 
-        // Compact HUD separate from the defender-card panel.
-        // Matching metallic energy HUD; kept separate from the defender toolbar.
-        this.add.rectangle(161, 61, 290, 75, 0x101b2a)
-            .setStrokeStyle(3, 0x647589).setDepth(10);
-        this.add.rectangle(161, 61, 280, 65, 0x243348)
-            .setStrokeStyle(1, 0x0c131e).setDepth(11);
-        this.add.text(41, 61, "⚡", { fontSize: "27px", color: "#38cfff" })
-            .setOrigin(0.5).setDepth(20);
-        this.energyText = this.add.text(
-            179, 61, "Energy: " + this.energyManager.getEnergy(),
-            { fontSize: "22px", color: "#00ccff" }
-        );
-        this.energyText.setOrigin(0.5);
-        this.energyText.setDepth(20);
+        this.energyHUD = new EnergyHUD(this, this.energyManager);
 
         this.waveText = this.add.text(
             this.scale.width - 25,
@@ -297,66 +258,9 @@ export class GameScene extends Phaser.Scene {
         new EnergyDrops(this).setup();
     }
 
-    
-    private startDefenderDrag(
-        type: string,
-        pointer: Phaser.Input.Pointer
-    ): void {
-        this.draggedDefender = type;
-
-        this.dragImage = this.add.image(pointer.x, pointer.y, type)
-            .setDisplaySize(65, 65)
-            .setDepth(100);
-
-        this.dragHighlight = this.add.rectangle(
-            0, 0, CELL_WIDTH, CELL_HEIGHT, 0x00ff99, 0.25
-        ).setDepth(3).setVisible(false);
-    }
-
-    private moveDefenderDrag(pointer: Phaser.Input.Pointer): void {
-        if (!this.dragImage || !this.dragHighlight) return;
-
-        this.dragImage.setPosition(pointer.x, pointer.y);
-
-        const col = Math.floor((pointer.x - GRID_X) / CELL_WIDTH);
-        const row = Math.floor((pointer.y - GRID_Y) / CELL_HEIGHT);
-
-        if (
-            row < 0 || row >= GRID_ROWS ||
-            col < 0 || col >= this.grid.cols ||
-            !this.grid.getCell(row, col).isEmpty()
-        ) {
-            this.dragHighlight.setVisible(false);
-            return;
-        }
-
-        this.dragHighlight.setPosition(
-            GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2,
-            GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2
-        );
-
-        this.dragHighlight.setVisible(true);
-    }
-
-    private finishDefenderDrag(pointer: Phaser.Input.Pointer): void {
-        if (!this.draggedDefender) return;
-
-        this.selectedDefender = null;
-
-        this.defenderPlacement.place(pointer, this.draggedDefender);
-
-        this.dragImage?.destroy();
-        this.dragHighlight?.destroy();
-
-        this.dragImage = null;
-        this.dragHighlight = null;
-        this.draggedDefender = null;
-    }
-
-
     private handleGridClick(pointer: Phaser.Input.Pointer): void {
 
-        if (this.draggedDefender) return;
+        if (this.defenderDrag.isDragging()) return;
 
         if (this.selectedDefender === "recall") {
             this.defenderPlacement.recall(pointer);
@@ -535,10 +439,22 @@ private startBossWave(): void {
             () => this.updateEnergyText()
         );
 
+        this.defenderDrag = new DefenderDrag(
+            this,
+            this.grid,
+            this.defenderPlacement,
+            () => { this.selectedDefender = null; }
+        );
+
         this.setupGameEvents();
         this.createUI();
         this.createStronghold();
-        this.startPassiveEnergy();
+
+        new PassiveEnergy(
+            this,
+            this.energyManager,
+            () => this.updateEnergyText()
+        ).start();
 
         this.enemySpawner = new EnemySpawner(
             this,
@@ -559,13 +475,13 @@ private startBossWave(): void {
         );
 
         this.input.on("pointerdown", this.handleGridClick, this);
-        this.input.on("pointermove", this.moveDefenderDrag, this);
-        this.input.on("pointerup", this.finishDefenderDrag, this);
+        this.input.on("pointermove", this.defenderDrag.move, this.defenderDrag);
+        this.input.on("pointerup", this.defenderDrag.finish, this.defenderDrag);
 
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             this.input.off("pointerdown", this.handleGridClick, this);
-            this.input.off("pointermove", this.moveDefenderDrag, this);
-            this.input.off("pointerup", this.finishDefenderDrag, this);
+            this.input.off("pointermove", this.defenderDrag.move, this.defenderDrag);
+            this.input.off("pointerup", this.defenderDrag.finish, this.defenderDrag);
         });
         this.startEnemySpawning();
         this.showNotification(`LEVEL ${this.currentLevel} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
