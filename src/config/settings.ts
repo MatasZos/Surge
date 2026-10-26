@@ -34,6 +34,16 @@ export const SETTINGS = {
         drone: {
             health: 300,
             speed: 18,
+            damage: 25,
+            attackIntervalMs: 0,
+            attackRange: 0,
+            projectileSpeed: 0,
+            projectileDamage: 0
+        },
+
+        hijacker: {
+            health: 450,
+            speed: 40,
             damage: 0,
             attackIntervalMs: 0,
             attackRange: 0,

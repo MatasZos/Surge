@@ -13,6 +13,7 @@ import { Grid } from "../grid/Grid.ts";
 import { Defender } from "../defenders/Defender.ts";
 import { Enemy } from "../enemies/Enemy.ts";
 import { BossEnemy } from "../enemies/BossEnemy.ts";
+import { HijackerEnemy } from "../enemies/HijackerEnemy.ts";
 
 import { EnemyProjectile } from "../objects/EnemyProjectile.ts";
 import { Projectile } from "../objects/projectile.ts";
@@ -360,6 +361,38 @@ export class GameScene extends Phaser.Scene {
         if (this.selectedDefender === "recall") {
             this.defenderPlacement.recall(pointer);
         }
+    }
+
+    /**
+     * Prepare a Hijacker to steal a specific defender.
+     * Not called by any existing wave or spawner: Hijackers remain inactive.
+     */
+    public prepareHijackerSteal(hijacker: HijackerEnemy, target: Defender): void {
+        if (!hijacker.active || !target.active || !this.defenders.includes(target)) return;
+
+        hijacker.onGrabReady = (attacker: HijackerEnemy) => {
+            // The defender might have been destroyed or recalled during descent.
+            if (!attacker.active || !target.active || !this.defenders.includes(target)) {
+                attacker.cancelGrab();
+                return;
+            }
+
+            const row = target.getData("gridRow") as number;
+            const col = target.getData("gridCol") as number;
+            if (!Number.isInteger(row) || !Number.isInteger(col) ||
+                row < 0 || row >= GRID_ROWS || col < 0 || col >= this.grid.cols) {
+                attacker.cancelGrab();
+                return;
+            }
+
+            const index = this.defenders.indexOf(target);
+            this.defenders.splice(index, 1);
+            this.grid.removeOccupant(row, col);
+            target.destroy();
+            attacker.beginEscape();
+        };
+
+        hijacker.startDescent(target.x, target.y);
     }
 
     private spawnEnemy(): void {
