@@ -2,6 +2,7 @@
 import Phaser from "phaser";
 import { Enemy } from "./Enemy.ts";
 import { Defender } from "../defenders/Defender.ts";
+import { Landmine } from "../defenders/Landmine.ts";
 import { Stronghold } from "../objects/Stronghold.ts";
 import { EnemyProjectile } from "../objects/EnemyProjectile.ts";
 import { SETTINGS } from "../config/settings.ts";
@@ -37,6 +38,7 @@ export class RangedEnemy extends Enemy {
         // Check for defenders in shooting range
         const defenderInRange = this.defenders.some(defender =>
             defender.active &&
+            !(defender instanceof Landmine) &&
             defender.x < this.x &&
             Math.abs(defender.y - this.y) < 30 &&
             this.x - defender.x <= SETTINGS.enemies.ranged.attackRange

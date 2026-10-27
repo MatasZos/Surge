@@ -1,6 +1,8 @@
+
 import Phaser from "phaser";
 import { Grid } from "../../grid/Grid.ts";
 import { Defender } from "../../defenders/Defender.ts";
+import { Landmine } from "../../defenders/Landmine.ts";
 import { EnemyProjectile } from "../../objects/EnemyProjectile.ts";
 import { Stronghold } from "../../objects/Stronghold.ts";
 
@@ -18,7 +20,7 @@ export class EnemyProjectileCollision {
             if (!projectile.active) continue;
 
             for (const defender of this.defenders) {
-                if (!defender.active) continue;
+                if (!defender.active || defender instanceof Landmine) continue;
 
                 const hit = Phaser.Geom.Intersects.RectangleToRectangle(
                     projectile.getBounds(),
