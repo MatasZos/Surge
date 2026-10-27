@@ -1,4 +1,3 @@
-
 import Phaser from "phaser";
 import { SETTINGS } from "../config/settings.ts";
 import { Grid } from "../grid/Grid.ts";
@@ -35,18 +34,37 @@ export class DefenderPlacement {
         private updateEnergyText: () => void
     ) {}
 
-    private showWarning(message: string): void {
+        private getGridPosition(pointer: Phaser.Input.Pointer) {
+        return {
+            col: Math.floor((pointer.x - GRID_X) / CELL_WIDTH),
+            row: Math.floor((pointer.y - GRID_Y) / CELL_HEIGHT)
+        };
+    }
+
+private createDefender(type: DefenderType, x: number, y: number): Defender {
+    switch (type) {
+        case "scrapper":
+            return new Scrapper(this.scene, x, y);
+        case "landmine":
+            return new Landmine(this.scene, x, y);
+        case "generator":
+            return new Generator(this.scene, x, y);
+        case "barricade":
+            return new Barricade(this.scene, x, y);
+        case "dualbarrel":
+            return new DualBarrel(this.scene, x, y, this.enemies);
+        case "cryogunner":
+            return new CryoGunner(this.scene, x, y, this.enemies);
+        case "shooter":
+            return new Shooter(this.scene, x, y, this.enemies);
+    }
+}
+
+        private showWarning(message: string): void {
         const warning = this.scene.add.text(
             this.scene.scale.width / 2,
             this.scene.scale.height / 2,
-            message,
-            {
-                fontSize: "30px",
-                color: "#ff4444",
-                fontStyle: "bold",
-                stroke: "#000000",
-                strokeThickness: 4
-            }
+            message
         ).setOrigin(0.5).setDepth(200);
 
         this.scene.time.delayedCall(1200, () => {
@@ -55,23 +73,17 @@ export class DefenderPlacement {
     }
 
     place(pointer: Phaser.Input.Pointer, selectedDefender: string | null): void {
-        const col = Math.floor((pointer.x - GRID_X) / CELL_WIDTH);
-        const row = Math.floor((pointer.y - GRID_Y) / CELL_HEIGHT);
+         const { row, col } = this.getGridPosition(pointer);
 
         if (row < 0 || row >= GRID_ROWS || col < 0 || col >= GRID_COLS) return;
         if (!this.grid.getCell(row, col).isEmpty()) return;
         if (!selectedDefender) return;
 
-        if (
-            selectedDefender !== "shooter" &&
-            selectedDefender !== "generator" &&
-            selectedDefender !== "barricade" &&
-            selectedDefender !== "dualbarrel" &&
-            selectedDefender !== "cryogunner" &&
-            selectedDefender !== "landmine" &&
-            selectedDefender !== "scrapper"
 
-        ) return;
+        const validTypes = ["shooter", "generator", "barricade",
+        "dualbarrel", "cryogunner", "landmine", "scrapper"];
+
+        if (!validTypes.includes(selectedDefender)) return;
 
         const type = selectedDefender as DefenderType;
         const cost = SETTINGS.defenders[type].cost;
@@ -93,23 +105,7 @@ export class DefenderPlacement {
         const x = GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2;
         const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
 
-        let defender: Defender;
-
-        if (type === "scrapper") {
-            defender = new Scrapper(this.scene, x, y);
-        } else if (type === "landmine") {
-            defender = new Landmine(this.scene, x, y);
-        } else if (type === "generator") {
-            defender = new Generator(this.scene, x, y);
-        } else if (type === "barricade") {
-            defender = new Barricade(this.scene, x, y);
-        } else if (type === "dualbarrel") {
-            defender = new DualBarrel(this.scene, x, y, this.enemies);
-        } else if (type === "cryogunner") {
-            defender = new CryoGunner(this.scene, x, y, this.enemies);
-        } else {
-            defender = new Shooter(this.scene, x, y, this.enemies);
-        }
+       const defender = this.createDefender(type, x, y);
 
         this.grid.placeHuman(row, col, defender);
 
@@ -125,8 +121,7 @@ export class DefenderPlacement {
     }
 
     recall(pointer: Phaser.Input.Pointer): void {
-        const col = Math.floor((pointer.x - GRID_X) / CELL_WIDTH);
-        const row = Math.floor((pointer.y - GRID_Y) / CELL_HEIGHT);
+        const { row, col } = this.getGridPosition(pointer);
 
         if (row < 0 || row >= GRID_ROWS || col < 0 || col >= GRID_COLS) return;
 
