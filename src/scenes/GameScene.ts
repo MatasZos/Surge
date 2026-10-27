@@ -104,7 +104,7 @@ export class GameScene extends Phaser.Scene {
         if (!this.cache.audio.exists("backgroundMusic")) return;
 
         const music = this.sound.add("backgroundMusic", {
-            volume: 0.04,
+            volume: 0.1,
             loop: true
         });
 
