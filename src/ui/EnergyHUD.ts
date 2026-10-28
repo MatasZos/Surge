@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { EnergyManager } from "../managers/EnergyManager";
+import { EnergyManager } from "../managers/EnergyManager.ts";
 
 export class EnergyHUD {
 

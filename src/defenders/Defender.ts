@@ -2,6 +2,7 @@
 import Phaser from "phaser";
 import type { Enemy } from "../enemies/Enemy.ts";
 import { BossEnemy } from "../enemies/BossEnemy.ts";
+import { DefenderUpgradeIndicator } from "../ui/DefenderUpgradeIndicator.ts";
 
 export class Defender extends Phaser.GameObjects.Sprite {
 
@@ -11,6 +12,7 @@ export class Defender extends Phaser.GameObjects.Sprite {
 
     private maxHealth: number;
     private healthBar: Phaser.GameObjects.Graphics;
+    private upgradeIndicator: DefenderUpgradeIndicator;
 
     constructor(
         scene: Phaser.Scene,
@@ -30,6 +32,7 @@ export class Defender extends Phaser.GameObjects.Sprite {
         this.healthBar.setDepth(10);
 
         this.updateHealthBar();
+        this.upgradeIndicator = new DefenderUpgradeIndicator(scene, this);
     }
 
     protected setDefenderHealth(health: number) {
@@ -45,6 +48,7 @@ export class Defender extends Phaser.GameObjects.Sprite {
         }
 
         this.upgradeLevel = 2;
+        this.upgradeIndicator.show();
         return true;
     }
 

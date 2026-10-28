@@ -1,6 +1,6 @@
 
 import Phaser from "phaser";
-import { Defender } from "../defenders/Defender";
+import { Defender } from "../defenders/Defender.ts";
 
 export class DefenderUpgradeMenu {
     private menu: Phaser.GameObjects.Container | null = null;
