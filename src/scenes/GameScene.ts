@@ -432,7 +432,11 @@ private startBossWave(): void {
         battlefieldView.drawGrid();
 
         this.grid = new Grid(GRID_ROWS, GRID_COLS);
-        this.upgradeMenu = new DefenderUpgradeMenu(this);
+        this.upgradeMenu = new DefenderUpgradeMenu(
+            this,
+            this.energyManager,
+            () => this.updateEnergyText()
+        );
         this.defenderPlacement = new DefenderPlacement(
             this,
             this.grid,

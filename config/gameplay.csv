@@ -27,6 +27,20 @@ enemies.boss.attack_interval_ms,2000
 enemies.boss.attack_range,0
 enemies.boss.projectile_speed,0
 enemies.boss.projectile_damage,0
+enemies.drone.health,300
+enemies.drone.speed,18
+enemies.drone.damage,0
+enemies.drone.attack_interval_ms,0
+enemies.drone.attack_range,0
+enemies.drone.projectile_speed,0
+enemies.drone.projectile_damage,0
+enemies.hijacker.health,450
+enemies.hijacker.speed,40
+enemies.hijacker.damage,0
+enemies.hijacker.attack_interval_ms,0
+enemies.hijacker.attack_range,0
+enemies.hijacker.projectile_speed,0
+enemies.hijacker.projectile_damage,0
 defenders.shooter.health,300
 defenders.shooter.damage,0
 defenders.shooter.cost,100
@@ -38,6 +52,7 @@ defenders.shooter.slow_multiplier,0
 defenders.shooter.slow_duration_ms,0
 defenders.shooter.arming_ms,0
 defenders.shooter.blast_radius,0
+defenders.shooter.upgrade_cost,100
 defenders.generator.health,300
 defenders.generator.damage,0
 defenders.generator.cost,50
@@ -49,6 +64,7 @@ defenders.generator.slow_multiplier,0
 defenders.generator.slow_duration_ms,0
 defenders.generator.arming_ms,0
 defenders.generator.blast_radius,0
+defenders.generator.upgrade_cost,75
 defenders.barricade.health,2750
 defenders.barricade.damage,0
 defenders.barricade.cost,125
@@ -60,6 +76,7 @@ defenders.barricade.slow_multiplier,0
 defenders.barricade.slow_duration_ms,0
 defenders.barricade.arming_ms,0
 defenders.barricade.blast_radius,0
+defenders.barricade.upgrade_cost,75
 defenders.dualbarrel.health,300
 defenders.dualbarrel.damage,0
 defenders.dualbarrel.cost,200
@@ -71,6 +88,7 @@ defenders.dualbarrel.slow_multiplier,0
 defenders.dualbarrel.slow_duration_ms,0
 defenders.dualbarrel.arming_ms,0
 defenders.dualbarrel.blast_radius,0
+defenders.dualbarrel.upgrade_cost,150
 defenders.cryogunner.health,300
 defenders.cryogunner.damage,20
 defenders.cryogunner.cost,175
@@ -82,6 +100,7 @@ defenders.cryogunner.slow_multiplier,0.5
 defenders.cryogunner.slow_duration_ms,1500
 defenders.cryogunner.arming_ms,0
 defenders.cryogunner.blast_radius,0
+defenders.cryogunner.upgrade_cost,120
 defenders.landmine.health,300
 defenders.landmine.damage,1800
 defenders.landmine.cost,25
@@ -93,6 +112,7 @@ defenders.landmine.slow_multiplier,0
 defenders.landmine.slow_duration_ms,0
 defenders.landmine.arming_ms,15000
 defenders.landmine.blast_radius,90
+defenders.landmine.upgrade_cost,50
 energy.starting_energy,2000
 energy.generator_pickup_value,25
 energy.generator_first_production_ms,7000

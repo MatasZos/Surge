@@ -1,16 +1,27 @@
 
 import Phaser from "phaser";
 import { Defender } from "../defenders/Defender.ts";
+import { EnergyManager } from "../managers/EnergyManager.ts";
+import { SETTINGS } from "../config/settings.ts";
 
 export class DefenderUpgradeMenu {
     private menu: Phaser.GameObjects.Container | null = null;
 
-    constructor(private scene: Phaser.Scene) {}
+    constructor(
+        private scene: Phaser.Scene,
+        private energyManager: EnergyManager,
+        private updateEnergyText: () => void
+    ) {}
 
     show(defender: Defender): void {
         this.close();
 
         if (!defender.active) return;
+
+        // Get the defender's upgrade cost from the spreadsheet settings
+        const type = defender.getData("defenderType") as keyof typeof SETTINGS.defenders;
+
+        const cost = SETTINGS.defenders[type]?.upgradeCost;
 
         const x = defender.x;
         const y = defender.y - 105;
@@ -31,7 +42,7 @@ export class DefenderUpgradeMenu {
 
         const upgradeButton = this.scene.add.text(
             0, 25,
-            defender.canUpgrade() ? "UPGRADE" : "MAX LEVEL",
+            defender.canUpgrade() ? "UPGRADE - " + cost + " Energy" : "MAX LEVEL",
             {
                 fontSize: "16px",
                 color: "#ffffff",
@@ -44,7 +55,29 @@ export class DefenderUpgradeMenu {
             upgradeButton.setInteractive({ useHandCursor: true });
 
             upgradeButton.on("pointerdown", () => {
+
+            // Check the defender is still alive
+                if (!defender.active) {
+                    this.close();
+                    return;
+                }
+
+                // Check the spreadsheet cost is valid
+                if (cost === undefined || !Number.isFinite(cost) || cost <= 0) {
+                    console.warn("Invalid upgrade cost for:", type);
+                    return;
+                }
+
+                // Check if player has enough energy
+                if (!this.energyManager.canAfford(cost)) {
+                    upgradeButton.setText("NOT ENOUGH ENERGY");
+                    return;
+                }
+
+                // Upgrade the defender and deduct energy
                 if (defender.upgrade()) {
+                    this.energyManager.spendEnergy(cost);
+                    this.updateEnergyText();
                     this.show(defender);
                 }
             });

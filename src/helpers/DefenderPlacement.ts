@@ -112,6 +112,7 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
 
         defender.setData("gridRow", row);
         defender.setData("gridCol", col);
+        defender.setData("defenderType", type);
 
         this.defenders.push(defender);
 
