@@ -22,9 +22,10 @@ import { EnergyManager } from "../managers/EnergyManager.ts";
 import { WaveManager } from "../managers/WaveManager.ts";
 import { CollisionSystem } from "../systems/CollisionSystem.ts";
 import { DefenderToolbar } from "../ui/DefenderToolbar.ts";
-import { PassiveEnergy } from "../helpers/PassiveEnergy";
-import { DefenderDrag } from "../helpers/DefenderDrag";
-import { EnergyHUD } from "../ui/EnergyHUD";
+import { PassiveEnergy } from "../helpers/PassiveEnergy.ts";
+import { DefenderDrag } from "../helpers/DefenderDrag.ts";
+import { EnergyHUD } from "../ui/EnergyHUD.ts";
+import { DefenderUpgradeMenu } from "../ui/DefenderUpgradeMenu.ts";
 
 export class GameScene extends Phaser.Scene {
     private grid!: Grid;
@@ -35,6 +36,7 @@ export class GameScene extends Phaser.Scene {
     private projectiles: Projectile[] = [];
     private defenders: Defender[] = [];
     private defenderDrag!: DefenderDrag;
+    private upgradeMenu!: DefenderUpgradeMenu;
 
     private stronghold!: Stronghold;
     private collisionSystem!: CollisionSystem;
@@ -263,6 +265,7 @@ export class GameScene extends Phaser.Scene {
         if (this.defenderDrag.isDragging()) return;
 
         if (this.selectedDefender === "recall") {
+            this.upgradeMenu.close();
             this.defenderPlacement.recall(pointer);
         }
     }
@@ -429,6 +432,7 @@ private startBossWave(): void {
         battlefieldView.drawGrid();
 
         this.grid = new Grid(GRID_ROWS, GRID_COLS);
+        this.upgradeMenu = new DefenderUpgradeMenu(this);
         this.defenderPlacement = new DefenderPlacement(
             this,
             this.grid,
@@ -436,7 +440,13 @@ private startBossWave(): void {
             this.enemies,
             this.energyManager,
             this.lastPlaced,
-            () => this.updateEnergyText()
+            () => this.updateEnergyText(),
+            (defender: Defender) => {
+                if (this.selectedDefender !== "recall" &&
+                    !this.defenderDrag?.isDragging()) {
+                    this.upgradeMenu.show(defender);
+                }
+            }
         );
 
         this.defenderDrag = new DefenderDrag(

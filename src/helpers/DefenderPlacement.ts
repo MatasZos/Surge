@@ -31,7 +31,8 @@ export class DefenderPlacement {
         private enemies: Enemy[],
         private energyManager: EnergyManager,
         private lastPlaced: Record<string, number>,
-        private updateEnergyText: () => void
+        private updateEnergyText: () => void,
+        private openUpgradeMenu: (defender: Defender) => void
     ) {}
 
         private getGridPosition(pointer: Phaser.Input.Pointer) {
@@ -113,6 +114,14 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
         defender.setData("gridCol", col);
 
         this.defenders.push(defender);
+
+        defender.setInteractive({ useHandCursor: true });
+
+        defender.on("pointerdown", () => {
+            if (defender.active) {
+                this.openUpgradeMenu(defender);
+            }
+        });
 
         this.energyManager.spendEnergy(cost);
         this.updateEnergyText();
