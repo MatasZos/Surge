@@ -1,10 +1,10 @@
 import Phaser from "phaser";
-import { Grid } from "../grid/Grid";
-import { DefenderPlacement } from "./DefenderPlacement";
+import { Grid } from "../grid/Grid.ts";
+import { DefenderPlacement } from "./DefenderPlacement.ts";
 import {
     GRID_ROWS, GRID_X, GRID_Y,
     CELL_WIDTH, CELL_HEIGHT
-} from "../constants";
+} from "../constants.ts";
 
 export class DefenderDrag {
 

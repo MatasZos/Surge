@@ -15,12 +15,19 @@ export class DefenderToolbar {
     private readonly normalColor = 0x34465c;
     private readonly selectedColor = 0x205d60;
 
+    private currentLevel = 1;
+    private defenderIcons: Partial<Record<DefenderType,Phaser.GameObjects.Image>> = {};
+    private costTexts: Partial<Record<DefenderType, Phaser.GameObjects.Text>> = {};
+    private lockedTexts: Partial<Record<DefenderType, Phaser.GameObjects.Text>> = {};
+
     constructor(
         private scene: Phaser.Scene,
         private onSelect: (defender: string) => void,
-        private onDragStart: (type: string, pointer: Phaser.Input.Pointer) => void
+        private onDragStart: (type: string, pointer: Phaser.Input.Pointer) => void,
+        private getUnlockLevel: (type: string) => number
     ) {
         this.drawToolbar();
+        this.updateUnlocks(1);
     }
 
     private resetButtons(): void {
@@ -28,6 +35,8 @@ export class DefenderToolbar {
             button.setFillStyle(this.normalColor);
             button.setStrokeStyle();
         }
+
+        this.updateUnlocks(this.currentLevel);
     }
 
     private drawToolbar(): void {
@@ -101,16 +110,24 @@ export class DefenderToolbar {
         this.scene.input.setDraggable(button);
 
         button.on("dragstart", (pointer: Phaser.Input.Pointer) => {
+
+            if(this.currentLevel < this.getUnlockLevel(type)){
+                return;
+            }
             this.onDragStart(type, pointer);
         });
 
-        this.scene.add.image(x, y - 21, type).setDisplaySize(43, 43).setDepth(12);
-        this.scene.add.text(x, y + 12, name, {
-            fontSize: "12px", color: "#ffffff"
-        }).setOrigin(0.5).setDepth(12);
-        this.scene.add.text(x, y + 31, SETTINGS.defenders[type].cost + " Energy", {
-            fontSize: "11px", color: "#00ccff"
-        }).setOrigin(0.5).setDepth(12);
+        const icon = this.scene.add.image(x, y - 21, type).setDisplaySize(43, 43).setDepth(12);
+        this.defenderIcons[type] = icon;
+        this.scene.add.text(x, y + 12, name, { fontSize: "12px", color: "#ffffff"}).setOrigin(0.5).setDepth(12);
+
+        const costText = this.scene.add.text(x, y + 31, SETTINGS.defenders[type].cost + " Energy", {fontSize: "11px", color: "#00ccff"}).setOrigin(0.5).setDepth(12);
+
+        this.costTexts[type] = costText;
+
+        const lockedText = this.scene.add.text(x,y-21,"LOCKED",{fontSize:"11px", color:"#ffcc66", fontStyle:"bold", backgroundColor:"#182231", padding:{x:4,y:3}}).setOrigin(0.5).setDepth(13).setVisible(false);
+
+        this.lockedTexts[type] = lockedText;
 
         const cooldownText = this.scene.add.text(x, y - 21, "", {
             fontSize: "22px", color: "#ffffff", fontStyle: "bold",
@@ -119,12 +136,52 @@ export class DefenderToolbar {
         this.cooldownTexts[type] = cooldownText;
 
         button.on("pointerdown", () => {
+
+            if(this.currentLevel < this.getUnlockLevel(type)){
+                this.onSelect(type);
+                return;
+            }
             this.selectedType = type;
             this.onSelect(type);
             this.resetButtons();
             button.setFillStyle(this.selectedColor);
             button.setStrokeStyle(2, 0x00ff99);
         });
+    }
+
+
+    updateUnlocks(level:number): void{
+        this.currentLevel = level;
+
+        for(const type of TYPES){
+            const requiredLevel = this.getUnlockLevel(type);
+            const unlocked = level >= requiredLevel;
+
+            const button = this.defenderButtons[type]!;
+            const icon = this.defenderIcons[type]!;
+            const costText = this.costTexts[type]!;
+            const lockedText = this.lockedTexts[type]!;
+            const cooldownText = this.cooldownTexts[type];
+            
+            lockedText.setVisible(!unlocked);
+
+            if (unlocked){
+                icon.clearTint()
+
+                costText.setText(SETTINGS.defenders[type].cost + "Energy");
+                costText.setColor("#00ccff");
+
+                button.setFillStyle(this.normalColor);
+                button.setStrokeStyle();
+            } else{
+                icon.setTint(0x555555);
+                costText.setText(`Unlocks at\nLevel ${requiredLevel}`);
+                costText.setColor("#ffcc66");
+                button.setFillStyle(0x1b2533);
+                button.setStrokeStyle();
+                cooldownText?.setVisible(false);
+            }
+        }
     }
 
     updateCooldowns(now: number, lastPlaced: Record<string, number>): void {
@@ -134,6 +191,13 @@ export class DefenderToolbar {
             const remaining = last === undefined ? 0 : Math.max(0, cooldown - (now - last));
             const button = this.defenderButtons[type]!;
             const text = this.cooldownTexts[type]!;
+
+            if(this.currentLevel < this.getUnlockLevel(type)){
+                button.setFillStyle(0x1b2533);
+                button.setStrokeStyle();
+                text.setVisible(false);
+                continue;
+            }
 
             if (remaining > 0) {
                 button.setFillStyle(0x27303d);

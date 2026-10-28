@@ -50,6 +50,26 @@ export class GameScene extends Phaser.Scene {
     private waveManager = new WaveManager();
     private currentLevel = 1;
 
+    private readonly defenderUnlockLevels: Record<string,number> = {
+        shooter:1,
+        generator: 1,
+        barricade: 1,
+        dualbarrel: 2,
+        cryogunner: 3,
+        landmine: 4,
+        scrapper:5
+    };
+
+    private isDefenderUnlocked(type: string): boolean{
+        if (type === "recall"){
+            return true;
+        }
+
+        const requiredLevel = this.defenderUnlockLevels[type];
+
+        return requiredLevel !== undefined && this.currentLevel >= requiredLevel;
+    }
+
     private intermissionActive = false;
     private intermissionCountdown?: Phaser.Time.TimerEvent;
     private intermissionEnd?: Phaser.Time.TimerEvent;
@@ -190,9 +210,25 @@ export class GameScene extends Phaser.Scene {
 
     private createUI(): void {
         this.defenderToolbar = new DefenderToolbar(this,
-            (defender: string) => {this.selectedDefender = defender;},
-            (type: string, pointer: Phaser.Input.Pointer) => {this.defenderDrag.start(type, pointer);}
+            (defender: string) => {
+                if (!this.isDefenderUnlocked(defender)){
+                    this.showNotification("DEFENDER LOCKED!");
+                    return;
+                }
+
+                this.selectedDefender = defender;
+            },
+            (type: string, pointer: Phaser.Input.Pointer) =>{
+                if (!this.isDefenderUnlocked(type)){
+                    this.showNotification("DEFENDER LOCKED!");
+                    return;
+                }
+
+                this.defenderDrag.start(type,pointer);
+            },
+            (type:string) => this.defenderUnlockLevels[type] ?? 99
         );
+        this.defenderToolbar.updateUnlocks(this.currentLevel)
 
         this.energyHUD = new EnergyHUD(this, this.energyManager);
 
@@ -228,6 +264,7 @@ export class GameScene extends Phaser.Scene {
         this.events.on("next-level", (level:number) =>{
             this.currentLevel = level;
             this.waveManager.startLevel(level)
+            this.defenderToolbar.updateUnlocks(level);
 
             this.waveText.setText("Wave " + this.waveManager.getWave() +"/" + this.waveManager.getMaxWaves());
 
@@ -450,7 +487,8 @@ private startBossWave(): void {
                     !this.defenderDrag?.isDragging()) {
                     this.upgradeMenu.show(defender);
                 }
-            }
+            },
+            (type:string) => this.isDefenderUnlocked(type)
         );
 
         this.defenderDrag = new DefenderDrag(
@@ -464,11 +502,7 @@ private startBossWave(): void {
         this.createUI();
         this.createStronghold();
 
-        new PassiveEnergy(
-            this,
-            this.energyManager,
-            () => this.updateEnergyText()
-        ).start();
+        new PassiveEnergy(this,this.energyManager,() => this.updateEnergyText()).start();
 
         this.enemySpawner = new EnemySpawner(
             this,

@@ -32,7 +32,8 @@ export class DefenderPlacement {
         private energyManager: EnergyManager,
         private lastPlaced: Record<string, number>,
         private updateEnergyText: () => void,
-        private openUpgradeMenu: (defender: Defender) => void
+        private openUpgradeMenu: (defender: Defender) => void,
+        private isUnlocked: (type:string) => boolean
     ) {}
 
         private getGridPosition(pointer: Phaser.Input.Pointer) {
@@ -87,6 +88,10 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
         if (!validTypes.includes(selectedDefender)) return;
 
         const type = selectedDefender as DefenderType;
+        if (!this.isUnlocked(type)){
+            this.showWarning("Defender Locked");
+            return;
+        }
         const cost = SETTINGS.defenders[type].cost;
         const cooldown = SETTINGS.defenders[type].cooldownMs;
 

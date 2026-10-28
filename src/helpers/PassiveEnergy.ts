@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import { SETTINGS } from "../config/settings";
-import { EnergyManager } from "../managers/EnergyManager";
+import { SETTINGS } from "../config/settings.ts";
+import { EnergyManager } from "../managers/EnergyManager.ts";
 
 export class PassiveEnergy {
 
