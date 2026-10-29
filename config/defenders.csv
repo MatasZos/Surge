@@ -1,7 +1,7 @@
-defender_id,health,damage,cost,cooldown_ms,fire_interval_ms,projectile_speed,projectile_damage,slow_multiplier,slow_duration_ms,arming_ms,blast_radius,upgrade_cost
-shooter,300,0,100,7500,100,300,20,0,0,0,0,100
-generator,300,0,50,7500,0,0,0,0,0,0,0,75
-barricade,2750,0,125,30000,0,0,0,0,0,0,0,75
-dualbarrel,300,0,200,12000,100,300,100,0,0,0,0,150
-cryogunner,300,20,175,10000,100,300,20,0.5,1500,0,0,120
-landmine,300,1800,25,30000,0,0,0,0,0,15000,90,50
+defender_id,health,damage,cost,cooldown_ms,fire_interval_ms,projectile_speed,projectile_damage,slow_multiplier,slow_duration_ms,arming_ms,blast_radius,upgrade_cost,upgrade_damage_multiplier
+shooter,300,0,100,7500,100,300,20,0,0,0,0,100,1.5
+generator,300,0,50,7500,0,0,0,0,0,0,0,75,1
+barricade,2750,0,125,30000,0,0,0,0,0,0,0,75,1
+dualbarrel,300,0,200,12000,100,300,100,0,0,0,0,150,1.5
+cryogunner,300,20,175,10000,100,300,20,0.5,1500,0,0,120,1.5
+landmine,300,1800,25,30000,0,0,0,0,0,15000,90,50,1.5

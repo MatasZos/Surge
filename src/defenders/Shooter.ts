@@ -43,7 +43,12 @@ export class Shooter extends Defender {
             this.scene.sound.play("laserSound", { volume: 0.3 });
         }
 
-        new Projectile(this.scene, this.x + 25, this.y - 2);
+        const projectile = new Projectile(this.scene, this.x + 25, this.y - 2);
+
+        if (this.upgradeLevel === 2) {
+            projectile.damage *= SETTINGS.defenders.shooter.upgradeDamageMultiplier;
+        }
+        console.log("Shooter Level:", this.upgradeLevel, "Damage:", projectile.damage);
     }
 
     destroy(fromScene?: boolean) {

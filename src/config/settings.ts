@@ -75,7 +75,8 @@ export const SETTINGS = {
             fireIntervalMs: 0,
             projectileSpeed: 0,
             projectileDamage: 0,
-            upgradeCost: 0
+            upgradeCost: 0,
+            upgradeDamageMultiplier: 0
         },
 
         generator: {
@@ -86,7 +87,8 @@ export const SETTINGS = {
             fireIntervalMs: 0,
             projectileSpeed: 0,
             projectileDamage: 0,
-            upgradeCost: 0
+            upgradeCost: 0,
+            upgradeDamageMultiplier: 0
         },
 
         barricade: {
@@ -97,7 +99,8 @@ export const SETTINGS = {
             fireIntervalMs: 0,
             projectileSpeed: 0,
             projectileDamage: 0,
-            upgradeCost: 0
+            upgradeCost: 0,
+            upgradeDamageMultiplier: 0
         },
 
         cryogunner: {
@@ -110,7 +113,8 @@ export const SETTINGS = {
             projectileDamage: 0,
             slowMultiplier: 0,
             slowDurationMs: 0,
-            upgradeCost: 0
+            upgradeCost: 0,
+            upgradeDamageMultiplier: 0
         },
 
         landmine: {
@@ -120,7 +124,8 @@ export const SETTINGS = {
             cooldownMs: 0,
             armingMs: 0,
             blastRadius: 0,
-            upgradeCost: 0
+            upgradeCost: 0,
+            upgradeDamageMultiplier: 0
         },
 
         scrapper: {
@@ -129,7 +134,8 @@ export const SETTINGS = {
             cost: 150,
             cooldownMs: 7500,
             recoveryMs: 42000,
-            upgradeCost: 0
+            upgradeCost: 0,
+            upgradeDamageMultiplier: 0
         },
 
         dualbarrel: {
@@ -140,7 +146,8 @@ export const SETTINGS = {
             fireIntervalMs: 0,
             projectileSpeed: 0,
             projectileDamage: 0,
-            upgradeCost: 0
+            upgradeCost: 0,
+            upgradeDamageMultiplier: 0
         }
 
     },
