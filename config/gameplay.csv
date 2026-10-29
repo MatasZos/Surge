@@ -140,6 +140,7 @@ energy.enemy_drop_chance,0.4
 energy.enemy_drop_value,20
 energy.passive_energy_value,25
 energy.passive_energy_interval_ms,15000
+energy.sell_refund_multiplier,0.5
 stronghold.starting_health,500
 stronghold.melee_attack_interval_ms,1000
 stronghold.retaliation_damage,50
@@ -174,3 +175,5 @@ waves.level_5_wave_1_budget,70
 waves.level_5_wave_2_budget,90
 waves.level_5_wave_3_budget,110
 waves.wave_intermission,10000
+waves.enemy_health_increase_per_level,0.1
+waves.enemy_damage_increase_per_level,0.05

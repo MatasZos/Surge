@@ -8,3 +8,4 @@ enemy_drop_chance,0.4
 enemy_drop_value,20
 passive_energy_value,25
 passive_energy_interval_ms,15000
+sell_refund_multiplier,0.5

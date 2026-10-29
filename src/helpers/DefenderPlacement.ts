@@ -136,6 +136,7 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
     }
 
     recall(pointer: Phaser.Input.Pointer): void {
+
         const { row, col } = this.getGridPosition(pointer);
 
         if (row < 0 || row >= GRID_ROWS || col < 0 || col >= GRID_COLS) return;
@@ -148,6 +149,16 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
 
         if (!defender) return;
 
+        // Calculate refund from original defender cost
+        const type = defender.getData("defenderType") as DefenderType;
+        const cost = SETTINGS.defenders[type].cost;
+        const refund = Math.floor(cost * SETTINGS.energy.sellRefundMultiplier);
+
+        // Return energy and update HUD
+        this.energyManager.addEnergy(refund);
+        this.updateEnergyText();
+
+        // Remove defender and free grid cell
         defender.destroy();
         this.grid.removeOccupant(row, col);
 
@@ -155,5 +166,7 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
         if (index !== -1) {
             this.defenders.splice(index, 1);
         }
+        
+        console.log("Sold:", type, "Energy refunded:", refund);
     }
 }

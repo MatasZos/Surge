@@ -163,7 +163,8 @@ export const SETTINGS = {
         enemyDropChance: 0,
         enemyDropValue: 0,
         passiveEnergyValue: 0,
-        passiveEnergyIntervalMs: 0
+        passiveEnergyIntervalMs: 0,
+        sellRefundMultiplier: 0
     },
 
     stronghold: {
