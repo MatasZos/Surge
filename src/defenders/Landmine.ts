@@ -31,7 +31,16 @@ export class Landmine extends Defender {
         const radius = SETTINGS.defenders.landmine.blastRadius;
         for (const enemy of enemies) {
             if (enemy.active && Phaser.Math.Distance.Between(this.x, this.y, enemy.x, enemy.y) <= radius) {
-                enemy.takeDamage(this.damage);
+                let damage = this.damage;
+
+                // Level 2 damage upgrade
+                if (this.upgradeLevel === 2) {
+                    damage *= SETTINGS.defenders.landmine.upgradeDamageMultiplier;
+                }
+                
+                console.log("Landmine Level:", this.upgradeLevel, "Damage:", damage);
+
+                enemy.takeDamage(damage);
             }
         }
         const blast = this.scene.add.circle(this.x, this.y, radius, 0xffa329, 0.45).setDepth(7);

@@ -68,6 +68,12 @@ export class DualBarrel extends Defender {
         //use dual barrel own projectile stats
         projectile.damage = SETTINGS.defenders.dualbarrel.projectileDamage;
         projectile.speed = SETTINGS.defenders.dualbarrel.projectileSpeed;
+        
+        // Level 2 damage upgrade
+        if (this.upgradeLevel === 2) {
+            projectile.damage *= SETTINGS.defenders.dualbarrel.upgradeDamageMultiplier;
+        }
+        console.log("Dual Barrel Level:", this.upgradeLevel, "Damage:", projectile.damage);
     }
 
     destroy(fromScene?: boolean) {

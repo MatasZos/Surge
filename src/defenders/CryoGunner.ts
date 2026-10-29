@@ -35,7 +35,13 @@ export class CryoGunner extends Defender {
         if (this.scene.cache.audio.exists("laserSound")) {
             this.scene.sound.play("laserSound", { volume: 0.3 });
         }
-        new CryoProjectile(this.scene, this.x + 25, this.y - 2);
+        const projectile = new CryoProjectile(this.scene, this.x + 25, this.y - 2);
+
+        // Level 2 damage upgrade
+        if (this.upgradeLevel === 2) {
+            projectile.damage *= SETTINGS.defenders.cryogunner.upgradeDamageMultiplier;
+        }
+        console.log("Cryo Gunner Level:", this.upgradeLevel, "Damage:", projectile.damage);
     }
 
     destroy(fromScene?: boolean): void {
