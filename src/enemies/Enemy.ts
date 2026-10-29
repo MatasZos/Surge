@@ -6,6 +6,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     health: number;
     speed: number;
     damage: number;
+    projectileDamageMultiplier = 1;
     isAttacking: boolean = false;
 
     private slowMultiplier = 1;
@@ -50,6 +51,14 @@ export class Enemy extends Phaser.GameObjects.Sprite {
         this.maxHealth = health;
         this.healthBar = scene.add.graphics();
         this.updateHealthBar();
+    }
+
+    applyLevelDifficulty(healthMultiplier: number, damageMultiplier: number): void {
+            this.maxHealth = Math.max(1, Math.round(this.maxHealth*healthMultiplier));
+            this.health = this.maxHealth;
+            this.damage = Math.round(this.damage * damageMultiplier);
+            this.projectileDamageMultiplier = damageMultiplier;
+            this.updateHealthBar;
     }
 
     private updateHealthBar() {

@@ -2,7 +2,7 @@
 
 import { SETTINGS } from "../config/settings.ts";
 
-type EnemyType = "melee" | "ranged" | "crusher";
+type EnemyType = "melee" | "ranged" | "crusher" |  "drone" | "hijacker";
 
 export class WaveManager{
 
@@ -23,6 +23,10 @@ export class WaveManager{
                 return SETTINGS.waves.rangedWaveCost;
             case "crusher":
                 return SETTINGS.waves.crusherWaveCost;
+            case "drone":
+                return SETTINGS.waves.droneWaveCost;
+            case "hijacker":
+                return SETTINGS.waves.hijackerWaveCost;
         }
     }
 
@@ -41,6 +45,12 @@ export class WaveManager{
             case "crusher":
                 weight = SETTINGS.waves.crusherSpawnProbability;
                 break;
+            case "drone":
+                weight = SETTINGS.waves.droneSpawnProbability;
+                break;
+            case "hijacker":
+                weight = SETTINGS.waves.hijackerSpawnProbability;
+                break;
         }
         return Number.isFinite(weight) ? Math.max(0, weight):0;
     }
@@ -53,7 +63,15 @@ export class WaveManager{
         if (this.currentLevel === 2) {
             return ["melee", "ranged"];
         }
-        return ["melee", "ranged", "crusher"];
+        if(this.currentLevel === 3){
+            return ["melee", "ranged", "crusher"];
+
+        }
+        if(this.currentLevel === 4){
+            return ["melee", "ranged", "crusher", "drone"];
+
+        }
+        return ["melee", "ranged", "crusher","drone", "hijacker"];
     }
 
     //check which enemies are still cheaper than the remaining budget
@@ -90,6 +108,11 @@ export class WaveManager{
         //guarantee crusher in level 3
         if(this.currentLevel === 3 && this.currentWave === 1 && this.enemiesSpawned === 0 && affordable.includes("crusher")){
             return "crusher"
+        }
+
+        //guarantee a drone appears at the start of level 4
+        if(this.currentLevel === 4 && this.currentWave === 1 && this.enemiesSpawned === 0 && affordable.includes("drone")){
+            return "drone";
         }
 
         const totalWeight = affordable.reduce((sum, type) => sum+ this.getSpawnWeight(type),0);
@@ -177,6 +200,10 @@ export class WaveManager{
 
     getWave(): number {
         return this.currentWave;
+    }
+
+    getCurrentLevel():number{
+        return this.currentLevel;
     }
 
     getMaxWaves(): number{

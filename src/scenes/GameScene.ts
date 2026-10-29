@@ -522,7 +522,8 @@ private startBossWave(): void {
             this.enemies,
             this.defenders,
             this.stronghold,
-            this.waveManager
+            this.waveManager,
+            (hijacker, target) => this.prepareHijackerSteal(hijacker,target)
         );
 
         this.collisionSystem = new CollisionSystem(
@@ -596,7 +597,14 @@ private updateWaveProgress(): void {
         this.defenderToolbar.updateCooldowns(this.time.now, this.lastPlaced);
 
         for (const enemy of this.enemies) {
-            if (enemy.active) enemy.move(delta);
+            if(!enemy.active){
+                continue;
+            }
+            if(enemy instanceof HijackerEnemy){
+                enemy.updateHijacker(delta);
+            }else{
+                enemy.move(delta);
+            }
         }
         for (const projectile of this.projectiles) {
             if (projectile.active) projectile.move(delta);

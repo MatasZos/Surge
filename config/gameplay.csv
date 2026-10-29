@@ -145,8 +145,10 @@ stronghold.melee_attack_interval_ms,1000
 stronghold.retaliation_damage,50
 waves.first_enemy_delay_ms,1000
 waves.enemy_spawn_interval_ms,1000
-waves.melee_spawn_probability,0.6
-waves.ranged_spawn_probability,0.3
+waves.melee_spawn_probability,0.4
+waves.ranged_spawn_probability,0.2
+waves.hijacker_spawn_probability,0.15
+waves.drone_spawn_probability,0.15
 waves.crusher_spawn_probability,0.1
 waves.level_1_wave_count,1
 waves.starting_enemies_per_wave,3
@@ -156,6 +158,8 @@ waves.level_4_wave_count,3
 waves.level_5_wave_count,3
 waves.melee_wave_cost,5
 waves.ranged_wave_cost,10
+waves.hijacker_wave_cost,15
+waves.drone_wave_cost,10
 waves.crusher_wave_cost,20
 waves.level_1_wave_1_budget,15
 waves.level_2_wave_1_budget,20

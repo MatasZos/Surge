@@ -4,6 +4,7 @@ import { Enemy } from "../../enemies/Enemy.ts";
 import { RangedEnemy } from "../../enemies/RangedEnemy.ts";
 import { CrusherEnemy } from "../../enemies/CrusherEnemy.ts";
 import { Stronghold } from "../../objects/Stronghold.ts";
+import { HijackerEnemy } from "../../enemies/HijackerEnemy.ts";
 
 export class StrongholdCollision {
     constructor(
@@ -16,9 +17,12 @@ export class StrongholdCollision {
 
     update(): void {
         for (const enemy of this.enemies) {
-            if (!enemy.active || enemy.isAttacking) continue;
-            if (enemy instanceof RangedEnemy) continue;
-
+            if (!enemy.active || enemy.isAttacking) {
+                continue;
+            }
+            if (enemy instanceof RangedEnemy || enemy instanceof HijackerEnemy) {
+                continue;
+            }
             const hit = Phaser.Geom.Intersects.RectangleToRectangle(
                 enemy.getBounds(),
                 this.stronghold.getCollisionBounds()

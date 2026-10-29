@@ -26,7 +26,8 @@ export class RangedEnemy extends Enemy {
             callback: () => {
                 if (this.active && this.isAttacking) {
                     console.log("Ranged enemy shooting!");
-                    new EnemyProjectile(this.scene, this.x - 30, this.y);
+                    const projectile = new EnemyProjectile(this.scene, this.x - 30, this.y);
+                    projectile.damage = Math.round(projectile.damage * this.projectileDamageMultiplier)
                 }
             },
             loop: true

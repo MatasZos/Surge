@@ -179,6 +179,8 @@ export const SETTINGS = {
         meleeSpawnProbability: 0.0,
         rangedSpawnProbability: 0.0,
         crusherSpawnProbability: 0.0,
+        droneSpawnProbability:0.0,
+        hijackerSpawnProbability:0.0,
         startingEnemiesPerWave:0,
         level1WaveCount: 0,
         level2WaveCount:0,
@@ -199,6 +201,10 @@ export const SETTINGS = {
         level5Wave3Budget: 0,
         meleeWaveCost: 0,
         rangedWaveCost: 0,
-        crusherWaveCost: 0
+        crusherWaveCost: 0,
+        droneWaveCost:0,
+        hijackerWaveCost:0,
+        enemyHealthIncreasePerLevel:0,
+        enemyDamageIncreasePerLevel:0
     }
 };
