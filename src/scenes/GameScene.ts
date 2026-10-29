@@ -304,7 +304,20 @@ export class GameScene extends Phaser.Scene {
         if (this.selectedDefender === "recall") {
             this.upgradeMenu.close();
             this.defenderPlacement.recall(pointer);
+            return;
         }
+
+        // Check if the player clicked on a defender
+        const clickedDefender = this.defenders.some(defender =>
+            defender.active &&
+            defender.getBounds().contains(pointer.worldX, pointer.worldY)
+        );
+
+        // Close menu only when clicking outside a defender and the menu
+        if (!clickedDefender && !this.upgradeMenu.isPointerInside(pointer)) {
+            this.upgradeMenu.close();
+        }
+
     }
 
     /**

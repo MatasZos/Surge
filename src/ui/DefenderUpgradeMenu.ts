@@ -23,8 +23,20 @@ export class DefenderUpgradeMenu {
 
         const cost = SETTINGS.defenders[type]?.upgradeCost;
 
-        const x = defender.x;
-        const y = defender.y - 105;
+        const menuWidth = 200;
+        const menuHeight = 100;
+
+        const x = Phaser.Math.Clamp(
+            defender.x,
+            menuWidth / 2 + 5,
+            this.scene.scale.width - menuWidth / 2 - 5
+        );
+
+        const aboveY = defender.y - 105;
+
+        const y = aboveY - menuHeight / 2 < 5
+            ? defender.y + 105
+            : aboveY;
 
         const background = this.scene.add.rectangle(
             0, 0, 180, 105, 0x162536
@@ -88,6 +100,20 @@ export class DefenderUpgradeMenu {
         ]);
 
         this.menu.setDepth(200);
+    }
+
+    isPointerInside(pointer: Phaser.Input.Pointer): boolean {
+        if (!this.menu) return false;
+
+        const x = this.menu.x;
+        const y = this.menu.y;
+
+        return (
+            pointer.x >= x - 100 &&
+            pointer.x <= x + 100 &&
+            pointer.y >= y - 50 &&
+            pointer.y <= y + 50
+        );
     }
 
     close(): void {

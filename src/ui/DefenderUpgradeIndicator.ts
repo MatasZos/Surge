@@ -26,7 +26,7 @@ export class DefenderUpgradeIndicator {
         this.levelText.setVisible(false);
 
         this.outline = scene.add.rectangle(0, 0, 10, 10);
-        this.outline.setStrokeStyle(3, 0x00ff99);
+        this.outline.setStrokeStyle(2, 0x00ff99);
         this.outline.setDepth(15);
         this.outline.setVisible(false);
 
