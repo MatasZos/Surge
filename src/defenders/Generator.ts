@@ -59,10 +59,18 @@ export class Generator extends Defender {
     })
 
     energy.on("pointerdown", () => {
-      if (!energy.active) return;
+        if (!energy.active) return;
 
-      this.scene.events.emit("energy-collected", SETTINGS.energy.generatorPickupValue);
-      energy.destroy();
+        let amount = SETTINGS.energy.generatorPickupValue;
+
+        if (this.upgradeLevel === 2) {
+            amount *= SETTINGS.defenders.generator.upgradeEnergyMultiplier;
+    }
+
+    console.log("Generator Level:", this.upgradeLevel, "Energy:", amount);
+
+    this.scene.events.emit("energy-collected", amount);
+    energy.destroy();
     });
 
     // Energy disappears if not collected

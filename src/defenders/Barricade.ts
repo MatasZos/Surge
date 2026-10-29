@@ -13,4 +13,15 @@ export class Barricade extends Defender {
         this.setDefenderHealth(SETTINGS.defenders.barricade.health);
         this.damage = SETTINGS.defenders.barricade.damage;
     }
+    override upgrade(): boolean {
+        if (!super.upgrade()) return false;
+
+        this.setDefenderHealth(
+            SETTINGS.defenders.barricade.health *
+            SETTINGS.defenders.barricade.upgradeHealthMultiplier
+        );
+        console.log("Barricade Level:", this.upgradeLevel, "Health:", this.health);
+
+        return true;
+    }
 }

@@ -88,7 +88,8 @@ export const SETTINGS = {
             projectileSpeed: 0,
             projectileDamage: 0,
             upgradeCost: 0,
-            upgradeDamageMultiplier: 0
+            upgradeDamageMultiplier: 0,
+            upgradeEnergyMultiplier: 0
         },
 
         barricade: {
@@ -100,7 +101,8 @@ export const SETTINGS = {
             projectileSpeed: 0,
             projectileDamage: 0,
             upgradeCost: 0,
-            upgradeDamageMultiplier: 0
+            upgradeDamageMultiplier: 0,
+            upgradeHealthMultiplier: 0
         },
 
         cryogunner: {
