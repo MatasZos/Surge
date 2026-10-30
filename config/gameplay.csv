@@ -56,6 +56,7 @@ defenders.shooter.upgrade_cost,100
 defenders.shooter.upgrade_damage_multiplier,1.5
 defenders.shooter.upgrade_energy_multiplier,1
 defenders.shooter.upgrade_health_multiplier,1
+defenders.shooter.recovery_ms,0
 defenders.generator.health,300
 defenders.generator.damage,0
 defenders.generator.cost,50
@@ -71,6 +72,7 @@ defenders.generator.upgrade_cost,75
 defenders.generator.upgrade_damage_multiplier,1
 defenders.generator.upgrade_energy_multiplier,1.5
 defenders.generator.upgrade_health_multiplier,1
+defenders.generator.recovery_ms,0
 defenders.barricade.health,2750
 defenders.barricade.damage,0
 defenders.barricade.cost,125
@@ -86,6 +88,7 @@ defenders.barricade.upgrade_cost,75
 defenders.barricade.upgrade_damage_multiplier,1
 defenders.barricade.upgrade_energy_multiplier,1
 defenders.barricade.upgrade_health_multiplier,1.5
+defenders.barricade.recovery_ms,0
 defenders.dualbarrel.health,300
 defenders.dualbarrel.damage,0
 defenders.dualbarrel.cost,200
@@ -101,6 +104,7 @@ defenders.dualbarrel.upgrade_cost,150
 defenders.dualbarrel.upgrade_damage_multiplier,1.5
 defenders.dualbarrel.upgrade_energy_multiplier,1
 defenders.dualbarrel.upgrade_health_multiplier,1
+defenders.dualbarrel.recovery_ms,0
 defenders.cryogunner.health,300
 defenders.cryogunner.damage,20
 defenders.cryogunner.cost,175
@@ -116,6 +120,7 @@ defenders.cryogunner.upgrade_cost,120
 defenders.cryogunner.upgrade_damage_multiplier,1.5
 defenders.cryogunner.upgrade_energy_multiplier,1
 defenders.cryogunner.upgrade_health_multiplier,1
+defenders.cryogunner.recovery_ms,0
 defenders.landmine.health,300
 defenders.landmine.damage,1800
 defenders.landmine.cost,25
@@ -131,6 +136,23 @@ defenders.landmine.upgrade_cost,50
 defenders.landmine.upgrade_damage_multiplier,1.5
 defenders.landmine.upgrade_energy_multiplier,1
 defenders.landmine.upgrade_health_multiplier,1
+defenders.landmine.recovery_ms,0
+defenders.scrapper.health,300
+defenders.scrapper.damage,500
+defenders.scrapper.cost,150
+defenders.scrapper.cooldown_ms,7500
+defenders.scrapper.fire_interval_ms,0
+defenders.scrapper.projectile_speed,0
+defenders.scrapper.projectile_damage,0
+defenders.scrapper.slow_multiplier,0
+defenders.scrapper.slow_duration_ms,0
+defenders.scrapper.arming_ms,0
+defenders.scrapper.blast_radius,0
+defenders.scrapper.upgrade_cost,100
+defenders.scrapper.upgrade_damage_multiplier,1.5
+defenders.scrapper.upgrade_energy_multiplier,1
+defenders.scrapper.upgrade_health_multiplier,1
+defenders.scrapper.recovery_ms,42000
 energy.starting_energy,2000
 energy.generator_pickup_value,25
 energy.generator_first_production_ms,7000

@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { Defender } from "./Defender.ts";
 import { Enemy } from "../enemies/Enemy.ts";
 import { CrusherEnemy } from "../enemies/CrusherEnemy.ts";
+import { SETTINGS } from "../config/settings.ts";
 
 /** Chomper-inspired close-range defender. */
 export class Scrapper extends Defender {
@@ -15,7 +16,7 @@ export class Scrapper extends Defender {
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, "scrapper");
         this.setDisplaySize(70, 70);
-        this.setDefenderHealth(300);
+        this.setDefenderHealth(SETTINGS.defenders.scrapper.health);
         this.statusIndicator = scene.add.circle(x, y - 43, 5, 0x24f59c).setDepth(5);
     }
 
@@ -34,10 +35,18 @@ export class Scrapper extends Defender {
         if (!target) return false;
 
         // Normal enemies are eliminated; Crushers only take heavy damage.
-        const damage = target instanceof CrusherEnemy
+        let damage = target instanceof CrusherEnemy
             ? this.heavyEnemyDamage
             : target.health;
-        target.takeDamage(damage);
+
+            // Level 2 upgrade against Crushers
+            if (this.upgradeLevel === 2 && target instanceof CrusherEnemy) {
+                damage *= SETTINGS.defenders.scrapper.upgradeDamageMultiplier;
+            }
+
+            target.takeDamage(damage);
+
+            console.log("Scrapper Level:", this.upgradeLevel, "Damage:", damage);
 
         this.recovering = true;
         this.statusIndicator.setFillStyle(0xffa52d);
@@ -48,7 +57,7 @@ export class Scrapper extends Defender {
             duration: 110,
             yoyo: true
         });
-        this.recoveryTimer = this.scene.time.delayedCall(this.recoveryMs, () => {
+        this.recoveryTimer = this.scene.time.delayedCall(SETTINGS.defenders.scrapper.recoveryMs, () => {
             if (!this.active) return;
             this.recovering = false;
             this.statusIndicator.setFillStyle(0x24f59c);

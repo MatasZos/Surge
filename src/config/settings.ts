@@ -131,13 +131,15 @@ export const SETTINGS = {
         },
 
         scrapper: {
-            health: 300,
-            damage: 500,
-            cost: 150,
-            cooldownMs: 7500,
-            recoveryMs: 42000,
+            health: 0,
+            damage: 0,
+            cost: 0,
+            cooldownMs: 0,
+            recoveryMs: 0,
             upgradeCost: 0,
-            upgradeDamageMultiplier: 0
+            upgradeDamageMultiplier: 0,
+            upgradeEnergyMultiplier: 0,
+            upgradeHealthMultiplier: 0
         },
 
         dualbarrel: {
