@@ -490,13 +490,68 @@ The team members are:
 
 ## 10 Resources and Credits
 
-This section contains the resources and references used.
+### 10.1 Core Technologies and Development Resources
 
-### 10.1 Code Related Resources
+- Phaser Official Documentation : https://docs.phaser.io/
+  Main framework used for game objects, scenes, input, graphics, movement and sound.
 
-This section includes any external code, tutorials, documentation or programming resources used.
+- Phaser 4 Learning Guide - Matt Smith : https://docs.phaser.io/
+  Educational reference covering Phaser 4, TypeScript, Deno, scenes, game loops and game development with Celbridge.
 
-- No external code or resources used
+- TypeScript Handbook - Classes: https://www.typescriptlang.org/docs/handbook/2/classes.html
+  Relevant to the inheritance structure used by Enemy, Defender and their subclasses.
+  
+- TypeScript Handbook - Narrowing: https://www.typescriptlang.org/docs/handbook/2/narrowing.html
+  Type checking and instanceof, used to distinguish different defender and enemy behaviours.
+
+- TypeScript Handbook - Everyday Types: https://www.typescriptlang.org/docs/handbook/2/everyday-types.html
+  Arrays, object types, interfaces types used throughout the project.
+
+- Deno Documentation - Configuration: https://docs.deno.com/runtime/fundamentals/configuration/
+  Project tasks, import mappings and the deno.json configuration.
+
+
+- Deno Documentation - Type Checking: https://docs.deno.com/runtime/reference/cli/check/
+  Reference for checking TypeScript code with deno check.
+  
+- Deno Documentation - Linting: https://docs.deno.com/runtime/reference/cli/lint/
+  Code-quality checks using deno lint.
+
+### 10.2 Phase Game Systems and Methods
+
+- Scene Management: https://docs.phaser.io/phaser/concepts/scenes
+  Main Menu, Game Scene, Game Over and Level Completion transitions.
+  
+- Game Objects: https://docs.phaser.io/phaser/concepts/gameobjects
+  Creating and controlling defenders, enemies, projectiles and UI objects.
+  
+- Input and Dragging: https://docs.phaser.io/phaser/concepts/input
+  Defender selection, drag-and-drop placement, grid interactions and energy collection.
+  
+- Geometry and Intersection Detection: https://docs.phaser.io/phaser/concepts/geometry
+  Detecting collisions between projectiles, enemies, defenders and the Stronghold using rectangle intersection checks.
+  
+- Timers and Delayed Events: https://docs.phaser.io/phaser/concepts/time
+  Defender firing cooldowns, enemy attacks, generator production, wave intermissions and delayed actions.
+  
+- Event Handling: https://docs.phaser.io/phaser/concepts/events
+  Communication between gameplay systems using events and callbacks, including projectile creation and level progression.
+
+- Graphics: https://docs.phaser.io/phaser/concepts/gameobjects/graphics
+  Drawing health bars, placement indicators, outlines and other gameplay UI elements.
+  
+- Tweens: https://docs.phaser.io/phaser/concepts/tweens
+  Visual effects such as explosions, fading and other animated changes to game objects.
+
+- Asset Loading: https://docs.phaser.io/phaser/concepts/loader
+  Loading defender sprites, enemy textures, backgrounds, projectiles and sound effects.
+
+- Audio: https://docs.phaser.io/phaser/concepts/audio
+  Playing background music and sound effects, including volume adjustments.
+
+- Scale Manager: https://docs.phaser.io/phaser/concepts/scale-manager
+  Adjusting the game display to fit the available browser or preview window.
+
 
 ## 11 Licence
 
