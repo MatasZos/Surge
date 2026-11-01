@@ -45,7 +45,7 @@ defenders.shooter.health,300
 defenders.shooter.damage,0
 defenders.shooter.cost,100
 defenders.shooter.cooldown_ms,7500
-defenders.shooter.fire_interval_ms,100
+defenders.shooter.fire_interval_ms,800
 defenders.shooter.projectile_speed,300
 defenders.shooter.projectile_damage,20
 defenders.shooter.slow_multiplier,0
@@ -93,9 +93,9 @@ defenders.dualbarrel.health,300
 defenders.dualbarrel.damage,0
 defenders.dualbarrel.cost,200
 defenders.dualbarrel.cooldown_ms,12000
-defenders.dualbarrel.fire_interval_ms,100
-defenders.dualbarrel.projectile_speed,300
-defenders.dualbarrel.projectile_damage,100
+defenders.dualbarrel.fire_interval_ms,1400
+defenders.dualbarrel.projectile_speed,350
+defenders.dualbarrel.projectile_damage,30
 defenders.dualbarrel.slow_multiplier,0
 defenders.dualbarrel.slow_duration_ms,0
 defenders.dualbarrel.arming_ms,0
@@ -109,9 +109,9 @@ defenders.cryogunner.health,300
 defenders.cryogunner.damage,20
 defenders.cryogunner.cost,175
 defenders.cryogunner.cooldown_ms,10000
-defenders.cryogunner.fire_interval_ms,100
+defenders.cryogunner.fire_interval_ms,1600
 defenders.cryogunner.projectile_speed,300
-defenders.cryogunner.projectile_damage,20
+defenders.cryogunner.projectile_damage,15
 defenders.cryogunner.slow_multiplier,0.5
 defenders.cryogunner.slow_duration_ms,1500
 defenders.cryogunner.arming_ms,0
@@ -153,7 +153,7 @@ defenders.scrapper.upgrade_damage_multiplier,1.5
 defenders.scrapper.upgrade_energy_multiplier,1
 defenders.scrapper.upgrade_health_multiplier,1
 defenders.scrapper.recovery_ms,42000
-energy.starting_energy,2000
+energy.starting_energy,600
 energy.generator_pickup_value,25
 energy.generator_first_production_ms,7000
 energy.generator_production_interval_ms,24000
@@ -163,7 +163,7 @@ energy.enemy_drop_value,20
 energy.passive_energy_value,25
 energy.passive_energy_interval_ms,15000
 energy.sell_refund_multiplier,0.5
-stronghold.starting_health,500
+stronghold.starting_health,750
 stronghold.melee_attack_interval_ms,1000
 stronghold.retaliation_damage,50
 waves.first_enemy_delay_ms,1000
