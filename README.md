@@ -552,6 +552,36 @@ The team members are:
 - Scale Manager: https://docs.phaser.io/phaser/concepts/scale-manager
   Adjusting the game display to fit the available browser or preview window.
 
+### 10.3 Gameplay Logic
+
+- Random Number Generator: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+  Random enemy selection and the probability of energy pickups being dropped.
+
+- Finite State Machines: https://gameprogrammingpatterns.com/state.html
+  The HijackerEnemy uses different phases for waiting, descending, grabbing, ascending and escaping.
+
+- Observer and Event Driven Gameplay Logic: https://gameprogrammingpatterns.com/observer.html
+  Using events instead of requiring all functionality to be handled in one class.
+
+- Fetch API: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+  Loading external gameplay configuration files when the game starts.
+
+- JavaScript Timers: https://developer.mozilla.org/en-US/docs/Web/API/Window/setInterval
+  Used for repeated timed callbacks, including some destruction animation behaviour.
+
+- Python CSV Module: https://docs.python.org/3/library/csv.html Exporting Excel gameplay values into CSV files for use by the game.
+
+
+### 10.4 Weighted Enemy Spawning and Wave Budgets
+- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+
+### 10.5 Grid Placement and Collision Detection
+- https://docs.phaser.io/phaser/concepts/geometry
+
+### 10.6 Gameplay Inspiration
+- https://www.ea.com/games/plants-vs-zombies/plants-vs-zombies
+  
+
 
 ## 11 Licence
 
