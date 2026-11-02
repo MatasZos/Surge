@@ -360,6 +360,8 @@ SURGE is primarily controlled using the mouse.
 | Start Game | Click the Play button |
 | Restart Game | Click the Restart button on the Game Over screen |
 | Return to Main Menu | Click the Main Menu button on the Game Over screen |
+| Upgrade Defender | Click a placed defender and select Upgrade from the menu |
+| Close Upgrade Menu | Click outside the upgrade menu |
 
 ## 4 Technical Implementation
 
@@ -382,7 +384,7 @@ The project uses:
 | Directory / File | Responsibility |
 |---|---|
 | `src/scenes/` | Contains the Main Menu, Game Scene Game Over scenes and Level Completion Scenes. |
-| `src/defenders/` | Contains defender classes such as Shooter, Generator, Barricade Dual Barrel Cryo Gunner, Landmine and Scrapper. |
+| `src/defenders/` | Contains defender classes such as Shooter, Generator, Barricade Dual Barrel Cryo Gunner, Landmine, Scrapper, Drone, Hijacker and OverLord Boss. |
 | `src/enemies/` | Contains Melee, Ranged and Crusher enemy classes, Overlord Boss enemy classes including their movement and combat behaviour. |
 | `src/grid/` | Manages the battlefield grid, individual cells and defender placement. |
 | `src/managers/` | Contains gameplay managers inclduing energy management and WaveManager for enemy spawning and wave progression. |
@@ -544,6 +546,16 @@ The following screenshots show the current state of SURGE and some of the gamepl
 
 ### 7.6 Victory Screen
 <img width="1427" height="842" alt="Victory" src="https://github.com/user-attachments/assets/a2e3dbcf-a62e-426c-b019-ce0c44c6e8c3" />
+
+### 7.7 Defender Upgrade Menu
+<img width="1630" height="895" alt="image" src="https://github.com/user-attachments/assets/e27ab62f-c47d-4fad-8cac-cd6db0d35d35" />
+
+### 7.8 Level 2 Defender - MAX LEVEL
+<img width="1680" height="967" alt="image" src="https://github.com/user-attachments/assets/f131bc42-b51b-4ee7-9355-d0fbd0559ed7" />
+
+### 7.9 Defender Unlock System
+<img width="1706" height="985" alt="image" src="https://github.com/user-attachments/assets/9aa11586-3d52-4b68-85d1-8d69e1c5b985" />
+
 
 
 ## 8 Gameplay Hints and Tips
