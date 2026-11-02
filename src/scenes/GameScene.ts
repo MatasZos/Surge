@@ -376,7 +376,7 @@ export class GameScene extends Phaser.Scene {
         const configuredDelay = SETTINGS.waves.waveIntermissionMs;
 
         //this fallback prevenmts broken config from freezing progress
-        const durationMs = Number.isFinite(configuredDelay) && configuredDelay > 0 ? configuredDelay: 10000;
+        const durationMs = Number.isFinite(configuredDelay) && configuredDelay > 0 ? configuredDelay: 1000;
 
         let secondsRemaining = Math.ceil(durationMs / 1000)
 

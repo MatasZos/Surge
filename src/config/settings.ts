@@ -22,19 +22,19 @@ export const SETTINGS = {
         },
 
         crusher: {
-            health: 3000,
-            speed: 8,
-            damage: 150,
-            attackIntervalMs: 2500,
+            health: 0,
+            speed: 0,
+            damage: 0,
+            attackIntervalMs: 0,
             attackRange: 0,
             projectileSpeed: 0,
             projectileDamage: 0
         },
 
         drone: {
-            health: 300,
-            speed: 18,
-            damage: 25,
+            health: 0,
+            speed: 0,
+            damage: 0,
             attackIntervalMs: 0,
             attackRange: 0,
             projectileSpeed: 0,

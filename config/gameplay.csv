@@ -44,10 +44,10 @@ enemies.hijacker.projectile_damage,0
 defenders.shooter.health,300
 defenders.shooter.damage,0
 defenders.shooter.cost,100
-defenders.shooter.cooldown_ms,7500
-defenders.shooter.fire_interval_ms,800
+defenders.shooter.cooldown_ms,1000
+defenders.shooter.fire_interval_ms,100
 defenders.shooter.projectile_speed,300
-defenders.shooter.projectile_damage,20
+defenders.shooter.projectile_damage,100
 defenders.shooter.slow_multiplier,0
 defenders.shooter.slow_duration_ms,0
 defenders.shooter.arming_ms,0
@@ -60,7 +60,7 @@ defenders.shooter.recovery_ms,0
 defenders.generator.health,300
 defenders.generator.damage,0
 defenders.generator.cost,50
-defenders.generator.cooldown_ms,7500
+defenders.generator.cooldown_ms,1000
 defenders.generator.fire_interval_ms,0
 defenders.generator.projectile_speed,0
 defenders.generator.projectile_damage,0
@@ -76,7 +76,7 @@ defenders.generator.recovery_ms,0
 defenders.barricade.health,2750
 defenders.barricade.damage,0
 defenders.barricade.cost,125
-defenders.barricade.cooldown_ms,30000
+defenders.barricade.cooldown_ms,1000
 defenders.barricade.fire_interval_ms,0
 defenders.barricade.projectile_speed,0
 defenders.barricade.projectile_damage,0
@@ -92,10 +92,10 @@ defenders.barricade.recovery_ms,0
 defenders.dualbarrel.health,300
 defenders.dualbarrel.damage,0
 defenders.dualbarrel.cost,200
-defenders.dualbarrel.cooldown_ms,12000
-defenders.dualbarrel.fire_interval_ms,1400
+defenders.dualbarrel.cooldown_ms,1000
+defenders.dualbarrel.fire_interval_ms,100
 defenders.dualbarrel.projectile_speed,350
-defenders.dualbarrel.projectile_damage,30
+defenders.dualbarrel.projectile_damage,100
 defenders.dualbarrel.slow_multiplier,0
 defenders.dualbarrel.slow_duration_ms,0
 defenders.dualbarrel.arming_ms,0
@@ -108,10 +108,10 @@ defenders.dualbarrel.recovery_ms,0
 defenders.cryogunner.health,300
 defenders.cryogunner.damage,20
 defenders.cryogunner.cost,175
-defenders.cryogunner.cooldown_ms,10000
-defenders.cryogunner.fire_interval_ms,1600
+defenders.cryogunner.cooldown_ms,1000
+defenders.cryogunner.fire_interval_ms,100
 defenders.cryogunner.projectile_speed,300
-defenders.cryogunner.projectile_damage,15
+defenders.cryogunner.projectile_damage,100
 defenders.cryogunner.slow_multiplier,0.5
 defenders.cryogunner.slow_duration_ms,1500
 defenders.cryogunner.arming_ms,0
@@ -124,7 +124,7 @@ defenders.cryogunner.recovery_ms,0
 defenders.landmine.health,300
 defenders.landmine.damage,1800
 defenders.landmine.cost,25
-defenders.landmine.cooldown_ms,30000
+defenders.landmine.cooldown_ms,1000
 defenders.landmine.fire_interval_ms,0
 defenders.landmine.projectile_speed,0
 defenders.landmine.projectile_damage,0
@@ -140,7 +140,7 @@ defenders.landmine.recovery_ms,0
 defenders.scrapper.health,300
 defenders.scrapper.damage,500
 defenders.scrapper.cost,150
-defenders.scrapper.cooldown_ms,7500
+defenders.scrapper.cooldown_ms,1000
 defenders.scrapper.fire_interval_ms,0
 defenders.scrapper.projectile_speed,0
 defenders.scrapper.projectile_damage,0
@@ -153,7 +153,7 @@ defenders.scrapper.upgrade_damage_multiplier,1.5
 defenders.scrapper.upgrade_energy_multiplier,1
 defenders.scrapper.upgrade_health_multiplier,1
 defenders.scrapper.recovery_ms,42000
-energy.starting_energy,600
+energy.starting_energy,20000
 energy.generator_pickup_value,25
 energy.generator_first_production_ms,7000
 energy.generator_production_interval_ms,24000
@@ -167,7 +167,7 @@ stronghold.starting_health,750
 stronghold.melee_attack_interval_ms,1000
 stronghold.retaliation_damage,50
 waves.first_enemy_delay_ms,1000
-waves.enemy_spawn_interval_ms,1000
+waves.enemy_spawn_interval_ms,500
 waves.melee_spawn_probability,0.4
 waves.ranged_spawn_probability,0.2
 waves.hijacker_spawn_probability,0.15
@@ -196,6 +196,6 @@ waves.level_4_wave_3_budget,80
 waves.level_5_wave_1_budget,70
 waves.level_5_wave_2_budget,90
 waves.level_5_wave_3_budget,110
-waves.wave_intermission,10000
+waves.wave_intermission,1000
 waves.enemy_health_increase_per_level,0.1
 waves.enemy_damage_increase_per_level,0.05

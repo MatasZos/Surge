@@ -1,6 +1,6 @@
 setting,value
 first_enemy_delay_ms,1000
-enemy_spawn_interval_ms,1000
+enemy_spawn_interval_ms,500
 melee_spawn_probability,0.4
 ranged_spawn_probability,0.2
 hijacker_spawn_probability,0.15
@@ -29,6 +29,6 @@ level_4_wave_3_budget,80
 level_5_wave_1_budget,70
 level_5_wave_2_budget,90
 level_5_wave_3_budget,110
-wave_intermission,10000
+wave_intermission,1000
 enemy_health_increase_per_level,0.1
 enemy_damage_increase_per_level,0.05
