@@ -39,6 +39,13 @@ The player can:
 - Prepare for the next wave during intermissions
 - Complete levels by defeating the required enemies
 - Fight the Overlord Boss Enemy in the final level
+- Upgrade placed defenders from Level 1 to Level 2 using energy
+- View upgrade costs through a clickable defender upgrade menu
+- See a green Level 2 indicator on upgraded defenders
+- Increase defender damage, health or energy production through upgrades
+- Receive a 50% energy refund when recalling defenders
+- Unlock additional defenders as the player progresses through levels
+  
 
 ## 2 Game Design
 
@@ -267,6 +274,8 @@ Players can drag defenders from the toolbar onto available battlefield cells.
 - Available cells are highlighted during placement
 - A placement preview shows where the defender can be placed
 - Messages appear when a defender cannot be placed
+- Locked defender indicators for defenders that have not been unlocked yet
+- Level based defender unlocking as the player progresses through the game
 
 ### 2.23 Multiple Levels and Level Completion
 
@@ -291,6 +300,52 @@ Several improvements have been made to the gameplay.
 - Fixed energy pickups remaining after a Generator was destroyed
 - Improved defender placement and cooldown messages
 - Refactored GameScene and collision code
+- Moved passive energy, drag and drop and energy HUD into separate classes
+- Fixed the upgrade menu closing immediately when clicking a defender
+- Added click outside detection to automatically close the upgrade menu
+- Added energy checks to prevent upgrades when the player has insufficient energy
+- Updated the energy HUD after purchasing defender upgrades
+
+### 2.26 Defender Upgrade System
+
+The game now includes a Level 2 upgrade system for placed defenders.
+
+- Players can click on a placed defender to open the upgrade menu
+- Defenders can be upgraded from Level 1 to Level 2 using energy
+- Each defender has its own upgrade cost controlled through the Excel spreadsheet
+- The system checks if the player has enough energy before upgrading
+- Once upgraded, the menu displays MAX LEVEL
+- Upgraded defenders display a green Level 2 label and outline
+- Recalling an upgraded defender resets it back to Level 1 when placed again
+
+The upgrade system gives players more options when deciding how to spend their energy.
+
+### 2.27 Level 2 Defender Upgrades
+
+Each defender receives a different improvement when upgraded to Level 2.
+
+- Shooter: 1.5x projectile damage
+- Dual Barrel: 1.5x damage
+- Cryo Gunner: 1.5x damage
+- Landmine: 1.5x damage
+- Scrapper: 1.5x damage against Crushers
+- Generator: 1.5x energy generation
+- Barricade: 1.5x maximum health
+
+The upgrade multipliers are controlled through the Excel spreadsheet and exported to CSV, allowing the values to be changed without hardcoding them.
+
+### 2.28 Defender Selling and Energy Refund
+
+The recall system has been updated to refund energy when removing defenders.
+
+- Players receive a 50% energy refund when recalling a defender
+- The refund is based on the defender's placement cost
+- For example, recalling a Shooter costing 100 energy refunds 50 energy
+- The occupied grid cell becomes available again
+- Recalled defenders can be placed again at Level 1
+
+This allows players to change their defence without losing all the energy spent on placing defenders.
+
 
 ## 3 Player Input/Controls
 
@@ -330,10 +385,10 @@ The project uses:
 | `src/defenders/` | Contains defender classes such as Shooter, Generator, Barricade Dual Barrel Cryo Gunner, Landmine and Scrapper. |
 | `src/enemies/` | Contains Melee, Ranged and Crusher enemy classes, Overlord Boss enemy classes including their movement and combat behaviour. |
 | `src/grid/` | Manages the battlefield grid, individual cells and defender placement. |
-| `src/managers/` | Contains EnergyManager for managing energy and WaveManager for enemy spawning and wave progression. |
+| `src/managers/` | Contains gameplay managers inclduing energy management and WaveManager for enemy spawning and wave progression. |
 | `src/systems/` | Handles collision detection and combat interactions. |
 | `src/objects/` | Contains game objects such as the Stronghold and projectiles. |
-| `src/ui/` | Contains the defender selection toolbar and cooldown indicators. |
+| `src/ui/` | Contains the defender selection toolbar, cooldown indicators and defender upgrade menu. |
 | `src/config/` | Contains default gameplay settings and CSV configuration loading. |
 | `src/constants.ts` | Stores game dimensions and grid layout constants. |
 | `config/gameplay.xlsx` | Excel spreadsheet containing gameplay statistics and settings. |
@@ -352,11 +407,17 @@ The spreadsheet contains separate worksheets for:
 - Energy
 - Stronghold
 - Waves and enemy spawning
-
 This allows us to adjust any of these values such as health, damage, movement speed, energy costs, cooldowns and spawn probabilities to be adjusted instantly
-
 The configuration also allows gameplay values to be adjusted as new defenders, enemies and levels are added.
-  
+
+The Excel configuration now also includes individual defender upgrade costs and Level 2 multipliers.
+- Each defender has its own upgrade energy cost
+- Damage multipliers control Level 2 attacking defenders
+- Health multipliers control the Barricade upgrade
+- Energy production multipliers control the Generator upgrade
+- Scrapper statistics are also included in the spreadsheet
+These values are exported to CSV and used by the game, making it easier to balance defender upgrades without changing the main gameplay code.
+
 
 ## 5 Game Features
 
@@ -397,18 +458,24 @@ The configuration also allows gameplay values to be adjusted as new defenders, e
 | Victory Conditions | 3 | Introduce objectives that allow the player to win. | Implemented |
 | Level Completion Screen | 3 | Display a completion screen when the player successfully finishes a level. | Implemented |
 | Multiple Levels | 3 | Add additional levels with increasing difficulty. | Implemented |
+| Defender Upgrade System | 2 | Allow placed defenders to upgrade from Level 1 to Level 2 using energy. | Implemented |
+| Defender Upgrade Menu | 2 | Display upgrade costs and MAX LEVEL when upgraded. | Implemented |
+| Defender Upgrade Indicators | 2 | Display a green Level 2 label and outline on upgraded defenders. | Implemented |
+| Defender Upgrade Costs | 2 | Use individual upgrade costs from the Excel spreadsheet. | Implemented |
+| Level 2 Damage Upgrades | 2 | Increase damage for Shooter, Dual Barrel, Cryo Gunner, Landmine and Scrapper. | Implemented |
+| Generator and Barricade Upgrades | 2 | Increase Generator energy production and Barricade health by 1.5x. | Implemented |
+| Defender Selling | 2 | Refund 50% of placement energy when recalling defenders. | Implemented |
+| Defender Unlock System | 3 | Unlock additional defenders as the player progresses through levels. | Implemented |
+| Locked Defender Indicators | 3 | Show which defenders are currently locked in the toolbar. | Implemented |
+| Increasing Enemy Difficulty | 2 | Increase enemy difficulty as the player progresses through levels. | Implemented |
+
 
 ### 5.2 Planned Features
 
 | Feature | Priority | Description | Status |
 |---|:---:|---|---|
-| Defender Unlock System | 3 | Unlock new defenders as the player progresses. | Planned |
-| Defender Wave Unlocks | 3 | Unlock defenders after reaching certain waves. | Planned |
-| Locked Defender Indicators | 3 | Show locked defenders in the toolbar. | Planned |
-| Increasing Enemy Difficulty | 2 | Make enemies stronger as the game progresses. | Planned |
-| Defender Upgrades | 2 | Allow players to upgrade their defenders. | Planned |
-| Defender Upgrade UI | 2 | Add a menu for upgrading defenders. | Planned |
-| Defender Upgrade Indicators | 2 | Show when a defender has been upgraded. | Planned |
+| Gameplay Balancing | 2 | Adjust gameplay values to improve the overall game balance. | Planned |
+| Defender Costs and Cooldowns | 2 | Adjust defender energy costs and placement cooldowns using the Excel spreadsheet. | Planned |
 | Pause and Resume | 2 | Allow players to pause and resume the game. | Planned |
 
 ## 6 Development Progress
