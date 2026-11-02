@@ -505,6 +505,22 @@ Completed development work includes:
 - Improved enemy detection and collision handling
 - Fixed energy pickup and defender placement bugs
 - Refactored GameScene and collision code
+- Refactored passive energy, drag and drop and energy HUD into separate classes
+- Implemented Level 1 to Level 2 defender upgrades
+- Added a clickable defender upgrade menu
+- Added individual defender upgrade costs using Excel and CSV
+- Added green Level 2 indicators and MAX LEVEL messages
+- Implemented 1.5x damage upgrades for attacking defenders
+- Added 1.5x energy production for upgraded Generators
+- Added 1.5x maximum health for upgraded Barricades
+- Added Scrapper upgrade settings to the Excel configuration
+- Fixed defender upgrade menu click handling
+- Implemented a 50% energy refund when recalling defenders
+- Added level-based defender unlocking and locked toolbar indicators
+- Added Hijacker and Drone enemy types
+- Integrated new enemy types into wave progression
+- Added level-based enemy difficulty scaling
+
 
 
 ## 7 Game Screenshots
@@ -543,6 +559,14 @@ Here are some tips to help players defend their Stronghold:
 - Prepare your defence during the breaks between waves.
 - Try different defender combinations when dealing with stronger enemies.
 - Make sure all five lanes are defended when fighting the Overlord Boss.
+- Upgrade defenders to Level 2 to increase their effectiveness.
+- Upgrade Generators to produce 1.5x more energy.
+- Upgrade Barricades to increase their health by 1.5x.
+- Use Level 2 Scrappers against Crushers for additional damage.
+- Recall defenders that are no longer needed to receive a 50% energy refund.
+- Save enough energy for upgrades as enemy waves become more difficult.
+- Unlock additional defenders by progressing through levels.
+
 
 ## 9 Development Team
 
@@ -647,8 +671,18 @@ The team members are:
 
 ### 10.6 Gameplay Inspiration
 - https://www.ea.com/games/plants-vs-zombies/plants-vs-zombies
-  
 
+
+### 10.7 Defender Upgrade System
+- Phaser Input: https://docs.phaser.io/phaser/concepts/input
+  Used for detecting clicks on placed defenders and opening the upgrade menu.
+
+- TypeScript Classes: https://www.typescriptlang.org/docs/handbook/2/classes.html
+  Used for organising defender upgrade logic into separate classes.
+
+- Python CSV Module: https://docs.python.org/3/library/csv.html
+  Used for exporting defender upgrade costs and multipliers from Excel into CSV files.
+  
 
 ## 11 Licence
 
