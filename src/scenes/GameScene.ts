@@ -237,7 +237,8 @@ export class GameScene extends Phaser.Scene {
 
                 this.defenderDrag.start(type,pointer);
             },
-            (type:string) => this.defenderUnlockLevels[type] ?? 99
+            (type:string) => this.defenderUnlockLevels[type] ?? 99,
+            () => this.energyManager.getEnergy()
         );
         this.defenderToolbar.updateUnlocks(this.currentLevel)
 
@@ -614,6 +615,7 @@ private updateWaveProgress(): void {
 
     update(_time: number, delta: number): void {
         this.defenderToolbar.updateCooldowns(this.time.now, this.lastPlaced);
+        this.defenderToolbar.updateAffordability();
 
         for (const enemy of this.enemies) {
             if(!enemy.active){

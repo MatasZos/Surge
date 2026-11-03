@@ -24,7 +24,8 @@ export class DefenderToolbar {
         private scene: Phaser.Scene,
         private onSelect: (defender: string) => void,
         private onDragStart: (type: string, pointer: Phaser.Input.Pointer) => void,
-        private getUnlockLevel: (type: string) => number
+        private getUnlockLevel: (type: string) => number,
+        private getEnergy:() => number
     ) {
         this.drawToolbar();
         this.updateUnlocks(1);
@@ -111,7 +112,7 @@ export class DefenderToolbar {
 
         button.on("dragstart", (pointer: Phaser.Input.Pointer) => {
 
-            if(this.currentLevel < this.getUnlockLevel(type)){
+            if(this.currentLevel < this.getUnlockLevel(type) || this.getEnergy() < SETTINGS.defenders[type].cost){
                 return;
             }
             this.onDragStart(type, pointer);
@@ -136,9 +137,13 @@ export class DefenderToolbar {
         this.cooldownTexts[type] = cooldownText;
 
         button.on("pointerdown", () => {
-
+            //check if defender is locked by level
             if(this.currentLevel < this.getUnlockLevel(type)){
                 this.onSelect(type);
+                return;
+            }
+            //check if player has enough energy
+            if(this.getEnergy() < SETTINGS.defenders[type].cost){
                 return;
             }
             this.selectedType = type;
@@ -180,6 +185,30 @@ export class DefenderToolbar {
                 button.setFillStyle(0x1b2533);
                 button.setStrokeStyle();
                 cooldownText?.setVisible(false);
+            }
+        }
+    }
+
+    updateAffordability():void{
+        for(const type of TYPES){
+            //level locked defenders keep their exising locked status appearance
+            if(this.currentLevel < this.getUnlockLevel(type)){
+                continue;
+            }
+
+            const affordable = this.getEnergy() >= SETTINGS.defenders[type].cost;
+            const icon = this.defenderIcons[type]!;
+            const costText = this.costTexts[type]!;
+            const button = this.defenderButtons[type]!;
+
+            if(affordable){
+                icon.clearTint();
+                costText.setColor("#00ccff");
+            } else{
+                icon.setTint(0x555555);
+                costText.setColor("#ff8888");
+                button.setFillStyle(0x1b2533);
+                button.setStrokeStyle();
             }
         }
     }

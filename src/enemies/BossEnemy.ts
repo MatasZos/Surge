@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import { Enemy } from "./Enemy.ts";
-import { GRID_ROWS, CELL_HEIGHT } from "../constants.ts";
 import { OverlordPhases } from "../boss/OverlordPhases.ts";
 
 
