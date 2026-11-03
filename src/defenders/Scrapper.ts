@@ -57,7 +57,14 @@ export class Scrapper extends Defender {
             duration: 110,
             yoyo: true
         });
-        this.recoveryTimer = this.scene.time.delayedCall(SETTINGS.defenders.scrapper.recoveryMs, () => {
+        const recoveryTime = this.upgradeLevel === 3
+            ? this.recoveryMs * 0.5
+            : this.recoveryMs;
+        
+        this.recoveryTimer = this.scene.time.delayedCall(
+            recoveryTime, 
+            () => {
+
             if (!this.active) return;
             this.recovering = false;
             this.statusIndicator.setFillStyle(0x24f59c);
