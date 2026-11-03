@@ -5,6 +5,7 @@ import { SETTINGS } from "../config/settings.ts";
 
 export class Generator extends Defender {
   private energyTimer?: Phaser.Time.TimerEvent;
+  private pickupCount = 0;
 
   //keep track of energy pickups belonging to this generator
   private energyPickups: Phaser.GameObjects.Image[] = [];
@@ -65,6 +66,28 @@ export class Generator extends Defender {
 
         if (this.upgradeLevel >= 2) {
             amount *= SETTINGS.defenders.generator.upgradeEnergyMultiplier;
+    }
+
+    // Level 3 Energy Jackpot
+    if (this.upgradeLevel === 3) {
+        this.pickupCount++;
+
+        if (this.pickupCount % 4 === 0) {
+            amount *= 3;
+
+            // Golden effect for jackpot
+            const effect = this.scene.add.circle(
+                energy.x, energy.y, 25, 0xffd700, 0.6
+            );
+
+            this.scene.tweens.add({
+                targets: effect,
+                alpha: 0,
+                scale: 1.5,
+                duration: 400,
+                onComplete: () => effect.destroy()
+            });
+        }
     }
 
     console.log("Generator Level:", this.upgradeLevel, "Energy:", amount);
