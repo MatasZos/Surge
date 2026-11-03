@@ -14,6 +14,10 @@ import { Defender } from "../defenders/Defender.ts";
 import { Enemy } from "../enemies/Enemy.ts";
 import { BossEnemy } from "../enemies/BossEnemy.ts";
 import { HijackerEnemy } from "../enemies/HijackerEnemy.ts";
+import { OverlordReinforcements } from "../boss/OverlordReinforcements.ts";
+import { BossAbilities } from "../enemies/BossAbilities.ts";
+import { OverlordEffects } from "../boss/OverlordEffects.ts";
+import { BossMusic } from "../helpers/BossMusic.ts";
 
 import { EnemyProjectile } from "../objects/EnemyProjectile.ts";
 import { Projectile } from "../objects/projectile.ts";
@@ -80,8 +84,10 @@ export class GameScene extends Phaser.Scene {
     //final boss enemy encounter
     private bossEnemy: BossEnemy | null = null;
     private bossWaveActive = false;
-    private bossAttackTimer?: Phaser.Time.TimerEvent;
-    private bossAttackLane = 0;
+    private bossReinforcements?: OverlordReinforcements;
+    private bossAbilities?: BossAbilities;
+    private bossEffects?: OverlordEffects;
+    private bossMusic?: BossMusic;
 
     constructor() {
         super("GameScene");
@@ -114,13 +120,18 @@ export class GameScene extends Phaser.Scene {
         this.notificationQueue = [];
         this.notificationShowing = false;
 
-        //reset boss encounter state
-        this.bossAttackTimer?.remove();
-        this.bossAttackTimer = undefined;
+        //reset boss encounter state   
+        this.bossEffects?.destroy();
+        this.bossEffects = undefined;
         this.bossEnemy = null;
         this.bossWaveActive = false;
-        this.bossAttackLane = 0;
-    }
+        this.bossReinforcements = undefined;
+        this.bossAbilities = undefined;
+        this.events.off("boss-shield-activated");
+        this.bossMusic?.stop();
+        this.bossMusic = undefined;
+
+      }
 
     private startBackgroundMusic(): void {
         if (!this.cache.audio.exists("backgroundMusic")) return;
@@ -434,30 +445,37 @@ private startBossWave(): void {
 
     this.bossEnemy = boss;
     this.bossWaveActive = true;
+    this.bossEffects = new OverlordEffects(this, boss);
+    this.bossMusic = new BossMusic(this);
+    this.bossMusic.start();
 
     this.enemies.push(boss);
+
+    this.bossReinforcements = new OverlordReinforcements(
+    this,
+    boss,
+    this.enemies,
+    this.defenders,
+    this.stronghold
+    );
+
+    this.events.on("boss-shield-activated", (phase: number) => {
+    this.bossReinforcements?.spawn(phase);
+    });
+
+    
     this.waveText.setText("BOSS WAVE");
 
     this.showNotification("WARNING: OVERLORD INCOMING!");
-    this.bossAttackLane = 0;
 
-    this.bossAttackTimer?.remove();
-
-    this.bossAttackTimer = this.time.addEvent({delay: BossEnemy.ATTACK_INTERVAL_MS,callback: () => {
-        if (!boss.active || this.stronghold.health <= 0) {
-            return;
-        }
-        const row = this.bossAttackLane % GRID_ROWS;
-        this.bossAttackLane++;
-        
-        const shotY =GRID_Y +row * CELL_HEIGHT +CELL_HEIGHT / 2;
-        const projectile = new EnemyProjectile(this,boss.x - boss.displayWidth / 2,shotY);projectile.damage = BossEnemy.DAMAGE;
-        
-        },
-        loop: true
-    });
+    this.bossAbilities = new BossAbilities(
+    this,
+    boss,
+    () => {},
+    this.defenders,
+    this.grid
+);
 }
-
 
     private startEnemySpawning(): void {
         this.time.delayedCall(SETTINGS.waves.firstEnemyDelayMs, () => {
@@ -541,10 +559,12 @@ private startBossWave(): void {
         this.input.on("pointerup", this.defenderDrag.finish, this.defenderDrag);
 
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-            this.input.off("pointerdown", this.handleGridClick, this);
-            this.input.off("pointermove", this.defenderDrag.move, this.defenderDrag);
-            this.input.off("pointerup", this.defenderDrag.finish, this.defenderDrag);
+        this.input.off("pointerdown", this.handleGridClick, this);
+        this.input.off("pointermove", this.defenderDrag.move, this.defenderDrag);
+        this.input.off("pointerup", this.defenderDrag.finish, this.defenderDrag);
+         this.bossMusic?.stop();
         });
+
         this.startEnemySpawning();
         this.showNotification(`LEVEL ${this.currentLevel} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
     }
@@ -552,14 +572,13 @@ private startBossWave(): void {
     
 private updateWaveProgress(): void {
     if (this.bossWaveActive) {
-
+      
         if (
             this.bossEnemy &&
             !this.bossEnemy.active &&
             this.stronghold.health > 0
         ) {
-            this.bossAttackTimer?.remove();
-            this.bossAttackTimer = undefined;
+            this.bossMusic?.stop();
 
             this.bossWaveActive = false;
 
@@ -614,6 +633,15 @@ private updateWaveProgress(): void {
         }
 
         this.collisionSystem.update();
+
+        this.bossReinforcements?.update();
+
+        if (this.bossWaveActive && this.stronghold.health > 0) {
+         this.bossAbilities?.update(delta);
+        }
+
+        this.bossReinforcements?.update();
+        this.bossEffects?.update();
         this.updateWaveProgress();
     }
 }

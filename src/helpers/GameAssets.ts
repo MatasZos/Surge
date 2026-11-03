@@ -34,6 +34,7 @@ export function loadGameAssets(scene: Phaser.Scene): void {
 
     // Audio
     scene.load.audio("backgroundMusic", "assets/sounds/backgroundMusic.m4a");
+    scene.load.audio("bossMusic", "assets/sounds/bossMusic.mp3");
     scene.load.audio("laserSound", "assets/sounds/laser.m4a");
     scene.load.audio("enemyHitSound", "assets/sounds/enemyhit.m4a");
     scene.load.audio("explosionSound", "assets/sounds/explosion.m4a");

@@ -1,54 +1,75 @@
-import { BossEnemy } from "./BossEnemy.ts";
 
-/**
- * Overlord ability controller. Defining this class does NOT activate the boss.
- * No timers, spawns, or defender changes happen until another system creates
- * this controller and explicitly calls update() during the final boss fight.
- */
-export interface BossAbilityHandlers {
-    /** Final-boss integration must implement disabling affected defenders. */
-    onEMP: (durationMs: number) => void;
-    /** Final-boss integration must implement spawning two regular enemies. */
-    onReinforcements: (count: number) => void;
-}
+import Phaser from "phaser";
+import { BossEnemy } from "./BossEnemy.ts";
+import { EnemyProjectile } from "../objects/EnemyProjectile.ts";
+import { GRID_ROWS, GRID_Y, CELL_HEIGHT } from "../constants.ts"
+import { Defender } from "../defenders/Defender.ts";
+import { Grid } from "../grid/Grid.ts";
+import { OverlordLaser } from "../boss/OverlordLaser.ts";;
 
 export class BossAbilities {
-    private lastEMP: number;
-    private lastReinforcements: number;
+    private attackTimer = 0;
+    private attackLane = 0;
+    private empTimer = 0;
+    private laser: OverlordLaser;
 
-    constructor(
-        private readonly boss: BossEnemy,
-        private readonly handlers: BossAbilityHandlers,
-        startTimeMs: number
+   constructor(
+        private scene: Phaser.Scene,
+        private boss: BossEnemy,
+        private onEMP: (duration: number) => void,
+        defenders: Defender[],
+        grid: Grid
     ) {
-        this.lastEMP = startTimeMs;
-        this.lastReinforcements = startTimeMs;
+        this.laser = new OverlordLaser(scene, boss, defenders, grid);
     }
 
-    /** Call ONLY while the final boss fight is active. */
-    update(nowMs: number): void {
+    update(delta: number): void {
         if (!this.boss.active || this.boss.health <= 0) return;
 
-        if (nowMs - this.lastEMP >= BossEnemy.EMP_COOLDOWN_MS) {
-            this.lastEMP = nowMs;
-            this.handlers.onEMP(BossEnemy.EMP_DURATION_MS);
+        this.attackTimer += delta;
+        this.empTimer += delta;
+
+        if (this.attackTimer >= this.getAttackInterval()) {
+            this.attackTimer = 0;
+            this.shoot();
         }
 
-        // Overdrive summons reinforcements 50% more frequently.
-        const reinforcementCooldown = this.boss.isOverdrive
-            ? BossEnemy.REINFORCEMENT_COOLDOWN_MS / 1.5
-            : BossEnemy.REINFORCEMENT_COOLDOWN_MS;
-
-        if (nowMs - this.lastReinforcements >= reinforcementCooldown) {
-            this.lastReinforcements = nowMs;
-            this.handlers.onReinforcements(2);
+        if (this.empTimer >= BossEnemy.EMP_COOLDOWN_MS) {
+            this.empTimer = 0;
+            this.onEMP(BossEnemy.EMP_DURATION_MS);
         }
     }
 
-    /** The eventual ranged-attack system can read this interval. */
-    getAttackIntervalMs(): number {
-        return this.boss.isOverdrive
-            ? BossEnemy.ATTACK_INTERVAL_MS / 1.5
-            : BossEnemy.ATTACK_INTERVAL_MS;
+    private shoot(): void {
+        const row = this.attackLane % GRID_ROWS;
+        this.attackLane++;
+
+        const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
+
+        const projectile = new EnemyProjectile(
+            this.scene,
+            this.boss.x - this.boss.displayWidth / 2,
+            y
+        );
+
+        projectile.damage = this.getAttackDamage();
+    }
+
+    private getAttackInterval(): number {
+        switch (this.boss.phases.phase) {
+            case 2: return 1700;
+            case 3: return 1400;
+            case 4: return 1000;
+            default: return 2000;
+        }
+    }
+
+    private getAttackDamage(): number {
+        switch (this.boss.phases.phase) {
+            case 2: return 250;
+            case 3: return 300;
+            case 4: return 400;
+            default: return 200;
+        }
     }
 }
