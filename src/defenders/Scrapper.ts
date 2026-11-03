@@ -40,7 +40,7 @@ export class Scrapper extends Defender {
             : target.health;
 
             // Level 2 upgrade against Crushers
-            if (this.upgradeLevel === 2 && target instanceof CrusherEnemy) {
+            if (this.upgradeLevel >= 2 && target instanceof CrusherEnemy) {
                 damage *= SETTINGS.defenders.scrapper.upgradeDamageMultiplier;
             }
 

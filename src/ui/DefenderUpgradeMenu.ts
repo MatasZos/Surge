@@ -21,7 +21,11 @@ export class DefenderUpgradeMenu {
         // Get the defender's upgrade cost from the spreadsheet settings
         const type = defender.getData("defenderType") as keyof typeof SETTINGS.defenders;
 
-        const cost = SETTINGS.defenders[type]?.upgradeCost;
+        const config = SETTINGS.defenders[type];
+
+        const cost = defender.upgradeLevel === 1
+            ? config?.upgradeCost
+            : config?.upgradeLevel3Cost;
 
         const menuWidth = 200;
         const menuHeight = 100;

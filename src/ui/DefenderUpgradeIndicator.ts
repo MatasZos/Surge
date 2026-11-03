@@ -39,6 +39,18 @@ export class DefenderUpgradeIndicator {
     show(): void {
         if (!this.defender.active) return;
 
+        this.levelText.setText("LVL " + this.defender.upgradeLevel);
+
+        const color = this.defender.upgradeLevel === 3
+            ? 0xffd700
+            : 0x00ff99;
+
+        this.levelText.setColor(
+            this.defender.upgradeLevel === 3 ? "#ffd700" : "#00ff99"
+        );
+
+        this.outline.setStrokeStyle(2, color);
+
         // Use the defender's final display size
         this.outline.setPosition(
             this.defender.x,

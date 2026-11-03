@@ -34,7 +34,7 @@ export class Landmine extends Defender {
                 let damage = this.damage;
 
                 // Level 2 damage upgrade
-                if (this.upgradeLevel === 2) {
+                if (this.upgradeLevel >= 2) {
                     damage *= SETTINGS.defenders.landmine.upgradeDamageMultiplier;
                 }
                 

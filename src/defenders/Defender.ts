@@ -43,16 +43,15 @@ export class Defender extends Phaser.GameObjects.Sprite {
     }
 
    upgrade(): boolean {
-        if (!this.canUpgrade()) 
-        return false;
+        if (!this.canUpgrade()) return false;
 
-        this.upgradeLevel = 2;
+        this.upgradeLevel++;
         this.upgradeIndicator.show();
         return true;
     }
 
     canUpgrade(): boolean {
-        return this.active && this.upgradeLevel < 2;
+        return this.active && this.upgradeLevel < 3;
     }
 
     private updateHealthBar() {

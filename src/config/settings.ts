@@ -76,7 +76,8 @@ export const SETTINGS = {
             projectileSpeed: 0,
             projectileDamage: 0,
             upgradeCost: 0,
-            upgradeDamageMultiplier: 0
+            upgradeDamageMultiplier: 0,
+            upgradeLevel3Cost: 0
         },
 
         generator: {
@@ -89,7 +90,8 @@ export const SETTINGS = {
             projectileDamage: 0,
             upgradeCost: 0,
             upgradeDamageMultiplier: 0,
-            upgradeEnergyMultiplier: 0
+            upgradeEnergyMultiplier: 0,
+            upgradeLevel3Cost: 0
         },
 
         barricade: {
@@ -102,7 +104,8 @@ export const SETTINGS = {
             projectileDamage: 0,
             upgradeCost: 0,
             upgradeDamageMultiplier: 0,
-            upgradeHealthMultiplier: 0
+            upgradeHealthMultiplier: 0,
+            upgradeLevel3Cost: 0
         },
 
         cryogunner: {
@@ -116,7 +119,8 @@ export const SETTINGS = {
             slowMultiplier: 0,
             slowDurationMs: 0,
             upgradeCost: 0,
-            upgradeDamageMultiplier: 0
+            upgradeDamageMultiplier: 0,
+            upgradeLevel3Cost: 0
         },
 
         landmine: {
@@ -127,7 +131,8 @@ export const SETTINGS = {
             armingMs: 0,
             blastRadius: 0,
             upgradeCost: 0,
-            upgradeDamageMultiplier: 0
+            upgradeDamageMultiplier: 0,
+            upgradeLevel3Cost: 0
         },
 
         scrapper: {
@@ -139,7 +144,8 @@ export const SETTINGS = {
             upgradeCost: 0,
             upgradeDamageMultiplier: 0,
             upgradeEnergyMultiplier: 0,
-            upgradeHealthMultiplier: 0
+            upgradeHealthMultiplier: 0,
+            upgradeLevel3Cost: 0
         },
 
         dualbarrel: {
@@ -151,7 +157,8 @@ export const SETTINGS = {
             projectileSpeed: 0,
             projectileDamage: 0,
             upgradeCost: 0,
-            upgradeDamageMultiplier: 0
+            upgradeDamageMultiplier: 0,
+            upgradeLevel3Cost: 0
         }
 
     },

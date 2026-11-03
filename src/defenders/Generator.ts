@@ -63,7 +63,7 @@ export class Generator extends Defender {
 
         let amount = SETTINGS.energy.generatorPickupValue;
 
-        if (this.upgradeLevel === 2) {
+        if (this.upgradeLevel >= 2) {
             amount *= SETTINGS.defenders.generator.upgradeEnergyMultiplier;
     }
 

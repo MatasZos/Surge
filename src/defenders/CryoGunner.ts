@@ -38,7 +38,7 @@ export class CryoGunner extends Defender {
         const projectile = new CryoProjectile(this.scene, this.x + 25, this.y - 2);
 
         // Level 2 damage upgrade
-        if (this.upgradeLevel === 2) {
+        if (this.upgradeLevel >= 2) {
             projectile.damage *= SETTINGS.defenders.cryogunner.upgradeDamageMultiplier;
         }
         console.log("Cryo Gunner Level:", this.upgradeLevel, "Damage:", projectile.damage);
