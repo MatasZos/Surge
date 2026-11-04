@@ -28,7 +28,12 @@ export class Landmine extends Defender {
             Phaser.Geom.Intersects.RectangleToRectangle(enemy.getBounds(), this.getBounds()));
         if (!triggered) return false;
 
-        const radius = SETTINGS.defenders.landmine.blastRadius;
+        // Level 3 increases the explosion radius by 50%
+        const radius = this.upgradeLevel === 3
+        
+        ? SETTINGS.defenders.landmine.blastRadius * 1.5
+        : SETTINGS.defenders.landmine.blastRadius;
+
         for (const enemy of enemies) {
             if (enemy.active && Phaser.Math.Distance.Between(this.x, this.y, enemy.x, enemy.y) <= radius) {
                 let damage = this.damage;

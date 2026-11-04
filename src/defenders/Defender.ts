@@ -42,6 +42,20 @@ export class Defender extends Phaser.GameObjects.Sprite {
         this.updateHealthBar();
     }
 
+    // Restore health without going over maximum health
+    protected heal(amount: number): void {
+        if (!this.active) return;
+
+        this.health = Math.min(this.health + amount, this.maxHealth);
+        this.updateHealthBar();
+    }
+
+    protected increaseMaxHealth(multiplier: number): void {
+        this.maxHealth *= multiplier;
+        this.health = Math.min(this.health, this.maxHealth);
+        this.updateHealthBar();
+    }
+
    upgrade(): boolean {
         if (!this.canUpgrade()) return false;
 
