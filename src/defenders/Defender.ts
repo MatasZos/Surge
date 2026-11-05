@@ -68,6 +68,17 @@ export class Defender extends Phaser.GameObjects.Sprite {
         return this.active && this.upgradeLevel < 3;
     }
 
+    //reposition defender to new cell
+    public repositionTo(x:number, y:number): void{
+        this.setPosition(x,y);
+        this.updateHealthBar();
+
+        if(this.upgradeLevel>1){
+            this.upgradeIndicator.show();
+        }
+
+    }
+
     private updateHealthBar() {
 
         this.healthBar.clear();

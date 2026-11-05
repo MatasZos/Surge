@@ -77,4 +77,10 @@ export class Scrapper extends Defender {
         this.statusIndicator?.destroy();
         super.destroy(fromScene);
     }
+
+    //reposition scrapper while keeping timer
+    override repositionTo(x:number, y:number):void{
+        super.repositionTo(x,y);
+        this.statusIndicator.setPosition(x,y-43);
+    }
 }

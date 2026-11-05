@@ -100,6 +100,20 @@ export class DefenderToolbar {
         };
         recallBackground.on("pointerdown", selectRecall);
         recallIcon.on("pointerdown", selectRecall);
+
+        const moveX = recallX + 120;
+
+        const moveButton = this.scene.add.rectangle(moveX, cardY, 100, 88, this.normalColor).setDepth(11).setInteractive({useHandCursor:true});
+
+        this.buttons.push(moveButton);
+
+        this.scene.add.text(moveX, cardY, "MOVE", {fontSize:"20px",color:"#ffffff",fontStyle:"bold"}).setOrigin(0.5).setDepth(12);
+
+        moveButton.on("pointerdown", () => { this.selectedType="move";
+        this.onSelect("move")
+        this.resetButtons();
+        moveButton.setFillStyle(this.selectedColor);
+        moveButton.setStrokeStyle(2,0x00ff99)})
     }
 
     private addButton(x: number, y: number, name: string, type: DefenderType): void {

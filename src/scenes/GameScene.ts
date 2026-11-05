@@ -34,6 +34,9 @@ import { DefenderUpgradeMenu } from "../ui/DefenderUpgradeMenu.ts";
 export class GameScene extends Phaser.Scene {
     private grid!: Grid;
     private selectedDefender: string | null = null;
+    private movingDefender: Defender | null = null;
+
+    private readonly moveCost = 50;
 
     private enemies: Enemy[] = [];
     private enemyProjectiles: EnemyProjectile[] = [];
@@ -65,7 +68,7 @@ export class GameScene extends Phaser.Scene {
     };
 
     private isDefenderUnlocked(type: string): boolean{
-        if (type === "recall"){
+        if (type === "recall" || type === "move"){
             return true;
         }
 
@@ -104,6 +107,7 @@ export class GameScene extends Phaser.Scene {
     private resetGameState(): void {
         this.energyManager = new EnergyManager();
         this.selectedDefender = null;
+        this.movingDefender = null;
         this.waveManager.reset();
         console.log( "Enemies per wave:",SETTINGS.waves.startingEnemiesPerWave);
         this.enemies = [];
@@ -319,6 +323,70 @@ export class GameScene extends Phaser.Scene {
             return;
         }
 
+        if(this.selectedDefender === "move"){
+            this.upgradeMenu.close();
+
+            const clickedDefender = this.defenders.some(defender=>defender.active && defender.getBounds().contains(pointer.worldX, pointer.worldY));
+
+            if(clickedDefender){
+                return;
+            }
+
+            //defender selection and repositionin
+            if(!this.movingDefender?.active){
+                this.showNotification("SELECT A DEFENDER FIRST");
+                return;
+            }
+
+            //work out which grid has been clicked
+            const col = Math.floor((pointer.worldX-GRID_X)/CELL_WIDTH);
+            const row = Math.floor((pointer.worldY-GRID_Y)/CELL_HEIGHT)
+
+            //check the battlefield boundaries
+            if(row<0 || row>= GRID_ROWS || col<0 || col>= GRID_COLS){
+                this.showNotification("INVALID CELL");
+                return;
+            }
+
+            //check if the destination cell is free
+            const cell = this.grid.getCell(row,col);
+
+            if(!cell.isEmpty()){
+                this.showNotification("CELL OCCUPIED");
+                return;
+            }
+            
+            const defender = this.movingDefender;
+            const oldRow = defender.getData("gridRow") as number;
+            const oldCol = defender.getData("gridCol") as number;
+
+            if(this.grid.getCell(oldRow,oldCol).occupant !== defender){
+                this.showNotification("DEFENDER POSITION INVALID");
+                return;
+            }
+
+            if(!this.energyManager.spendEnergy(this.moveCost)){
+                this.showNotification("NOT ENOUGH ENERGY");
+                return;
+            }
+            this.updateEnergyText();
+            this.grid.removeOccupant(oldRow,oldCol);
+            this.grid.placeHuman(row,col,defender);
+
+            const x = GRID_X + col * CELL_WIDTH + CELL_WIDTH/2;
+            const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT/2;
+
+            defender.repositionTo(x,y);
+
+            defender.setData("gridRow", row);
+            defender.setData("gridCol", col);
+            defender.setData("hasMoved", true);
+            this.movingDefender = null;
+
+            this.showNotification("DEFENDER MOVED");
+            return;
+        }
+
         // Check if the player clicked on a defender
         const clickedDefender = this.defenders.some(defender =>
             defender.active &&
@@ -515,7 +583,18 @@ private startBossWave(): void {
             this.lastPlaced,
             () => this.updateEnergyText(),
             (defender: Defender) => {
-                if (this.selectedDefender !== "recall" &&
+                //select a defender for repositioning
+                if(this.selectedDefender==="move"){
+                    if(defender.getData("hasMoved")===true){
+                        this.showNotification("DEFENDER ALREADY MOVED");
+                        return;
+                    }
+                    this.movingDefender = defender;
+                    this.upgradeMenu.close();
+                    this.showNotification("SELECT AN EMPTY CELL TO MOVE");
+                    return;
+                }
+                if (this.selectedDefender !== "recall" && this.selectedDefender !== "move" &&
                     !this.defenderDrag?.isDragging()) {
                     this.upgradeMenu.show(defender);
                 }

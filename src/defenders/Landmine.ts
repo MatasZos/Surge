@@ -60,4 +60,10 @@ export class Landmine extends Defender {
         this.indicator?.destroy();
         super.destroy(fromScene);
     }
+
+    //reposition landmine while keeping timer
+    override repositionTo(x:number, y:number){
+        super.repositionTo(x,y);
+        this.indicator.setPosition(x,y-34);
+    }
 }

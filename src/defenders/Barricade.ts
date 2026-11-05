@@ -31,7 +31,7 @@ export class Barricade extends Defender {
         if (!super.upgrade()) return false;
 
         if (this.upgradeLevel === 2) {
-            this.increaseMaxhHealth(
+            this.increaseMaxHealth(
                 SETTINGS.defenders.barricade.upgradeHealthMultiplier
 
             );
