@@ -45,7 +45,7 @@ defenders.shooter.health,300
 defenders.shooter.damage,0
 defenders.shooter.cost,100
 defenders.shooter.cooldown_ms,1000
-defenders.shooter.fire_interval_ms,100
+defenders.shooter.fire_interval_ms,800
 defenders.shooter.projectile_speed,300
 defenders.shooter.projectile_damage,100
 defenders.shooter.slow_multiplier,0
@@ -96,7 +96,7 @@ defenders.dualbarrel.health,300
 defenders.dualbarrel.damage,0
 defenders.dualbarrel.cost,200
 defenders.dualbarrel.cooldown_ms,1000
-defenders.dualbarrel.fire_interval_ms,100
+defenders.dualbarrel.fire_interval_ms,800
 defenders.dualbarrel.projectile_speed,350
 defenders.dualbarrel.projectile_damage,100
 defenders.dualbarrel.slow_multiplier,0
@@ -113,7 +113,7 @@ defenders.cryogunner.health,300
 defenders.cryogunner.damage,20
 defenders.cryogunner.cost,175
 defenders.cryogunner.cooldown_ms,1000
-defenders.cryogunner.fire_interval_ms,100
+defenders.cryogunner.fire_interval_ms,800
 defenders.cryogunner.projectile_speed,300
 defenders.cryogunner.projectile_damage,100
 defenders.cryogunner.slow_multiplier,0.5

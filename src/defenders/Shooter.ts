@@ -10,6 +10,7 @@ export class Shooter extends Defender {
 
     private shootTimer: Phaser.Time.TimerEvent;
     private enemies: Enemy[];
+    private shotCount = 0;
 
     constructor(
         scene: Phaser.Scene,
@@ -44,6 +45,15 @@ export class Shooter extends Defender {
         }
 
         const projectile = new Projectile(this.scene, this.x + 25, this.y - 2);
+        // Level 3 electric shot every third projectile
+        if (this.upgradeLevel === 3) {
+            this.shotCount++;
+
+            if (this.shotCount % 3 === 0) {
+                projectile.chainShot = true;
+                projectile.setTint(0x00ffff);
+            }
+        }
 
         if (this.upgradeLevel >= 2) {
             projectile.damage *= SETTINGS.defenders.shooter.upgradeDamageMultiplier;

@@ -6,7 +6,7 @@ export class Projectile extends Phaser.GameObjects.Sprite {
 
     damage: number = SETTINGS.defenders.shooter.projectileDamage;
     speed: number = SETTINGS.defenders.shooter.projectileSpeed;
-
+    chainShot = false;
 
     constructor(
         scene: Phaser.Scene,
