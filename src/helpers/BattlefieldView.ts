@@ -2,9 +2,8 @@
 import Phaser from "phaser";
 
 import {
+    GAME_WIDTH,
     GAME_HEIGHT,
-    SIDEBAR_WIDTH,
-    BATTLEFIELD_WIDTH,
     GRID_ROWS,
     GRID_COLS,
     GRID_X,
@@ -13,29 +12,22 @@ import {
     CELL_HEIGHT
 } from "../constants.ts";
 
+
 export class BattlefieldView {
     constructor(private scene: Phaser.Scene) {}
 
-    createBackground(): void {
-        const background = this.scene.add.image(
-            SIDEBAR_WIDTH + BATTLEFIELD_WIDTH / 2,
-            GAME_HEIGHT / 2,
-            "battlefield"
-        );
+    
+createBackground(): void {
+    const background = this.scene.add.image(
+        GAME_WIDTH / 2,
+        GAME_HEIGHT / 2,
+        "battlefield"
+    );
 
-        background.setDisplaySize(BATTLEFIELD_WIDTH, GAME_HEIGHT);
-        background.setDepth(-10);
+    background.setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
+    background.setDepth(-10);
+}
 
-        // Decorative fortress extension fills the former left sidebar.
-        // Keep it behind the stronghold and HUD; do not move the gameplay grid.
-        const fortress = this.scene.add.image(
-            SIDEBAR_WIDTH / 2,
-            GAME_HEIGHT / 2,
-            "fortressExtension"
-        );
-        fortress.setDisplaySize(SIDEBAR_WIDTH, GAME_HEIGHT);
-        fortress.setDepth(-9);
-    }
 
     drawGrid(): void {
         const graphics = this.scene.add.graphics();

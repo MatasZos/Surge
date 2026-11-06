@@ -29,10 +29,17 @@ export class Stronghold extends Phaser.GameObjects.Sprite {
         // Stronghold health remains unchanged
         this.health = SETTINGS.stronghold.startingHealth;
         this.maxHealth = this.health;
+ 
+       
+        const newHeight = GRID_ROWS * CELL_HEIGHT + 40;
+        const newWidth = 320;
 
-        // The wall covers all five lanes
-        this.setDisplaySize(150, GRID_ROWS * CELL_HEIGHT + 40);
+        this.setDisplaySize(newWidth, newHeight);
+        this.x -= (newWidth - 150) / 2;
+        this.x += 20;
         this.setDepth(2);
+
+
 
         // Health label
         this.healthLabel = scene.add.text(

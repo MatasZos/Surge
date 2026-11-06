@@ -12,11 +12,12 @@ export const BATTLEFIELD_WIDTH = 1200;
 export const GRID_ROWS = 5;
 export const GRID_COLS = 9;
 
-export const CELL_WIDTH = 113;
-export const CELL_HEIGHT = 122;
+export const CELL_WIDTH = 120;
+export const CELL_HEIGHT = 120;
 
-export const GRID_X = 295;
+export const GRID_X = 210;
 export const GRID_Y = 135;
+
 
 
 // Defender costs
