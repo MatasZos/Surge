@@ -81,6 +81,9 @@ export class GameScene extends Phaser.Scene {
     private intermissionCountdown?: Phaser.Time.TimerEvent;
     private intermissionEnd?: Phaser.Time.TimerEvent;
 
+    private intermissionBossNext = false;
+    private earlyWaveButton?: Phaser.GameObjects.Text;
+
     private notificationQueue: string[] = [];
     private notificationShowing = false;
 
@@ -121,6 +124,10 @@ export class GameScene extends Phaser.Scene {
         this.intermissionCountdown= undefined;
         this.intermissionEnd = undefined;
         this.intermissionActive = false;
+
+        this.intermissionBossNext = false;
+        this.earlyWaveButton = undefined;
+
         this.notificationQueue = [];
         this.notificationShowing = false;
 
@@ -230,6 +237,9 @@ export class GameScene extends Phaser.Scene {
                     this.showNotification("DEFENDER LOCKED!");
                     return;
                 }
+                if(defender !== "move"){
+                    this.movingDefender = null;
+                }
 
                 this.selectedDefender = defender;
             },
@@ -261,6 +271,26 @@ export class GameScene extends Phaser.Scene {
         );
         this.waveText.setOrigin(1, 1);
         this.waveText.setDepth(20);
+
+        //next wave early button
+        this.earlyWaveButton = this.add.text( this.scale.width/2,this.scale.height -65,  `START NEXT WAVE (+${SETTINGS.waves.earlyWaveBonusEnergy} ENERGY)`, {fontSize:"20px", color:"#ffffff", backgroundColor:"#244b73", fontStyle:"bold", padding:{x:18,y:10}
+        });
+
+        // Set up the early wave button
+        this.earlyWaveButton.setOrigin(0.5);
+        this.earlyWaveButton.setDepth(60);
+        this.earlyWaveButton.setScrollFactor(0);
+        this.earlyWaveButton.setInteractive({ useHandCursor: true });
+        this.earlyWaveButton.setVisible(false);
+
+        //make the next wave early button clickable
+        this.earlyWaveButton.on("pointerdown", (_pointer: Phaser.Input.Pointer,
+        _localX: number,
+        _localY: number,
+        event: Phaser.Types.Input.EventData)=> {
+            event.stopPropagation();
+            this.finishWaveIntermission(true);
+        });
     }
 
     private createStronghold(): void {
@@ -449,14 +479,16 @@ export class GameScene extends Phaser.Scene {
         }
 
         this.intermissionActive = true;
+        this.intermissionBossNext=bossNext;
+        this.earlyWaveButton?.setVisible(!bossNext);
         this.showNotification(`WAVE ${this.waveManager.getWave()} CLEARED!`);
 
         //read the duration from excel
+        const durationMs = SETTINGS.waves.waveIntermissionMs;
 
-        const configuredDelay = SETTINGS.waves.waveIntermissionMs;
-
-        //this fallback prevenmts broken config from freezing progress
-        const durationMs = Number.isFinite(configuredDelay) && configuredDelay > 0 ? configuredDelay: 1000;
+        if (!Number.isFinite(durationMs) || durationMs <= 0) {
+            throw new Error("Invalid csv configuration" );
+        }
 
         let secondsRemaining = Math.ceil(durationMs / 1000)
 
@@ -486,24 +518,57 @@ export class GameScene extends Phaser.Scene {
 
         //start the next wave after the intermission
         this.intermissionEnd = this.time.delayedCall(durationMs, () => {
-            this.intermissionCountdown?.remove();
-            this.intermissionCountdown = undefined;
-            this.intermissionEnd = undefined;
-            
-            if (bossNext) {
-                this.startBossWave();
-            } 
-            else {
-                this.waveManager.nextWave();
-                this.showNotification(`WAVE ${this.waveManager.getWave()} INCOMING!` );
-                this.waveText.setText("Wave " + this.waveManager.getWave() +"/" + this.waveManager.getMaxWaves());
-            }
-            this.intermissionActive = false;
+            this.finishWaveIntermission();
         });
+           
     }
     
     
+private finishWaveIntermission(startedEarly = false): void{
+    if(!this.intermissionActive){
+        return;
+    }
 
+    //thge boss intermission can not be skipped
+    if(startedEarly && this.intermissionBossNext){
+        return;
+    }
+
+    const bossNext = this.intermissionBossNext;
+
+    //prevent this intermission from finishing two times
+    this.intermissionActive = false;
+
+    //cancel the two timers
+    this.intermissionCountdown?.remove();
+    this.intermissionEnd?.remove();
+
+    this.intermissionCountdown = undefined;
+    this.intermissionEnd = undefined;
+    this.intermissionBossNext = false;
+
+    this.earlyWaveButton?.setVisible(false);
+
+    //reward the player if they decide to start the wave early
+    if(startedEarly){
+        const bonus = SETTINGS.waves.earlyWaveBonusEnergy;
+
+        this.energyManager.addEnergy(bonus);
+        this.updateEnergyText();
+        this.showNotification(`EARLY WAVE BONUS: +${bonus} ENERGY`);
+    }
+
+    //continue the existing wave progression
+    if(bossNext){
+        this.startBossWave();
+    } else{
+        this.waveManager.nextWave();
+        this.waveText.setText( `Wave ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
+
+        this.showNotification(`WAVE ${this.waveManager.getWave()} INCOMING!`);
+    }
+
+}
     
 private startBossWave(): void {
     const x = GRID_X + GRID_COLS * CELL_WIDTH + 15;

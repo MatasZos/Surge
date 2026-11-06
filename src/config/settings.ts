@@ -186,6 +186,7 @@ export const SETTINGS = {
         firstEnemyDelayMs: 0,
         enemySpawnIntervalMs: 0,
         waveIntermissionMs: 0,
+        earlyWaveBonusEnergy:0,
         meleeSpawnProbability: 0.0,
         rangedSpawnProbability: 0.0,
         crusherSpawnProbability: 0.0,

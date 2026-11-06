@@ -107,13 +107,19 @@ export class DefenderToolbar {
 
         this.buttons.push(moveButton);
 
-        this.scene.add.text(moveX, cardY, "MOVE", {fontSize:"20px",color:"#ffffff",fontStyle:"bold"}).setOrigin(0.5).setDepth(12);
+        const moveIcon = this.scene.add.image(moveX,cardY -13, "move").setDisplaySize(42,42).setDepth(12).setInteractive({useHandCursor:true});
 
-        moveButton.on("pointerdown", () => { this.selectedType="move";
-        this.onSelect("move")
-        this.resetButtons();
-        moveButton.setFillStyle(this.selectedColor);
-        moveButton.setStrokeStyle(2,0x00ff99)})
+        this.scene.add.text(moveX, cardY+28, "Move",{fontSize:"12px", color:"#ffffff"}).setOrigin(0.5).setDepth(12);
+
+        const selectMove = () => { 
+            this.selectedType="move";
+            this.onSelect("move");
+            this.resetButtons();
+            moveButton.setFillStyle(this.selectedColor);
+            moveButton.setStrokeStyle(2,0x00ff99);
+        };
+        moveButton.on("pointerdown",selectMove);
+        moveIcon.on("pointerdown", selectMove);
     }
 
     private addButton(x: number, y: number, name: string, type: DefenderType): void {

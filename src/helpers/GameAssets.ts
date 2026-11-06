@@ -26,6 +26,7 @@ export function loadGameAssets(scene: Phaser.Scene): void {
 
     // UI
     scene.load.image("recall", "assets/ui/recall button.png");
+    scene.load.image("move", "assets/ui/move.png");
 
     // Stronghold and battlefield
     scene.load.image("stronghold", "assets/stronghold/stronghold_wall.png");
