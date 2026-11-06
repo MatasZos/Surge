@@ -51,7 +51,6 @@ export class Shooter extends Defender {
 
             if (this.shotCount % 3 === 0) {
                 projectile.chainShot = true;
-                projectile.setTint(0x00ffff);
             }
         }
 

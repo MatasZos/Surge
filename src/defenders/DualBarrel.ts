@@ -73,7 +73,10 @@ export class DualBarrel extends Defender {
         if (this.upgradeLevel >= 2) {
             projectile.damage *= SETTINGS.defenders.dualbarrel.upgradeDamageMultiplier;
         }
-        console.log("Dual Barrel Level:", this.upgradeLevel, "Damage:", projectile.damage);
+        // Level 3 explosive rounds
+        if (this.upgradeLevel === 3 && Math.random() < 0.25) {
+            projectile.explosiveShot = true;
+        }
     }
 
     destroy(fromScene?: boolean) {

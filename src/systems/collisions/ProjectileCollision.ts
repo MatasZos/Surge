@@ -65,6 +65,36 @@ export class ProjectileCollision {
                 }
             }
 
+            // Level 3 explosive rounds
+            if (projectile.explosiveShot) {
+                for (const other of this.enemies) {
+                    if (
+                        other.active &&
+                        other !== enemy &&
+                        Phaser.Math.Distance.Between(
+                            enemy.x, enemy.y,
+                            other.x, other.y
+                        ) < 80
+                    ) {
+                        other.takeDamage(projectile.damage * 0.5);
+                    }
+                }
+
+                const explosion = projectile.scene.add.circle(
+                    enemy.x,
+                    enemy.y,
+                    80,
+                    0xff9900,
+                    0.4
+                );
+
+                explosion.setDepth(100);
+
+                projectile.scene.time.delayedCall(200, () => {
+                    explosion.destroy();
+                });
+            }
+            
             enemy.takeDamage(projectile.damage);
 
     if (
