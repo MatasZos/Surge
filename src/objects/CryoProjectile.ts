@@ -3,6 +3,8 @@ import { Projectile } from "./projectile.ts";
 import { SETTINGS } from "../config/settings.ts";
 
 export class CryoProjectile extends Projectile {
+    frozenShock = false;
+    
     readonly slowMultiplier = SETTINGS.defenders.cryogunner.slowMultiplier;
     readonly slowDurationMs =  SETTINGS.defenders.cryogunner.slowDurationMs;
 

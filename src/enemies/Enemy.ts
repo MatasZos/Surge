@@ -13,13 +13,22 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     private slowedUntil = 0;
 
     applySlow(multiplier: number, durationMs: number): void {
-    if (!this.active) return;
+    if (!this.active) return;   
+
+    const now = this.scene.time.now;
+
+    // Don't let normal slow attacks extend a freeze
+    if (this.slowMultiplier === 0 && now < this.slowedUntil && multiplier > 0) {
+        return;
+    }
+
+    // Reset expired effects
+    if (now >= this.slowedUntil) {
+        this.slowMultiplier = 1;
+    }
 
     this.slowMultiplier = Math.min(this.slowMultiplier, multiplier);
-
-    this.slowedUntil = Math.max(
-        this.slowedUntil,
-        this.scene.time.now + durationMs
+    this.slowedUntil = Math.max(this.slowedUntil, this.scene.time.now + durationMs
     );
 }
 

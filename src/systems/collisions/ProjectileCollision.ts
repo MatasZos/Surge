@@ -102,14 +102,21 @@ export class ProjectileCollision {
         enemy.active && 
         !(enemy instanceof BossEnemy)
     ) {
+
+    if (projectile.frozenShock) {
+        // Freeze enemy for 2 second 
+        enemy.applySlow(0, 2000);
+    } else {
+
         enemy.applySlow(
-             projectile.slowMultiplier,
+            projectile.slowMultiplier,
             projectile.slowDurationMs
         );
     }
 
-projectile.destroy();
-break;
+    projectile.destroy();
+    break;
+                }
             }
         }
     }

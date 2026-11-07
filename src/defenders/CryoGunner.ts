@@ -7,6 +7,7 @@ import { SETTINGS } from "../config/settings.ts";
 
 export class CryoGunner extends Defender {
     private shootTimer: Phaser.Time.TimerEvent;
+    private shotCount = 0;
 
     constructor(
         scene: Phaser.Scene,
@@ -41,7 +42,15 @@ export class CryoGunner extends Defender {
         if (this.upgradeLevel >= 2) {
             projectile.damage *= SETTINGS.defenders.cryogunner.upgradeDamageMultiplier;
         }
-        console.log("Cryo Gunner Level:", this.upgradeLevel, "Damage:", projectile.damage);
+
+        // Level 3 Frozen Shock every 8 shot
+        if (this.upgradeLevel === 3) {
+            this.shotCount++;
+
+            if (this.shotCount % 8 === 0) {
+                projectile.frozenShock = true;
+            }
+        }
     }
 
     destroy(fromScene?: boolean): void {
