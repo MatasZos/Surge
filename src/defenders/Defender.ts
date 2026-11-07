@@ -13,7 +13,7 @@ export class Defender extends Phaser.GameObjects.Sprite {
     private maxHealth: number;
     private healthBar: Phaser.GameObjects.Graphics;
     private upgradeIndicator: DefenderUpgradeIndicator;
-
+    
     constructor(
         scene: Phaser.Scene,
         x: number,

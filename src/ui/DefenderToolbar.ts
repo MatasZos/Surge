@@ -103,7 +103,13 @@ export class DefenderToolbar {
 
         const moveX = recallX + 120;
 
-        const moveButton = this.scene.add.rectangle(moveX, cardY, 100, 88, this.normalColor).setDepth(11).setInteractive({useHandCursor:true});
+        this.scene.add.rectangle(moveX, cardY, 116, 122, 0x101b2a)
+            .setStrokeStyle(3, 0x647589).setDepth(9);
+
+        this.scene.add.rectangle(moveX, cardY, 106, 112, 0x243348, 0.98)
+            .setStrokeStyle(1, 0x0c131e).setDepth(10);
+
+        const moveButton = this.scene.add.rectangle(moveX, cardY, 100, 88, this.normalColor).setStrokeStyle(1, 0x72839a).setDepth(11).setInteractive({useHandCursor:true});
 
         this.buttons.push(moveButton);
 
