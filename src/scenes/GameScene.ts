@@ -8,7 +8,7 @@ import { BossEncounter } from "../helpers/BossEncounter.ts";
 import { BattlefieldView } from "../helpers/BattlefieldView.ts";
 import { DefenderPlacement } from "../helpers/DefenderPlacement.ts";
 import { EnemySpawner } from "../helpers/EnemySpawner.ts";
-import { EnergyDrops } from "../helpers/EnergyDrops.ts";
+import { setupGameEvents } from "../helpers/GameEvents.ts";
 import { Grid } from "../grid/Grid.ts";
 import { Defender } from "../defenders/Defender.ts";
 import { Enemy } from "../enemies/Enemy.ts";
@@ -26,7 +26,9 @@ import { GameNotifications } from "../ui/GameNotifications.ts";
 import { GameUI } from "../ui/GameUI.ts";
 import { DefenderMovement } from "../helpers/DefenderMovement.ts";
 import { WaveIntermission } from "../helpers/WaveIntermission.ts";
-import { DevMenu } from "../ui/DevMenu.ts";
+import { setupGameInput } from "../helpers/GameInput.ts";
+import { setupGameDefenders } from "../helpers/GameDefenderSetup.ts";
+import { updateEnemies, updateProjectiles } from "../helpers/GameEntityUpdates.ts";
 
 export class GameScene extends Phaser.Scene {
     private grid!: Grid;
@@ -75,8 +77,6 @@ export class GameScene extends Phaser.Scene {
 
     //final boss enemy encounter
     private bossEncounter!: BossEncounter;
-
-    private devMenu!: DevMenu;
 
 
     constructor() {
@@ -167,41 +167,35 @@ export class GameScene extends Phaser.Scene {
     }
 
     private setupGameEvents(): void {
-        this.events.on("next-level", (level:number) =>{
-            this.currentLevel = level;
-            this.waveManager.startLevel(level)
-            this.gameUI.updateUnlocks(level);
-            this.battlefieldView.updateLevelIndicator(level);
+        setupGameEvents(
+            this,
+            (level:number) =>{
+                this.currentLevel = level;
+                this.waveManager.startLevel(level)
+                this.gameUI.updateUnlocks(level);
+                this.battlefieldView.updateLevelIndicator(level);
+                this.gameUI.updateWaveText();
 
-            this.gameUI.updateWaveText();
+                //new level notif
+                this.showNotification(`LEVEL ${level} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
 
-            //new level notif
-             this.showNotification(`LEVEL ${level} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
+                //first ranged enemy notif
+                if (level === 2) {
+                    this.showNotification("NEW ENEMY: RANGED ROBOT!");
+                }
 
-             // first ranged enemy notif
-             if (level === 2) {
-                this.showNotification("NEW ENEMY: RANGED ROBOT!");
+                //first crusher notif
+                if (level === 3) {
+                    this.showNotification("WARNING: CRUSHER INCOMING!");
+                }
+            },
+            this.projectiles,
+            this.enemyProjectiles,
+            (amount: number) => {
+                this.energyManager.addEnergy(amount);
+                this.updateEnergyText();
             }
-            // first crusher notif
-            if (level === 3) {
-                this.showNotification("WARNING: CRUSHER INCOMING!");
-            }
-        });
-
-        this.events.on("projectile-created", (projectile: Projectile) => {
-            this.projectiles.push(projectile);
-        });
-
-        this.events.on("enemy-projectile-created", (projectile: EnemyProjectile) => {
-            this.enemyProjectiles.push(projectile);
-        });
-
-        this.events.on("energy-collected", (amount: number) => {
-            this.energyManager.addEnergy(amount);
-            this.updateEnergyText();
-        });
-
-        new EnergyDrops(this).setup();
+        );
     }
 
     private handleGridClick(pointer: Phaser.Input.Pointer): void {
@@ -257,12 +251,7 @@ export class GameScene extends Phaser.Scene {
         });
     }
 
-    create(): void {
-        document.body.classList.remove("menu-active");
-        this.resetGameState();
-        this.notifications = new GameNotifications(this);
-        startGameMusic(this);
-
+    private setupBattlefield(): void {
         this.battlefieldView = new BattlefieldView(this);
         this.battlefieldView.setupGridHighlight();
         this.battlefieldView.createBackground();
@@ -271,43 +260,68 @@ export class GameScene extends Phaser.Scene {
         this.battlefieldView.createWaveProgressBar();
 
         this.grid = new Grid(GRID_ROWS, GRID_COLS);
+    }
 
-        this.defenderMovement = new DefenderMovement(this.grid,this.defenders,this.energyManager,() => this.updateEnergyText(),(message: string) => this.showNotification(message));
-
-        this.upgradeMenu = new DefenderUpgradeMenu(
-            this,
-            this.energyManager,
-            () => this.updateEnergyText()
-        );
-        this.defenderPlacement = new DefenderPlacement(
+    private setupDefenders(): void {
+         const systems = setupGameDefenders(
             this,
             this.grid,
             this.defenders,
             this.enemies,
             this.energyManager,
             this.lastPlaced,
+            () => this.selectedDefender,
+            (value) => { this.selectedDefender = value; },
             () => this.updateEnergyText(),
-            (defender: Defender) => {
-                if (this.selectedDefender === "move") {
-                    this.defenderMovement.select(defender);
-                    this.upgradeMenu.close();
-                    return;
-                }
-                if (this.selectedDefender !== "recall" && this.selectedDefender !== "move" &&
-                    !this.defenderDrag?.isDragging()) {
-                    this.upgradeMenu.show(defender);
-                }
-            },
-            (type:string) => this.isDefenderUnlocked(type)
+            (message) => this.showNotification(message),
+            (type) => this.isDefenderUnlocked(type)
         );
 
-        this.defenderDrag = new DefenderDrag(
+        this.defenderMovement = systems.defenderMovement;
+        this.upgradeMenu = systems.upgradeMenu;
+        this.defenderPlacement = systems.defenderPlacement;
+        this.defenderDrag = systems.defenderDrag;
+    }
+       
+    private setupCombat(): void {
+        this.enemySpawner = new EnemySpawner(
+            this,
+            this.enemies,
+            this.defenders,
+            this.stronghold,
+            this.waveManager,
+            (hijacker, target) => this.prepareHijackerSteal(hijacker,target)
+        );
+
+        this.collisionSystem = new CollisionSystem(
             this,
             this.grid,
-            this.defenderPlacement,
-            () => { this.selectedDefender = null; }
+            this.enemies,
+            this.projectiles,
+            this.defenders,
+            this.stronghold,
+            this.enemyProjectiles
         );
+    }
 
+    private setupInput(): void {
+        setupGameInput(
+            this,
+            (pointer) => this.handleGridClick(pointer),
+            (pointer) => this.defenderDrag.move(pointer),
+            (pointer) => this.defenderDrag.finish(pointer)
+        );
+    }
+
+    create(): void {
+        document.body.classList.remove("menu-active");
+        this.resetGameState();
+        this.notifications = new GameNotifications(this);
+        startGameMusic(this);
+
+        this.setupBattlefield();
+        this.setupDefenders();
+        
         this.setupGameEvents();
         this.createUI();
         this.createStronghold();
@@ -335,113 +349,57 @@ export class GameScene extends Phaser.Scene {
             () => this.battlefieldView.updateWaveProgressBar(0)
         );
 
-
-        this.devMenu = new DevMenu(this, (level:number)=>{
-            this.scene.restart({level:level});
-        });
-
-        const toggleDevMenu = () => {
-            this.devMenu.toggle();
-        };
-
-        this.input.keyboard?.on("keydown-F2", toggleDevMenu);
-
-        this.events.once(Phaser.Scenes.Events.SHUTDOWN,() =>{
-            this.input.keyboard?.off("keydown-F2", toggleDevMenu);
-        });
-
         new PassiveEnergy(this,this.energyManager,() => this.updateEnergyText()).start();
 
-        this.enemySpawner = new EnemySpawner(
-            this,
-            this.enemies,
-            this.defenders,
-            this.stronghold,
-            this.waveManager,
-            (hijacker, target) => this.prepareHijackerSteal(hijacker,target)
-        );
-
-        this.collisionSystem = new CollisionSystem(
-            this,
-            this.grid,
-            this.enemies,
-            this.projectiles,
-            this.defenders,
-            this.stronghold,
-            this.enemyProjectiles
-        );
-
-        this.input.on("pointerdown", this.handleGridClick, this);
-        this.input.on("pointermove", this.defenderDrag.move, this.defenderDrag);
-        this.input.on("pointerup", this.defenderDrag.finish, this.defenderDrag);
-
-        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-        this.input.off("pointerdown", this.handleGridClick, this);
-        this.input.off("pointermove", this.defenderDrag.move, this.defenderDrag);
-        this.input.off("pointerup", this.defenderDrag.finish, this.defenderDrag);
-        });
-
+        this.setupCombat();
+        this.setupInput();
+        
         this.startEnemySpawning();
         this.showNotification(`LEVEL ${this.currentLevel} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
     }
 
-    
-private updateWaveProgress(): void {
-    if (this.bossEncounter.isActive()) {
-        if (this.bossEncounter.isDefeated()) {
-            this.bossEncounter.stop();
+    private updateWaveProgress(): void {
+        if (this.bossEncounter.isActive()) {
+            if (this.bossEncounter.isDefeated()) {
+                this.bossEncounter.stop();
 
-            this.scene.launch("LevelComplete", {
-                completedLevel: 5
-            });
+                this.scene.launch("LevelComplete", {
+                    completedLevel: 5
+                });
 
-            this.scene.pause();
+                this.scene.pause();
+            }
+            return;
         }
-        return;
-    }
-    
-    if (this.waveIntermission.isActive()) {
-        return;
-    }
-    if (!this.waveManager.isWaveFinished() ||!this.enemies.every(enemy => !enemy.active) ||this.stronghold.health <= 0) {
-        return;
-    }
+        
+        if (this.waveIntermission.isActive()) {
+            return;
+        }
+        if (!this.waveManager.isWaveFinished() ||!this.enemies.every(enemy => !enemy.active) ||this.stronghold.health <= 0) {
+            return;
+        }
 
-    if (this.waveManager.isLevelComplete()) {
-        if (this.currentLevel === 5) {
-            this.waveIntermission.start(true);
+        if (this.waveManager.isLevelComplete()) {
+            if (this.currentLevel === 5) {
+                this.waveIntermission.start(true);
+
+            } else {
+                //level 1-4
+                this.scene.launch("LevelComplete", { completedLevel: this.currentLevel});
+                this.scene.pause();
+            }
 
         } else {
-            //level 1-4
-            this.scene.launch("LevelComplete", { completedLevel: this.currentLevel});
-            this.scene.pause();
+            this.waveIntermission.start();
         }
-
-    } else {
-        this.waveIntermission.start();
     }
-}
 
 
     update(_time: number, delta: number): void {
         this.gameUI.updateToolbar(this.time.now, this.lastPlaced);
 
-        for (const enemy of this.enemies) {
-            if(!enemy.active){
-                continue;
-            }
-            if(enemy instanceof HijackerEnemy){
-                enemy.updateHijacker(delta);
-            }else{
-                enemy.move(delta);
-            }
-        }
-        for (const projectile of this.projectiles) {
-            if (projectile.active) projectile.move(delta);
-        }
-        for (const projectile of this.enemyProjectiles) {
-            if (projectile.active) projectile.move(delta);
-        }
+        updateEnemies(this.enemies, delta);
+        updateProjectiles(this.projectiles, this.enemyProjectiles, delta);
 
         this.collisionSystem.update();
         this.bossEncounter.update(delta);
