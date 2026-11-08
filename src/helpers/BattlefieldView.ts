@@ -16,6 +16,27 @@ import {
 export class BattlefieldView {
     constructor(private scene: Phaser.Scene) {}
 
+private levelText!: Phaser.GameObjects.Text;
+
+createLevelIndicator(level: number): void {this.levelText = this.scene.add.text(this.scene.scale.width - 25,
+        this.scene.scale.height - 75,
+        "Level " + level,
+        {
+            fontSize: "22px",
+            color: "#00ff99",
+            backgroundColor: "#162536",
+            padding: { x: 12, y: 8 }
+        }
+    );
+
+    this.levelText.setOrigin(1, 1);
+    this.levelText.setDepth(20);
+}
+
+updateLevelIndicator(level: number): void {
+    this.levelText.setText("Level " + level);
+}
+
     
 createBackground(): void {
     const background = this.scene.add.image(

@@ -33,6 +33,7 @@ import { DefenderUpgradeMenu } from "../ui/DefenderUpgradeMenu.ts";
 
 export class GameScene extends Phaser.Scene {
     private grid!: Grid;
+    private battlefieldView!: BattlefieldView;
     private selectedDefender: string | null = null;
     private movingDefender: Defender | null = null;
 
@@ -311,6 +312,7 @@ export class GameScene extends Phaser.Scene {
             this.currentLevel = level;
             this.waveManager.startLevel(level)
             this.defenderToolbar.updateUnlocks(level);
+            this.battlefieldView.updateLevelIndicator(level);
 
             this.waveText.setText("Wave " + this.waveManager.getWave() +"/" + this.waveManager.getMaxWaves());
 
@@ -628,10 +630,11 @@ private startBossWave(): void {
         this.resetGameState();
         this.startBackgroundMusic();
 
-        const battlefieldView = new BattlefieldView(this);
-        battlefieldView.setupGridHighlight();
-        battlefieldView.createBackground();
-        battlefieldView.drawGrid();
+        this.battlefieldView = new BattlefieldView(this);
+        this.battlefieldView.setupGridHighlight();
+        this.battlefieldView.createBackground();
+        this.battlefieldView.drawGrid();
+        this.battlefieldView.createLevelIndicator(this.currentLevel);
 
         this.grid = new Grid(GRID_ROWS, GRID_COLS);
         this.upgradeMenu = new DefenderUpgradeMenu(
