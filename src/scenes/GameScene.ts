@@ -31,6 +31,8 @@ import { DefenderDrag } from "../helpers/DefenderDrag.ts";
 import { EnergyHUD } from "../ui/EnergyHUD.ts";
 import { DefenderUpgradeMenu } from "../ui/DefenderUpgradeMenu.ts";
 
+import { DevMenu } from "../ui/DevMenu.ts";
+
 export class GameScene extends Phaser.Scene {
     private grid!: Grid;
     private battlefieldView!: BattlefieldView;
@@ -96,6 +98,9 @@ export class GameScene extends Phaser.Scene {
     private bossEffects?: OverlordEffects;
     private bossMusic?: BossMusic;
 
+    private devMenu!: DevMenu;
+
+
     constructor() {
         super("GameScene");
     }
@@ -113,6 +118,7 @@ export class GameScene extends Phaser.Scene {
         this.selectedDefender = null;
         this.movingDefender = null;
         this.waveManager.reset();
+        this.waveManager.startLevel(this.currentLevel);
         console.log( "Enemies per wave:",SETTINGS.waves.startingEnemiesPerWave);
         this.enemies = [];
         this.projectiles = [];
@@ -682,6 +688,20 @@ private startBossWave(): void {
         this.setupGameEvents();
         this.createUI();
         this.createStronghold();
+
+        this.devMenu = new DevMenu(this, (level:number)=>{
+            this.scene.restart({level:level});
+        });
+
+        const toggleDevMenu = () => {
+            this.devMenu.toggle();
+        };
+
+        this.input.keyboard?.on("keydown-F2", toggleDevMenu);
+
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN,() =>{
+            this.input.keyboard?.off("keyboard-F2", toggleDevMenu);
+        });
 
         new PassiveEnergy(this,this.energyManager,() => this.updateEnergyText()).start();
 
