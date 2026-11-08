@@ -91,5 +91,13 @@ export class EnemySpawner {
         enemy.applyLevelDifficulty(healthMultiplier, damageMultiplier);
         this.enemies.push(enemy);
         this.waveManager.enemySpawned(enemyType);
+        //save the enemy type for wave progress
+        enemy.setData("waveEnemyType", enemyType);
+        //count this enemy when it is defeated
+        enemy.once("destroy", () => {
+            if (enemy.health <= 0) {
+                this.waveManager.enemyDefeated(enemyType);
+            }
+        });
     }
 }

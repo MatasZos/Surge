@@ -17,6 +17,32 @@ export class BattlefieldView {
     constructor(private scene: Phaser.Scene) {}
 
 private levelText!: Phaser.GameObjects.Text;
+private progressBar!: Phaser.GameObjects.Rectangle;
+
+//create the wave progress bar
+createWaveProgressBar(): void {
+    const x = this.scene.scale.width - 225;
+    const y = this.scene.scale.height - 115;
+
+    const background = this.scene.add.rectangle(
+        x, y, 200, 16, 0x162536
+    );
+
+    this.progressBar = this.scene.add.rectangle(
+        x - 100, y, 200, 16, 0x00ccff
+    );
+
+    this.progressBar.setOrigin(0, 0.5);
+    this.progressBar.setScale(0, 1);
+
+    background.setDepth(20);
+    this.progressBar.setDepth(21);
+}
+
+//update the bar as enemies are defeated
+updateWaveProgressBar(progress: number): void {
+    this.progressBar.setScale(progress, 1);
+}
 
 createLevelIndicator(level: number): void {this.levelText = this.scene.add.text(this.scene.scale.width - 25,
         this.scene.scale.height - 75,

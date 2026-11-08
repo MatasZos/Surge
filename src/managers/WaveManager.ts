@@ -13,6 +13,7 @@ export class WaveManager{
 
     private waveBudget = 0;
     private budgetSpent = 0;
+    private defeatedBudget = 0;
 
     //excel enemy point costs
     private getEnemyCost(type: EnemyType): number {
@@ -145,6 +146,18 @@ export class WaveManager{
         return Math.max(0, this.waveBudget - this.budgetSpent);
     }
 
+    //add the cost of each defeated enemy
+    enemyDefeated(type: EnemyType): void {
+        this.defeatedBudget += this.getEnemyCost(type);
+    }
+
+    //calculate wave progress from 0 to 1
+    getWaveProgress(): number {
+        if (this.waveBudget <= 0) return 0;
+
+        return Math.min(1, this.defeatedBudget / this.waveBudget);
+    }
+
     //when all affordable enemies have been spawned
     isWaveFinished(): boolean {
         return(this.waveBudget > 0 && this.enemiesSpawned > 0 && this.getAffordableTypes().length === 0);
@@ -191,6 +204,8 @@ export class WaveManager{
 
         this.budgetSpent = 0;
         this.enemiesSpawned = 0;
+        //reset progress for the next wave
+        this.defeatedBudget = 0;
     }
 
     nextWave() {

@@ -565,6 +565,7 @@ private finishWaveIntermission(startedEarly = false): void{
         this.startBossWave();
     } else{
         this.waveManager.nextWave();
+        this.battlefieldView.updateWaveProgressBar(0);
         this.waveText.setText( `Wave ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
 
         this.showNotification(`WAVE ${this.waveManager.getWave()} INCOMING!`);
@@ -635,6 +636,7 @@ private startBossWave(): void {
         this.battlefieldView.createBackground();
         this.battlefieldView.drawGrid();
         this.battlefieldView.createLevelIndicator(this.currentLevel);
+        this.battlefieldView.createWaveProgressBar();
 
         this.grid = new Grid(GRID_ROWS, GRID_COLS);
         this.upgradeMenu = new DefenderUpgradeMenu(
@@ -792,5 +794,10 @@ private updateWaveProgress(): void {
         this.bossReinforcements?.update();
         this.bossEffects?.update();
         this.updateWaveProgress();
+
+        //update wave progress bar
+        this.battlefieldView.updateWaveProgressBar(
+            this.waveManager.getWaveProgress()
+        );
     }
 }
