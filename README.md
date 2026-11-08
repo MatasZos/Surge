@@ -58,6 +58,11 @@ The defenders can be placed on available cells, and each cell can hold on defend
 Enemies approach the stronghold from the opposite side of the battlefield
 
 The grid tracks occupied cells, allowing destroyed defenders to be removed and replaced.
+The battlefield background has been updated with a new industrial design.
+
+The grid size and position were adjusted to match the tiles in the background. The game still uses a 9-column by 5-row grid.
+
+The stronghold is now a separate image instead of being part of the battlefield background. Its width, height and position can be adjusted independently.
 
 ### 2.2 Defender Selection Toolbar
 
@@ -197,6 +202,10 @@ Stronghold retaliation has also been implemented
 - When Melee or Crusher enemies attack the Stronghold directly, the Stronghold deals damage back to the enemy if it survives the attack
 - Ranged Enemies are not affected by this retaliation because they attack from a distance
 
+The Stronghold has also received a new design with thicker armour, turrets and blue lighting.
+
+Its image size and position can now be adjusted in Stronghold.ts without changing the battlefield grid. The existing health and collision systems remain unchanged.
+
 ### 2.13 Energy Drops from Defeated Enemies
 Enemies have a chance to drop collectible energy when defeated
 
@@ -240,6 +249,8 @@ These include:
 - Defender shooting sounds
 - Enemy hit sounds
 - Enemy destruction sounds
+- Separate boss battle music that starts when the Overlord appears.
+- The normal background music stops when the boss battle begins.
 
 ### 2.18 Cryo Gunner Defender
 
@@ -290,6 +301,15 @@ Once the required enemies have been defeated, the level completion condition is 
 The Overlord is a Boss Enemy that appears during the final wave of Level 5.
 
 It provides an additional challenge for the player, and defenders from all five lanes can attack it.
+
+The Overlord now has 15,000 health and four different stages based on its remaining health.
+
+- Stage 1 (100%–75%): The boss uses its basic projectile attacks.
+- Stage 2 (75%–50%): The boss attacks faster and deals more damage.
+- Stage 3 (50%–25%): The boss becomes stronger and introduces laser attacks.
+- Stage 4 (Below 25%): The boss uses its fastest and strongest attacks.
+
+The boss also changes colour between stages to show when it becomes more dangerous.
 
 ### 2.25 Gameplay Improvements and Bug Fixes
 
@@ -346,6 +366,32 @@ The recall system has been updated to refund energy when removing defenders.
 
 This allows players to change their defence without losing all the energy spent on placing defenders.
 
+## 2.29 Overlord Shield System
+
+The Overlord activates a shield when its health reaches 75%, 50% and 25%.
+
+While the shield is active, the boss cannot take damage.
+
+Each shield phase summons additional enemy robots:
+
+-75% health: 4 Melee and 2 Ranged enemies.
+-50% health: 4 Melee, 3 Ranged and 2 Crusher enemies.
+-25% health: 5 Melee, 4 Ranged and 3 Crusher enemies.
+
+The player must defeat all summoned enemies to remove the shield and continue damaging the boss.
+
+## 2.30 Overlord Abilities
+
+The Overlord has different attacks that become stronger as the fight progresses.
+
+-The boss fires projectiles across the battlefield lanes.
+-Projectile damage increases during later stages.
+-The time between projectile attacks becomes shorter.
+-A laser attack has been developed for stages 3 and 4.
+-The laser targets one row and displays a warning before firing.
+-The laser deals damage to defenders in the targeted row.
+
+The boss abilities are organised into separate TypeScript classes to keep the main game code easier to manage.
 
 ## 3 Player Input/Controls
 
@@ -383,6 +429,10 @@ The project uses:
 
 | Directory / File | Responsibility |
 |---|---|
+| `src/boss/` |	Contains Overlord boss phases, shields, reinforcements, laser attacks and visual effects.
+| `src/helpers/BattlefieldView.ts` |	Handles the battlefield background, grid display and other battlefield visuals.
+| `src/helpers/BossMusic.ts` |	Controls the music played during the Overlord boss fight.
+| `src/enemies/BossAbilities.ts` |	Controls the Overlord's projectile attacks and other abilities.
 | `src/scenes/` | Contains the Main Menu, Game Scene Game Over scenes and Level Completion Scenes. |
 | `src/defenders/` | Contains defender classes such as Shooter, Generator, Barricade Dual Barrel Cryo Gunner, Landmine, Scrapper, Drone, Hijacker and OverLord Boss. |
 | `src/enemies/` | Contains Melee, Ranged and Crusher enemy classes, Overlord Boss enemy classes including their movement and combat behaviour. |
@@ -470,6 +520,14 @@ These values are exported to CSV and used by the game, making it easier to balan
 | Defender Unlock System | 3 | Unlock additional defenders as the player progresses through levels. | Implemented |
 | Locked Defender Indicators | 3 | Show which defenders are currently locked in the toolbar. | Implemented |
 | Increasing Enemy Difficulty | 2 | Increase enemy difficulty as the player progresses through levels. | Implemented |
+| Battlefield Redesign | 2 | Updated the battlefield background and grid alignment. | Implemented |
+| Stronghold Redesign | 2 | Added a separate stronghold image with adjustable size and position. | Implemented |
+| Overlord Boss Stages | 3 | Added four boss stages with increasing difficulty. | Implemented |
+| Overlord Shield System | 3 | Added shields at 75%, 50% and 25% health. | Implemented |
+| Boss Reinforcements | 3 | Summons additional enemies during shield phases. | Implemented |
+| Boss Visual Effects | 2 | Added shield outlines and colour changes between boss stages. | Implemented |
+| Boss Music | 2 | Added separate music for the boss fight. | Implemented |
+| Boss Laser Attack | 3 | Laser attack that targets a battlefield row. | In Progress |
 
 
 ### 5.2 Planned Features
@@ -522,6 +580,15 @@ Completed development work includes:
 - Added Hijacker and Drone enemy types
 - Integrated new enemy types into wave progression
 - Added level-based enemy difficulty scaling
+- Updated the battlefield background and grid alignment.
+- Created a separate stronghold image and adjusted its size and position.
+- Added four Overlord boss stages with increasing attack difficulty.
+- Added shield phases at 75%, 50% and 25% boss health.
+- Added enemy reinforcements during boss shield phases.
+- Added visual effects for boss shields and stage changes.
+- Developed the Overlord laser attack system.
+- Added separate boss battle music.
+- Organised boss mechanics into separate TypeScript classes.
 
 
 
