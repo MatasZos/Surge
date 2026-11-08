@@ -58,6 +58,11 @@ The defenders can be placed on available cells, and each cell can hold on defend
 Enemies approach the stronghold from the opposite side of the battlefield
 
 The grid tracks occupied cells, allowing destroyed defenders to be removed and replaced.
+The battlefield background has been updated with a new industrial design.
+
+The grid size and position were adjusted to match the tiles in the background. The game still uses a 9-column by 5-row grid.
+
+The stronghold is now a separate image instead of being part of the battlefield background. Its width, height and position can be adjusted independently.
 
 ### 2.2 Defender Selection Toolbar
 
@@ -76,6 +81,8 @@ The toolbar includes:
 - A placement preview showing where defenders can be placed
 - Placement messages when a defender cannot be placed
 - A recall button for removing placed defenders and freeing up grid cells
+- Added a move defender button with an image and styling.
+- Added feedback when the player does not have enough energy.
 
 ### 2.3 Energy System / Generation
 
@@ -197,6 +204,10 @@ Stronghold retaliation has also been implemented
 - When Melee or Crusher enemies attack the Stronghold directly, the Stronghold deals damage back to the enemy if it survives the attack
 - Ranged Enemies are not affected by this retaliation because they attack from a distance
 
+The Stronghold has also received a new design with thicker armour, turrets and blue lighting.
+
+Its image size and position can now be adjusted in Stronghold.ts without changing the battlefield grid. The existing health and collision systems remain unchanged.
+
 ### 2.13 Energy Drops from Defeated Enemies
 Enemies have a chance to drop collectible energy when defeated
 
@@ -216,6 +227,12 @@ The current wave number is displayed during gameplay, and notifications inform t
 A short intermission takes place between waves, allowing the player to prepare for the next attack.
 
 The WaveManager manages enemy spawning and wave progression throughout the game.
+
+The game now includes a wave progress bar showing how far the player has progressed through the current wave.
+
+Players can also start the next wave early to receive bonus energy instead of waiting for the intermission to finish.
+
+A level indicator has been added so players can see which level they are currently playing.
 
 ### 2.15 Stronghold Destruction and Game Over
 When Stronghold health reaches zero, a destruction event is triggered.
@@ -240,6 +257,8 @@ These include:
 - Defender shooting sounds
 - Enemy hit sounds
 - Enemy destruction sounds
+- Separate boss battle music that starts when the Overlord appears.
+- The normal background music stops when the boss battle begins.
 
 ### 2.18 Cryo Gunner Defender
 
@@ -290,6 +309,15 @@ Once the required enemies have been defeated, the level completion condition is 
 The Overlord is a Boss Enemy that appears during the final wave of Level 5.
 
 It provides an additional challenge for the player, and defenders from all five lanes can attack it.
+
+The Overlord now has 15,000 health and four different stages based on its remaining health.
+
+- Stage 1 (100%–75%): The boss uses its basic projectile attacks.
+- Stage 2 (75%–50%): The boss attacks faster and deals more damage.
+- Stage 3 (50%–25%): The boss becomes stronger and introduces laser attacks.
+- Stage 4 (Below 25%): The boss uses its fastest and strongest attacks.
+
+The boss also changes colour between stages to show when it becomes more dangerous.
 
 ### 2.25 Gameplay Improvements and Bug Fixes
 
@@ -346,6 +374,56 @@ The recall system has been updated to refund energy when removing defenders.
 
 This allows players to change their defence without losing all the energy spent on placing defenders.
 
+## 2.29 Overlord Shield System
+
+The Overlord activates a shield when its health reaches 75%, 50% and 25%.
+
+While the shield is active, the boss cannot take damage.
+
+Each shield phase summons additional enemy robots:
+
+-75% health: 4 Melee and 2 Ranged enemies.
+-50% health: 4 Melee, 3 Ranged and 2 Crusher enemies.
+-25% health: 5 Melee, 4 Ranged and 3 Crusher enemies.
+
+The player must defeat all summoned enemies to remove the shield and continue damaging the boss.
+
+## 2.30 Overlord Abilities
+
+The Overlord has different attacks that become stronger as the fight progresses.
+
+-The boss fires projectiles across the battlefield lanes.
+-Projectile damage increases during later stages.
+-The time between projectile attacks becomes shorter.
+-A laser attack has been developed for stages 3 and 4.
+-The laser targets one row and displays a warning before firing.
+-The laser deals damage to defenders in the targeted row.
+
+The boss abilities are organised into separate TypeScript classes to keep the main game code easier to manage.
+
+## 2.31 Level 3 Defender Upgrades
+
+The defender upgrade system has been expanded to include Level 3 upgrades.
+
+Each defender receives a special ability when upgraded to Level 3.
+
+- Shooter: Electric chain attack.
+- Dual Barrel: Explosive rounds.
+- Cryo Gunner: Freezes enemies.
+- Landmine: Blast ability.
+- Barricade: Self-repair ability.
+- Scrapper: Rapid recovery.
+- Generator: Energy jackpot.
+
+A new visual indicator has also been added to show when a defender reaches Level 3.
+
+## 2.32 Defender Repositioning
+
+A defender repositioning system is being developed.
+
+This allows players to move already placed defenders to different available grid cells instead of removing and replacing them.
+
+The defender toolbar has also been updated with a move button and new styling.
 
 ## 3 Player Input/Controls
 
@@ -362,6 +440,8 @@ SURGE is primarily controlled using the mouse.
 | Return to Main Menu | Click the Main Menu button on the Game Over screen |
 | Upgrade Defender | Click a placed defender and select Upgrade from the menu |
 | Close Upgrade Menu | Click outside the upgrade menu |
+| Start Wave Early | Click the early wave start button |
+| Move Defender | Select the move defender option in the toolbar |
 
 ## 4 Technical Implementation
 
@@ -383,6 +463,10 @@ The project uses:
 
 | Directory / File | Responsibility |
 |---|---|
+| `src/boss/` |	Contains Overlord boss phases, shields, reinforcements, laser attacks and visual effects.
+| `src/helpers/BattlefieldView.ts` |	Handles the battlefield background, grid display and other battlefield visuals.
+| `src/helpers/BossMusic.ts` |	Controls the music played during the Overlord boss fight.
+| `src/enemies/BossAbilities.ts` |	Controls the Overlord's projectile attacks and other abilities.
 | `src/scenes/` | Contains the Main Menu, Game Scene Game Over scenes and Level Completion Scenes. |
 | `src/defenders/` | Contains defender classes such as Shooter, Generator, Barricade Dual Barrel Cryo Gunner, Landmine, Scrapper, Drone, Hijacker and OverLord Boss. |
 | `src/enemies/` | Contains Melee, Ranged and Crusher enemy classes, Overlord Boss enemy classes including their movement and combat behaviour. |
@@ -423,6 +507,7 @@ These values are exported to CSV and used by the game, making it easier to balan
 
 ## 5 Game Features
 
+
 ### 5.1 Implemented Features
 
 | Feature | Priority | Description | Status |
@@ -460,9 +545,9 @@ These values are exported to CSV and used by the game, making it easier to balan
 | Victory Conditions | 3 | Introduce objectives that allow the player to win. | Implemented |
 | Level Completion Screen | 3 | Display a completion screen when the player successfully finishes a level. | Implemented |
 | Multiple Levels | 3 | Add additional levels with increasing difficulty. | Implemented |
-| Defender Upgrade System | 2 | Allow placed defenders to upgrade from Level 1 to Level 2 using energy. | Implemented |
-| Defender Upgrade Menu | 2 | Display upgrade costs and MAX LEVEL when upgraded. | Implemented |
-| Defender Upgrade Indicators | 2 | Display a green Level 2 label and outline on upgraded defenders. | Implemented |
+| Defender Upgrade System | 2 | Allow placed defenders to upgrade from Level 1 to Level 3 using energy. | Implemented |
+| Defender Upgrade Menu | 2 | Display upgrade costs and MAX LEVEL when fully upgraded. | Implemented |
+| Defender Upgrade Indicators | 2 | Display visual indicators for Level 2 and Level 3 defenders. | Implemented |
 | Defender Upgrade Costs | 2 | Use individual upgrade costs from the Excel spreadsheet. | Implemented |
 | Level 2 Damage Upgrades | 2 | Increase damage for Shooter, Dual Barrel, Cryo Gunner, Landmine and Scrapper. | Implemented |
 | Generator and Barricade Upgrades | 2 | Increase Generator energy production and Barricade health by 1.5x. | Implemented |
@@ -470,6 +555,29 @@ These values are exported to CSV and used by the game, making it easier to balan
 | Defender Unlock System | 3 | Unlock additional defenders as the player progresses through levels. | Implemented |
 | Locked Defender Indicators | 3 | Show which defenders are currently locked in the toolbar. | Implemented |
 | Increasing Enemy Difficulty | 2 | Increase enemy difficulty as the player progresses through levels. | Implemented |
+| Battlefield Redesign | 2 | Updated the battlefield background and grid alignment. | Implemented |
+| Stronghold Redesign | 2 | Added a separate stronghold image with adjustable size and position. | Implemented |
+| Overlord Boss Stages | 3 | Added four boss stages with increasing difficulty. | Implemented |
+| Overlord Shield System | 3 | Added shields at 75%, 50% and 25% health. | Implemented |
+| Boss Reinforcements | 3 | Summons additional enemies during shield phases. | Implemented |
+| Boss Visual Effects | 2 | Added shield outlines and colour changes between boss stages. | Implemented |
+| Boss Music | 2 | Added separate music for the boss fight. | Implemented |
+| Boss Laser Attack | 3 | Laser attack that targets a battlefield row. | In Progress |
+| Wave Progress Bar | 2 | Displays progress through the current enemy wave. | Implemented |
+| Level Indicator | 2 | Displays the player's current level during gameplay. | Implemented |
+| Early Wave Start | 2 | Allows players to start waves early for bonus energy. | Implemented |
+| Insufficient Energy Feedback | 2 | Displays feedback when the player does not have enough energy. | Implemented |
+| Level 3 Defender Upgrades | 2 | Adds special abilities when defenders reach Level 3. | Implemented |
+| Shooter Electric Chain | 2 | Level 3 Shooter gains an electric chain attack. | Implemented |
+| Dual Barrel Explosive Rounds | 2 | Level 3 Dual Barrel gains explosive rounds. | Implemented |
+| Cryo Gunner Freeze | 2 | Level 3 Cryo Gunner can freeze enemies. | Implemented |
+| Landmine Blast | 2 | Level 3 Landmine gains a blast ability. | Implemented |
+| Barricade Self Repair | 2 | Level 3 Barricade can repair itself. | Implemented |
+| Scrapper Rapid Recovery | 2 | Level 3 Scrapper gains rapid recovery. | Implemented |
+| Generator Energy Jackpot | 2 | Level 3 Generator gains an energy jackpot ability. | Implemented |
+| Level 3 Visual Indicator | 2 | Displays a new indicator for Level 3 defenders. | Implemented |
+| Defender Move Button | 2 | Adds a move defender button to the toolbar. | Implemented |
+
 
 
 ### 5.2 Planned Features
@@ -479,22 +587,26 @@ These values are exported to CSV and used by the game, making it easier to balan
 | Gameplay Balancing | 2 | Adjust gameplay values to improve the overall game balance. | Planned |
 | Defender Costs and Cooldowns | 2 | Adjust defender energy costs and placement cooldowns using the Excel spreadsheet. | Planned |
 | Pause and Resume | 2 | Allow players to pause and resume the game. | Planned |
+| Defender Repositioning | 2 | Allow players to move placed defenders to another available grid cell. | In Progress |
+
 
 ## 6 Development Progress
+
 Completed development work includes:
+
 - Project setup
 - Battlefield grid and cell management
 - Shooter, Generator, Barricade, and Dual Barrel defenders
 - Melee, Ranged, and Crusher enemies
 - Projectile collision detection
 - Energy management and collection
-- Health bar for enemies, defender and the stronghold
-- Stronghold retaliations against close-range attackers
+- Health bar for enemies, defenders and the Stronghold
+- Stronghold retaliation against close-range attackers
 - Defender placement cooldowns and visual countdown indicators
 - Main menu and Game Over scenes
 - Stronghold destruction and restart functionality
 - Sound effects and destruction animations
-- Excel to CSV gameplay config
+- Excel to CSV gameplay configuration
 - WaveManager integration for enemy spawn logic
 - Full wave progression system with wave display and intermissions
 - Five levels with level completion and victory conditions
@@ -522,6 +634,27 @@ Completed development work includes:
 - Added Hijacker and Drone enemy types
 - Integrated new enemy types into wave progression
 - Added level-based enemy difficulty scaling
+- Updated the battlefield background and grid alignment
+- Created a separate Stronghold image with adjustable size and position
+- Added four Overlord boss stages with increasing difficulty
+- Added shield phases at 75%, 50% and 25% boss health
+- Added enemy reinforcements during boss shield phases
+- Added visual effects for boss shields and stage changes
+- Worked on the Overlord laser attack system
+- Added separate boss battle music
+- Organised boss mechanics into separate TypeScript classes
+- Added Level 3 upgrades with special abilities for all seven defenders
+- Added electric chain attacks for the Level 3 Shooter
+- Added explosive rounds for the Level 3 Dual Barrel
+- Added freezing attacks for the Level 3 Cryo Gunner
+- Added blast and self-repair abilities for Landmine and Barricade
+- Added rapid recovery for Scrapper and energy jackpot for Generator
+- Added Level 3 defender visual indicators
+- Added a wave progress bar
+- Added a level indicator during gameplay
+- Added an option to start waves early for bonus energy
+- Added feedback when the player has insufficient energy
+- Added a move defender button and started implementing defender repositioning
 
 
 
@@ -532,14 +665,15 @@ The following screenshots show the current state of SURGE and some of the gamepl
 ### 7.1 Main Menu
 <img width="1825" height="1012" alt="image" src="https://github.com/user-attachments/assets/318b7ed1-abf8-48a4-9ac5-ba0db93dc6e5" />
 
+
 ### 7.2 Gameplay
-<img width="1706" height="965" alt="Gameplay" src="https://github.com/user-attachments/assets/45ecd918-7e59-4fb3-b7d3-7a9b0a937405" />
+<img width="949" height="537" alt="image" src="https://github.com/user-attachments/assets/2e9eb255-4b4a-4b5e-93f1-931e98127f8a" />
 
 ### 7.3 Wave Progression
-<img width="1701" height="962" alt="Wave" src="https://github.com/user-attachments/assets/2f71cefe-122c-493a-a2f5-232f11ed4d7c" />
+<img width="235" height="96" alt="image" src="https://github.com/user-attachments/assets/84a3eacb-a771-475a-92a8-442d77a2fd76" />
 
 ### 7.4 Overlord Boss
-<img width="1702" height="956" alt="Boss" src="https://github.com/user-attachments/assets/5a0d5a76-b4df-43b9-9e55-c8f79a4ad6e9" />
+<img width="202" height="246" alt="image" src="https://github.com/user-attachments/assets/e091e1bb-ea1f-4243-be13-eab09fb05d43" />
 
 ### 7.5 Level Completion
 <img width="1565" height="882" alt="LevelComplete" src="https://github.com/user-attachments/assets/a4e8e867-fc7b-4039-b334-0c0cd75ff8e6" />
