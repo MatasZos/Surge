@@ -491,6 +491,14 @@ The project uses:
 | `config/export_config.py` | Python script that exports Excel settings to CSV files. |
 | `config/gameplay.csv` | Generated CSV containing gameplay settings used by the game. |
 | `build.ts` | Builds and checks the project and copies files into the distribution folder. |
+| `src/helpers/GameInput.ts` | Handles mouse input, defender dragging and the F2 developer menu. |
+| `src/helpers/GameDefenderSetup.ts` | Sets up defender placement, movement, dragging and upgrades. |
+| `src/helpers/GameEntityUpdates.ts` | Handles enemy and projectile movement updates. |
+| `src/helpers/GameEvents.ts` | Handles game events and communication between systems. |
+| `src/helpers/GameMusic.ts` | Handles background music during gameplay. |
+| `src/ui/GameUI.ts` | Manages the gameplay HUD and toolbar. |
+| `src/helpers/WaveIntermission.ts` | Handles breaks between enemy waves. |
+| `src/helpers/BossEncounter.ts` | Manages the final boss encounter. |
 
 
 ### 4.3 Excel and CSV Gameplay Configuration
@@ -669,6 +677,12 @@ Completed development work includes:
 - Added a developer menu for testing different levels.
 - Added an F2 shortcut to open the developer menu.
 - Added buttons to jump directly to Levels 1 to 5.
+- Refactored GameScene into smaller helper files.
+- Moved input handling and developer menu into GameInput.ts.
+- Moved defender setup into GameDefenderSetup.ts.
+- Separated enemy and projectile updates into GameEntityUpdates.ts.
+- Organised game events, music, UI, wave intermissions and boss logic into separate files.
+- Reduced GameScene.ts to around 414 lines, making the code easier to read and maintain.
 
 
 ## 7 Game Screenshots
