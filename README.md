@@ -425,6 +425,14 @@ This allows players to move already placed defenders to different available grid
 
 The defender toolbar has also been updated with a move button and new styling.
 
+### 2.33 Developer Menu
+
+A developer menu has been added to make testing easier.
+
+- Press F2 to open the developer menu.
+- Select Levels 1 to 5 using the menu buttons.
+- Allows developers to test different levels without playing through the entire game.
+
 ## 3 Player Input/Controls
 
 SURGE is primarily controlled using the mouse.
@@ -442,6 +450,8 @@ SURGE is primarily controlled using the mouse.
 | Close Upgrade Menu | Click outside the upgrade menu |
 | Start Wave Early | Click the early wave start button |
 | Move Defender | Select the move defender option in the toolbar |
+| Open Developer Menu | Press F2 |
+| Select Test Level | Click a level button in the developer menu |
 
 ## 4 Technical Implementation
 
@@ -577,7 +587,8 @@ These values are exported to CSV and used by the game, making it easier to balan
 | Generator Energy Jackpot | 2 | Level 3 Generator gains an energy jackpot ability. | Implemented |
 | Level 3 Visual Indicator | 2 | Displays a new indicator for Level 3 defenders. | Implemented |
 | Defender Move Button | 2 | Adds a move defender button to the toolbar. | Implemented |
-
+| Developer Menu | 2 | Allows developers to quickly test different game levels. | Implemented |
+| Developer Level Selection | 2 | Press F2 to open a menu and select Levels 1 to 5. | Implemented |
 
 
 ### 5.2 Planned Features
@@ -655,7 +666,9 @@ Completed development work includes:
 - Added an option to start waves early for bonus energy
 - Added feedback when the player has insufficient energy
 - Added a move defender button and started implementing defender repositioning
-
+- Added a developer menu for testing different levels.
+- Added an F2 shortcut to open the developer menu.
+- Added buttons to jump directly to Levels 1 to 5.
 
 
 ## 7 Game Screenshots
