@@ -1,59 +1,48 @@
 import Phaser from "phaser";
 import { SETTINGS } from "../config/settings.ts";
-import { GRID_ROWS, GRID_COLS, CELL_WIDTH, CELL_HEIGHT, GRID_X, GRID_Y } from "../constants.ts";
-
+import { GRID_ROWS, GRID_COLS, CELL_HEIGHT, GRID_X, GRID_Y } from "../constants.ts";
 import { loadGameAssets } from "../helpers/GameAssets.ts";
+import { startGameMusic } from "../helpers/GameMusic.ts";
+import { prepareHijackerSteal } from "../helpers/HijackerSteal.ts";
+import { BossEncounter } from "../helpers/BossEncounter.ts";
 import { BattlefieldView } from "../helpers/BattlefieldView.ts";
 import { DefenderPlacement } from "../helpers/DefenderPlacement.ts";
 import { EnemySpawner } from "../helpers/EnemySpawner.ts";
-
 import { EnergyDrops } from "../helpers/EnergyDrops.ts";
-
 import { Grid } from "../grid/Grid.ts";
 import { Defender } from "../defenders/Defender.ts";
 import { Enemy } from "../enemies/Enemy.ts";
-import { BossEnemy } from "../enemies/BossEnemy.ts";
 import { HijackerEnemy } from "../enemies/HijackerEnemy.ts";
-import { OverlordReinforcements } from "../boss/OverlordReinforcements.ts";
-import { BossAbilities } from "../enemies/BossAbilities.ts";
-import { OverlordEffects } from "../boss/OverlordEffects.ts";
-import { BossMusic } from "../helpers/BossMusic.ts";
-
 import { EnemyProjectile } from "../objects/EnemyProjectile.ts";
 import { Projectile } from "../objects/projectile.ts";
 import { Stronghold } from "../objects/Stronghold.ts";
 import { EnergyManager } from "../managers/EnergyManager.ts";
 import { WaveManager } from "../managers/WaveManager.ts";
 import { CollisionSystem } from "../systems/CollisionSystem.ts";
-import { DefenderToolbar } from "../ui/DefenderToolbar.ts";
 import { PassiveEnergy } from "../helpers/PassiveEnergy.ts";
 import { DefenderDrag } from "../helpers/DefenderDrag.ts";
-import { EnergyHUD } from "../ui/EnergyHUD.ts";
 import { DefenderUpgradeMenu } from "../ui/DefenderUpgradeMenu.ts";
-
+import { GameNotifications } from "../ui/GameNotifications.ts";
+import { GameUI } from "../ui/GameUI.ts";
+import { DefenderMovement } from "../helpers/DefenderMovement.ts";
+import { WaveIntermission } from "../helpers/WaveIntermission.ts";
 import { DevMenu } from "../ui/DevMenu.ts";
 
 export class GameScene extends Phaser.Scene {
     private grid!: Grid;
     private battlefieldView!: BattlefieldView;
     private selectedDefender: string | null = null;
-    private movingDefender: Defender | null = null;
-
-    private readonly moveCost = 50;
-
+    private defenderMovement!: DefenderMovement;
     private enemies: Enemy[] = [];
     private enemyProjectiles: EnemyProjectile[] = [];
     private projectiles: Projectile[] = [];
     private defenders: Defender[] = [];
     private defenderDrag!: DefenderDrag;
     private upgradeMenu!: DefenderUpgradeMenu;
-
     private stronghold!: Stronghold;
     private collisionSystem!: CollisionSystem;
     private energyManager!: EnergyManager;
-    private energyHUD!: EnergyHUD;
-    private waveText!: Phaser.GameObjects.Text;
-    private defenderToolbar!: DefenderToolbar;
+    private gameUI!: GameUI;
     private defenderPlacement!: DefenderPlacement;
     private enemySpawner!: EnemySpawner;
     private lastPlaced: Record<string, number> = {};
@@ -80,23 +69,12 @@ export class GameScene extends Phaser.Scene {
         return requiredLevel !== undefined && this.currentLevel >= requiredLevel;
     }
 
-    private intermissionActive = false;
-    private intermissionCountdown?: Phaser.Time.TimerEvent;
-    private intermissionEnd?: Phaser.Time.TimerEvent;
+    private waveIntermission!: WaveIntermission;
+    private notifications!: GameNotifications;
 
-    private intermissionBossNext = false;
-    private earlyWaveButton?: Phaser.GameObjects.Text;
-
-    private notificationQueue: string[] = [];
-    private notificationShowing = false;
 
     //final boss enemy encounter
-    private bossEnemy: BossEnemy | null = null;
-    private bossWaveActive = false;
-    private bossReinforcements?: OverlordReinforcements;
-    private bossAbilities?: BossAbilities;
-    private bossEffects?: OverlordEffects;
-    private bossMusic?: BossMusic;
+    private bossEncounter!: BossEncounter;
 
     private devMenu!: DevMenu;
 
@@ -116,188 +94,63 @@ export class GameScene extends Phaser.Scene {
     private resetGameState(): void {
         this.energyManager = new EnergyManager();
         this.selectedDefender = null;
-        this.movingDefender = null;
+
         this.waveManager.reset();
-        this.waveManager.startLevel(this.currentLevel);
-        console.log( "Enemies per wave:",SETTINGS.waves.startingEnemiesPerWave);
+        this.waveManager.startLevel(this.currentLevel)
         this.enemies = [];
         this.projectiles = [];
         this.enemyProjectiles = [];
         this.defenders = [];
         this.lastPlaced = {};
 
-        this.intermissionCountdown?.remove();
-        this.intermissionEnd?.remove();
-        this.intermissionCountdown= undefined;
-        this.intermissionEnd = undefined;
-        this.intermissionActive = false;
-
-        this.intermissionBossNext = false;
-        this.earlyWaveButton = undefined;
-
-        this.notificationQueue = [];
-        this.notificationShowing = false;
-
-        //reset boss encounter state   
-        this.bossEffects?.destroy();
-        this.bossEffects = undefined;
-        this.bossEnemy = null;
-        this.bossWaveActive = false;
-        this.bossReinforcements = undefined;
-        this.bossAbilities = undefined;
-        this.events.off("boss-shield-activated");
-        this.bossMusic?.stop();
-        this.bossMusic = undefined;
-
+        //reset boss encounter state  
+        this.bossEncounter?.stop();
       }
 
-    private startBackgroundMusic(): void {
-        if (!this.cache.audio.exists("backgroundMusic")) return;
-
-        const music = this.sound.add("backgroundMusic", {
-            volume: 0.1,
-            loop: true
-        });
-
-        const startMusic = () => {
-            if (!music.isPlaying) music.play();
-        };
-
-        if (this.sound.locked) {
-            this.sound.once(Phaser.Sound.Events.UNLOCKED, startMusic);
-        } else {
-            startMusic();
-        }
-
-        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-            this.sound.off(Phaser.Sound.Events.UNLOCKED, startMusic);
-            music.stop();
-            music.destroy();
-        });
-    }
 
     private updateEnergyText(): void {
-        this.energyHUD.update();
+        this.gameUI.updateEnergy();
     }
 
-    private showNotification(message: string): void{
-        this.notificationQueue.push(message);
-        this.displayNextNotification();
-
-    }
-
-    private displayNextNotification():void{
-        //wait until last notification is finished
-        if(this.notificationShowing){
-            return;
+    private showNotification(message: string): void {
+        this.notifications.show(message);
         }
 
-        const message = this.notificationQueue.shift();
-
-        if(!message){
-            return
-        }
-
-        //notification banner
-        const notification = this.add.text(this.scale.width/2,110,
-        message,
-        {fontSize: "26px",
-        color:"#ffffff",
-        fontStyle:"bold",
-        backgroundColor:"#1012ba",
-        padding:{
-            x:25,
-            y:15
-        },
-        align:"center"
-        });
-
-        notification.setOrigin(0.5);
-        notification.setDepth(100);
-        notification.setScrollFactor(0);
-        notification.setAlpha(0);
-
-        //fade in and fade out animation for the notification
-        this.tweens.add({
-            targets:notification,
-            alpha:1,
-            duration:250,
-            hold:1800,
-            yoyo:true,
-
-            onComplete: () => {
-                notification.destroy();
-
-                this.notificationShowing = false;
-
-                //display the next queued message
-                this.displayNextNotification();
-            }
-        });
-    
-    }
 
     private createUI(): void {
-        this.defenderToolbar = new DefenderToolbar(this,
+        this.gameUI = new GameUI(
+            this,
+            this.energyManager,
+            this.waveManager,
+            this.currentLevel,
+
+            // Handle defender selection
             (defender: string) => {
-                if (!this.isDefenderUnlocked(defender)){
+                if (!this.isDefenderUnlocked(defender)) {
                     this.showNotification("DEFENDER LOCKED!");
                     return;
                 }
-                if(defender !== "move"){
-                    this.movingDefender = null;
+
+                if (defender !== "move") {
+                    this.defenderMovement.cancel();
                 }
 
                 this.selectedDefender = defender;
             },
-            (type: string, pointer: Phaser.Input.Pointer) =>{
-                if (!this.isDefenderUnlocked(type)){
+
+            // Handle defender dragging
+            (type: string, pointer: Phaser.Input.Pointer) => {
+                if (!this.isDefenderUnlocked(type)) {
                     this.showNotification("DEFENDER LOCKED!");
                     return;
                 }
 
-                this.defenderDrag.start(type,pointer);
+                this.defenderDrag.start(type, pointer);
             },
-            (type:string) => this.defenderUnlockLevels[type] ?? 99,
-            () => this.energyManager.getEnergy()
+
+            // Get the level needed to unlock a defender
+            (type: string) => this.defenderUnlockLevels[type] ?? 99
         );
-        this.defenderToolbar.updateUnlocks(this.currentLevel)
-
-        this.energyHUD = new EnergyHUD(this, this.energyManager);
-
-        this.waveText = this.add.text(
-            this.scale.width - 25,
-            this.scale.height - 25,
-            "Wave " + this.waveManager.getWave() + "/" + this.waveManager.getMaxWaves(),
-            {
-                fontSize: "22px",
-                color: "#00ccff",
-                backgroundColor: "#162536",
-                padding: { x: 12, y: 8 }
-            }
-        );
-        this.waveText.setOrigin(1, 1);
-        this.waveText.setDepth(20);
-
-        //next wave early button
-        this.earlyWaveButton = this.add.text( this.scale.width/2,this.scale.height -65,  `START NEXT WAVE (+${SETTINGS.waves.earlyWaveBonusEnergy} ENERGY)`, {fontSize:"20px", color:"#ffffff", backgroundColor:"#244b73", fontStyle:"bold", padding:{x:18,y:10}
-        });
-
-        // Set up the early wave button
-        this.earlyWaveButton.setOrigin(0.5);
-        this.earlyWaveButton.setDepth(60);
-        this.earlyWaveButton.setScrollFactor(0);
-        this.earlyWaveButton.setInteractive({ useHandCursor: true });
-        this.earlyWaveButton.setVisible(false);
-
-        //make the next wave early button clickable
-        this.earlyWaveButton.on("pointerdown", (_pointer: Phaser.Input.Pointer,
-        _localX: number,
-        _localY: number,
-        event: Phaser.Types.Input.EventData)=> {
-            event.stopPropagation();
-            this.finishWaveIntermission(true);
-        });
     }
 
     private createStronghold(): void {
@@ -317,10 +170,10 @@ export class GameScene extends Phaser.Scene {
         this.events.on("next-level", (level:number) =>{
             this.currentLevel = level;
             this.waveManager.startLevel(level)
-            this.defenderToolbar.updateUnlocks(level);
+            this.gameUI.updateUnlocks(level);
             this.battlefieldView.updateLevelIndicator(level);
 
-            this.waveText.setText("Wave " + this.waveManager.getWave() +"/" + this.waveManager.getMaxWaves());
+            this.gameUI.updateWaveText();
 
             //new level notif
              this.showNotification(`LEVEL ${level} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
@@ -361,69 +214,11 @@ export class GameScene extends Phaser.Scene {
             return;
         }
 
-        if(this.selectedDefender === "move"){
+        if (this.selectedDefender === "move") {
             this.upgradeMenu.close();
-
-            const clickedDefender = this.defenders.some(defender=>defender.active && defender.getBounds().contains(pointer.worldX, pointer.worldY));
-
-            if(clickedDefender){
-                return;
-            }
-
-            //defender selection and repositionin
-            if(!this.movingDefender?.active){
-                this.showNotification("SELECT A DEFENDER FIRST");
-                return;
-            }
-
-            //work out which grid has been clicked
-            const col = Math.floor((pointer.worldX-GRID_X)/CELL_WIDTH);
-            const row = Math.floor((pointer.worldY-GRID_Y)/CELL_HEIGHT)
-
-            //check the battlefield boundaries
-            if(row<0 || row>= GRID_ROWS || col<0 || col>= GRID_COLS){
-                this.showNotification("INVALID CELL");
-                return;
-            }
-
-            //check if the destination cell is free
-            const cell = this.grid.getCell(row,col);
-
-            if(!cell.isEmpty()){
-                this.showNotification("CELL OCCUPIED");
-                return;
-            }
-            
-            const defender = this.movingDefender;
-            const oldRow = defender.getData("gridRow") as number;
-            const oldCol = defender.getData("gridCol") as number;
-
-            if(this.grid.getCell(oldRow,oldCol).occupant !== defender){
-                this.showNotification("DEFENDER POSITION INVALID");
-                return;
-            }
-
-            if(!this.energyManager.spendEnergy(this.moveCost)){
-                this.showNotification("NOT ENOUGH ENERGY");
-                return;
-            }
-            this.updateEnergyText();
-            this.grid.removeOccupant(oldRow,oldCol);
-            this.grid.placeHuman(row,col,defender);
-
-            const x = GRID_X + col * CELL_WIDTH + CELL_WIDTH/2;
-            const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT/2;
-
-            defender.repositionTo(x,y);
-
-            defender.setData("gridRow", row);
-            defender.setData("gridCol", col);
-            defender.setData("hasMoved", true);
-            this.movingDefender = null;
-
-            this.showNotification("DEFENDER MOVED");
+            this.defenderMovement.move(pointer);
             return;
-        }
+            }
 
         // Check if the player clicked on a defender
         const clickedDefender = this.defenders.some(defender =>
@@ -438,187 +233,17 @@ export class GameScene extends Phaser.Scene {
 
     }
 
-    /**
-     * Prepare a Hijacker to steal a specific defender.
-     * Not called by any existing wave or spawner: Hijackers remain inactive.
-     */
-    public prepareHijackerSteal(hijacker: HijackerEnemy, target: Defender): void {
-        if (!hijacker.active || !target.active || !this.defenders.includes(target)) return;
-
-        hijacker.onGrabReady = (attacker: HijackerEnemy) => {
-            // The defender might have been destroyed or recalled during descent.
-            if (!attacker.active || !target.active || !this.defenders.includes(target)) {
-                attacker.cancelGrab();
-                return;
-            }
-
-            const row = target.getData("gridRow") as number;
-            const col = target.getData("gridCol") as number;
-            if (!Number.isInteger(row) || !Number.isInteger(col) ||
-                row < 0 || row >= GRID_ROWS || col < 0 || col >= this.grid.cols) {
-                attacker.cancelGrab();
-                return;
-            }
-
-            const index = this.defenders.indexOf(target);
-            this.defenders.splice(index, 1);
-            this.grid.removeOccupant(row, col);
-            target.destroy();
-            attacker.beginEscape();
-        };
-
-        hijacker.startDescent(target.x, target.y);
-    }
+   public prepareHijackerSteal(hijacker: HijackerEnemy, target: Defender): void {
+    prepareHijackerSteal(hijacker,target,this.defenders,this.grid);
+}
 
     private spawnEnemy(): void {
         //dont spawn enemies during intermission
-        if(this.intermissionActive || this.bossWaveActive){
+        if(this.waveIntermission.isActive() || this.bossEncounter.isActive()){
             return;
         }
         this.enemySpawner.spawnEnemy();
     }
-
-
-
-    private startWaveIntermission(bossNext = false): void{
-        //prevent intermission from starting twice
-        if(this.intermissionActive){
-            return;
-        }
-
-        this.intermissionActive = true;
-        this.intermissionBossNext=bossNext;
-        this.earlyWaveButton?.setVisible(!bossNext);
-        this.showNotification(`WAVE ${this.waveManager.getWave()} CLEARED!`);
-
-        //read the duration from excel
-        const durationMs = SETTINGS.waves.waveIntermissionMs;
-
-        if (!Number.isFinite(durationMs) || durationMs <= 0) {
-            throw new Error("Invalid csv configuration" );
-        }
-
-        let secondsRemaining = Math.ceil(durationMs / 1000)
-
-        const completedWave = this.waveManager.getWave();
-
-        //show countdown using wave hud
-        const updateCountdown = () => { 
-            this.waveText.setText( bossNext ? `BOSS IN ${secondsRemaining}s`:`Wave ${completedWave}/${this.waveManager.getMaxWaves()} - Next in ${secondsRemaining}s`);
-        };
-        updateCountdown();
-
-        //update countdown once per second
-        this.intermissionCountdown = this.time.addEvent({
-            delay: 1000,
-            loop: true,
-            callback: () => {
-                if(!this.intermissionActive){
-                    return;
-                }
-                secondsRemaining = Math.max(0, secondsRemaining - 1);
-
-                if (secondsRemaining > 0){
-                    updateCountdown();
-                }
-            }
-        });
-
-        //start the next wave after the intermission
-        this.intermissionEnd = this.time.delayedCall(durationMs, () => {
-            this.finishWaveIntermission();
-        });
-           
-    }
-    
-    
-private finishWaveIntermission(startedEarly = false): void{
-    if(!this.intermissionActive){
-        return;
-    }
-
-    //thge boss intermission can not be skipped
-    if(startedEarly && this.intermissionBossNext){
-        return;
-    }
-
-    const bossNext = this.intermissionBossNext;
-
-    //prevent this intermission from finishing two times
-    this.intermissionActive = false;
-
-    //cancel the two timers
-    this.intermissionCountdown?.remove();
-    this.intermissionEnd?.remove();
-
-    this.intermissionCountdown = undefined;
-    this.intermissionEnd = undefined;
-    this.intermissionBossNext = false;
-
-    this.earlyWaveButton?.setVisible(false);
-
-    //reward the player if they decide to start the wave early
-    if(startedEarly){
-        const bonus = SETTINGS.waves.earlyWaveBonusEnergy;
-
-        this.energyManager.addEnergy(bonus);
-        this.updateEnergyText();
-        this.showNotification(`EARLY WAVE BONUS: +${bonus} ENERGY`);
-    }
-
-    //continue the existing wave progression
-    if(bossNext){
-        this.startBossWave();
-    } else{
-        this.waveManager.nextWave();
-        this.battlefieldView.updateWaveProgressBar(0);
-        this.waveText.setText( `Wave ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
-
-        this.showNotification(`WAVE ${this.waveManager.getWave()} INCOMING!`);
-    }
-
-}
-    
-private startBossWave(): void {
-    const x = GRID_X + GRID_COLS * CELL_WIDTH + 15;
-    const y = GRID_Y + GRID_ROWS * CELL_HEIGHT / 2;
-
-    const boss = new BossEnemy(this, x, y);
-    boss.setDepth(5);
-
-    this.bossEnemy = boss;
-    this.bossWaveActive = true;
-    this.bossEffects = new OverlordEffects(this, boss);
-    this.bossMusic = new BossMusic(this);
-    this.bossMusic.start();
-
-    this.enemies.push(boss);
-
-    this.bossReinforcements = new OverlordReinforcements(
-    this,
-    boss,
-    this.enemies,
-    this.defenders,
-    this.stronghold
-    );
-
-    this.events.on("boss-shield-activated", (phase: number) => {
-    this.bossReinforcements?.spawn(phase);
-    });
-
-    
-    this.waveText.setText("BOSS WAVE");
-
-    this.showNotification("WARNING: OVERLORD INCOMING!");
-
-    this.bossAbilities = new BossAbilities(
-    this,
-    boss,
-    () => {},
-    this.defenders,
-    this.grid
-);
-}
 
     private startEnemySpawning(): void {
         this.time.delayedCall(SETTINGS.waves.firstEnemyDelayMs, () => {
@@ -635,7 +260,8 @@ private startBossWave(): void {
     create(): void {
         document.body.classList.remove("menu-active");
         this.resetGameState();
-        this.startBackgroundMusic();
+        this.notifications = new GameNotifications(this);
+        startGameMusic(this);
 
         this.battlefieldView = new BattlefieldView(this);
         this.battlefieldView.setupGridHighlight();
@@ -645,6 +271,9 @@ private startBossWave(): void {
         this.battlefieldView.createWaveProgressBar();
 
         this.grid = new Grid(GRID_ROWS, GRID_COLS);
+
+        this.defenderMovement = new DefenderMovement(this.grid,this.defenders,this.energyManager,() => this.updateEnergyText(),(message: string) => this.showNotification(message));
+
         this.upgradeMenu = new DefenderUpgradeMenu(
             this,
             this.energyManager,
@@ -659,15 +288,9 @@ private startBossWave(): void {
             this.lastPlaced,
             () => this.updateEnergyText(),
             (defender: Defender) => {
-                //select a defender for repositioning
-                if(this.selectedDefender==="move"){
-                    if(defender.getData("hasMoved")===true){
-                        this.showNotification("DEFENDER ALREADY MOVED");
-                        return;
-                    }
-                    this.movingDefender = defender;
+                if (this.selectedDefender === "move") {
+                    this.defenderMovement.select(defender);
                     this.upgradeMenu.close();
-                    this.showNotification("SELECT AN EMPTY CELL TO MOVE");
                     return;
                 }
                 if (this.selectedDefender !== "recall" && this.selectedDefender !== "move" &&
@@ -689,6 +312,30 @@ private startBossWave(): void {
         this.createUI();
         this.createStronghold();
 
+        //boss encounter
+        this.bossEncounter = new BossEncounter(
+            this,
+            this.enemies,
+            this.defenders,
+            this.stronghold,
+            this.grid,
+            this.gameUI.waveText,
+            (message: string) => this.showNotification(message)
+        );
+
+        //wave intermission
+        this.waveIntermission = new WaveIntermission(
+            this,
+            this.gameUI.waveText,
+            this.waveManager,
+            this.energyManager,
+            () => this.updateEnergyText(),
+            (message: string) => this.showNotification(message),
+            () => this.bossEncounter.start(),
+            () => this.battlefieldView.updateWaveProgressBar(0)
+        );
+
+
         this.devMenu = new DevMenu(this, (level:number)=>{
             this.scene.restart({level:level});
         });
@@ -700,7 +347,7 @@ private startBossWave(): void {
         this.input.keyboard?.on("keydown-F2", toggleDevMenu);
 
         this.events.once(Phaser.Scenes.Events.SHUTDOWN,() =>{
-            this.input.keyboard?.off("keyboard-F2", toggleDevMenu);
+            this.input.keyboard?.off("keydown-F2", toggleDevMenu);
         });
 
         new PassiveEnergy(this,this.energyManager,() => this.updateEnergyText()).start();
@@ -732,7 +379,6 @@ private startBossWave(): void {
         this.input.off("pointerdown", this.handleGridClick, this);
         this.input.off("pointermove", this.defenderDrag.move, this.defenderDrag);
         this.input.off("pointerup", this.defenderDrag.finish, this.defenderDrag);
-         this.bossMusic?.stop();
         });
 
         this.startEnemySpawning();
@@ -741,25 +387,20 @@ private startBossWave(): void {
 
     
 private updateWaveProgress(): void {
-    if (this.bossWaveActive) {
-      
-        if (
-            this.bossEnemy &&
-            !this.bossEnemy.active &&
-            this.stronghold.health > 0
-        ) {
-            this.bossMusic?.stop();
+    if (this.bossEncounter.isActive()) {
+        if (this.bossEncounter.isDefeated()) {
+            this.bossEncounter.stop();
 
-            this.bossWaveActive = false;
+            this.scene.launch("LevelComplete", {
+                completedLevel: 5
+            });
 
-            // boss defeated - level is complete
-            this.scene.launch("LevelComplete", {completedLevel: 5});
             this.scene.pause();
         }
-
         return;
     }
-    if (this.intermissionActive) {
+    
+    if (this.waveIntermission.isActive()) {
         return;
     }
     if (!this.waveManager.isWaveFinished() ||!this.enemies.every(enemy => !enemy.active) ||this.stronghold.health <= 0) {
@@ -768,7 +409,7 @@ private updateWaveProgress(): void {
 
     if (this.waveManager.isLevelComplete()) {
         if (this.currentLevel === 5) {
-            this.startWaveIntermission(true);
+            this.waveIntermission.start(true);
 
         } else {
             //level 1-4
@@ -777,14 +418,13 @@ private updateWaveProgress(): void {
         }
 
     } else {
-        this.startWaveIntermission();
+        this.waveIntermission.start();
     }
 }
 
 
     update(_time: number, delta: number): void {
-        this.defenderToolbar.updateCooldowns(this.time.now, this.lastPlaced);
-        this.defenderToolbar.updateAffordability();
+        this.gameUI.updateToolbar(this.time.now, this.lastPlaced);
 
         for (const enemy of this.enemies) {
             if(!enemy.active){
@@ -804,15 +444,7 @@ private updateWaveProgress(): void {
         }
 
         this.collisionSystem.update();
-
-        this.bossReinforcements?.update();
-
-        if (this.bossWaveActive && this.stronghold.health > 0) {
-         this.bossAbilities?.update(delta);
-        }
-
-        this.bossReinforcements?.update();
-        this.bossEffects?.update();
+        this.bossEncounter.update(delta);
         this.updateWaveProgress();
 
         //update wave progress bar
