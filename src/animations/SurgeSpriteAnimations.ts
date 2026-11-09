@@ -312,9 +312,38 @@ object.setDisplaySize(
         }
     }
 
-    private mineDetonated(x: number, y: number): void {
-        this.effect(x, y, 2, 110);
-        this.sparks(x, y, 15, 0xffad48);
+    private mineDetonated(x: number, y: number, applyDamage: () => void, size: number): void {
+        if (!this.scene.anims.exists("surge-landmine-explode") ||
+            !this.scene.textures.exists("surge_landmine")) {
+            applyDamage();
+            this.effect(x, y, 2, 110);
+            return;
+        }
+
+        const explosion = this.scene.add.sprite(x, y, "surge_landmine", 4)
+            .setDepth(110).setDisplaySize(size, size);
+        let applied = false;
+
+        const impact = () => {
+            if (applied) return;
+            applied = true;
+            applyDamage();
+            this.sparks(x, y, 15, 0xffad48);
+        };
+
+        const onFrame = (_animation: Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame) => {
+            if (frame.index >= 2) impact();
+        };
+
+        explosion.on(Phaser.Animations.Events.ANIMATION_UPDATE, onFrame);
+        explosion.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+            impact();
+            explosion.destroy();
+        });
+        explosion.once(Phaser.GameObjects.Events.DESTROY, () => {
+            explosion.off(Phaser.Animations.Events.ANIMATION_UPDATE, onFrame);
+        });
+        explosion.play("surge-landmine-explode");
     }
 
     private shield(): void {
@@ -325,16 +354,83 @@ object.setDisplaySize(
         }
     }
 
-    private collect(_pointer: Phaser.Input.Pointer, target: Phaser.GameObjects.GameObject): void {
-        if (!(target instanceof Phaser.GameObjects.Image) || !this.pickups.has(target)) return;
-        const orb = this.scene.add.image(target.x, target.y, target.texture.key, target.frame.name)
-            .setDisplaySize(30, 30).setDepth(150);
+    private energyPickedUp(x: number, y: number, amount: number): void {
+        const texture = this.scene.textures.exists("surge_energy") ? "surge_energy" : "energy";
+        const energy = this.scene.add.image(x, y, texture, 0)
+            .setDisplaySize(56, 56).setDepth(150);
+        const startScaleX = energy.scaleX;
+        const startScaleY = energy.scaleY;
+
         this.scene.tweens.add({
-            targets: orb, x: 179, y: 61, alpha: 0.25, scaleX: 0.1, scaleY: 0.1,
-            duration: 620, ease: "Cubic.In", onComplete: () => {
-                orb.destroy(); this.ring(179, 61, 0x55eaff, 25);
+            targets: energy,
+            x: 179,
+            y: 61,
+            scaleX: startScaleX * 0.2,
+            scaleY: startScaleY * 0.2,
+            alpha: 0.65,
+            duration: 600,
+            ease: "Cubic.In",
+            onComplete: () => {
+                energy.destroy();
+                this.ring(179, 61, 0x55eaff, 25);
+                this.scene.events.emit("energy-collected", amount);
             }
         });
+    }
+
+    private dualBarrelFire(
+        defender: Phaser.GameObjects.Sprite,
+        firstShot: () => void,
+        secondShot: () => void
+    ): void {
+        this.discover();
+
+        const animationKey = "surge-dualbarrel-shoot";
+        if (!defender.active) return;
+        if (!this.scene.anims.exists(animationKey)) {
+            firstShot();
+            this.scene.time.delayedCall(150, secondShot);
+            return;
+        }
+
+        let firedFirst = false;
+        let firedSecond = false;
+        const first = () => {
+            if (firedFirst) return;
+            firedFirst = true;
+            if (defender.active) firstShot();
+        };
+        const second = () => {
+            first();
+            if (firedSecond) return;
+            firedSecond = true;
+            if (defender.active) secondShot();
+        };
+
+        const onFrame = (_animation: Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame) => {
+            if (frame.index >= 2) first();
+            if (frame.index >= 5) second();
+        };
+        const cleanup = () => {
+            defender.off(Phaser.Animations.Events.ANIMATION_UPDATE, onFrame);
+            defender.off(Phaser.Animations.Events.ANIMATION_COMPLETE, onComplete);
+            defender.off(Phaser.Animations.Events.ANIMATION_STOP, onStop);
+        };
+        const onComplete = () => {
+            cleanup();
+            second();
+            if (defender.active) this.loop(defender, "surge-dualbarrel-idle");
+        };
+        const onStop = () => {
+            cleanup();
+            second();
+        };
+
+        defender.anims.timeScale = 1;
+        defender.on(Phaser.Animations.Events.ANIMATION_UPDATE, onFrame);
+        defender.once(Phaser.Animations.Events.ANIMATION_COMPLETE, onComplete);
+        defender.once(Phaser.Animations.Events.ANIMATION_STOP, onStop);
+        defender.play(animationKey, true);
     }
 
     private nearest(x: number, y: number, types: Unit[], max: number): Tracked | undefined {
