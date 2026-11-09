@@ -54,7 +54,7 @@ export class Generator extends Defender {
       "energy"
     );
 
-    energy.setDisplaySize(35, 35);
+    energy.setDisplaySize(56, 56);
     energy.setDepth(5);
     energy.setInteractive({ useHandCursor: true });
 
@@ -104,8 +104,14 @@ export class Generator extends Defender {
 
     console.log("Generator Level:", this.upgradeLevel, "Energy:", amount);
 
-    this.scene.events.emit("energy-collected", amount);
+    const scene = this.scene;
+    const x = energy.x;
+    const y = energy.y;
+    energy.disableInteractive();
     energy.destroy();
+    if (!scene.events.emit("energy-picked-up", x, y, amount)) {
+        scene.events.emit("energy-collected", amount);
+    }
     });
 
     // Energy disappears if not collected
