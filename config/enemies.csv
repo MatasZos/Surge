@@ -1,7 +1,7 @@
 enemy_id,health,speed,damage,attack_interval_ms,attack_range,projectile_speed,projectile_damage
-melee,300,18,25,1000,0,0,0
+melee,300,15,50,1000,0,0,0
 ranged,300,12,20,2000,300,250,20
-crusher,3000,8,150,2500,0,0,0
+crusher,3000,8,150,1500,0,0,0
 boss,15000,0,200,2000,0,0,0
 drone,300,18,0,0,0,0,0
 hijacker,450,40,0,0,0,0,0

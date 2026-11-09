@@ -1,6 +1,6 @@
 setting,value
-first_enemy_delay_ms,1000
-enemy_spawn_interval_ms,500
+first_enemy_delay_ms,20000
+enemy_spawn_interval_ms,1200
 melee_spawn_probability,0.4
 ranged_spawn_probability,0.2
 hijacker_spawn_probability,0.15
