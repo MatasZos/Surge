@@ -33,6 +33,7 @@ export class SurgeSpriteAnimations {
         scene.events.on("enemy-projectile-created", this.enemyShot, this);
         scene.events.on("enemy-killed", this.enemyKilled, this);
         scene.events.on("landmine-detonated", this.mineDetonated, this);
+        scene.events.on("surge-projectile-hit", this.projectileHit, this);
         scene.events.on("boss-shield-activated", this.shield, this);
         scene.input.on("gameobjectdown", this.collect, this);
         scene.events.once(Phaser.Scenes.Events.SHUTDOWN, this.destroy, this);
@@ -177,6 +178,21 @@ export class SurgeSpriteAnimations {
         this.sparks(x, y, 11, 0xff694e);
     }
 
+    private projectileHit(x: number, y: number, type: string): void {
+        if (type === "cryo" || type === "freeze") {
+            this.ring(x, y, 0x77dfff, type === "freeze" ? 55 : 24);
+            this.sparks(x, y, type === "freeze" ? 14 : 5, 0x9ceeff);
+        } else if (type === "electric") {
+            this.ring(x, y, 0x4fffff, 28);
+            this.sparks(x, y, 8, 0x66eaff);
+        } else if (type === "explosive") {
+            this.effect(x, y, 2, 105);
+            this.sparks(x, y, 12, 0xffac48);
+        } else {
+            this.sparks(x, y, 3, 0xffd873);
+        }
+    }
+
     private mineDetonated(x: number, y: number): void {
         this.effect(x, y, 2, 110);
         this.sparks(x, y, 15, 0xffad48);
@@ -267,6 +283,7 @@ export class SurgeSpriteAnimations {
         this.scene.events.off("enemy-projectile-created", this.enemyShot, this);
         this.scene.events.off("enemy-killed", this.enemyKilled, this);
         this.scene.events.off("landmine-detonated", this.mineDetonated, this);
+        this.scene.events.off("surge-projectile-hit", this.projectileHit, this);
         this.scene.events.off("boss-shield-activated", this.shield, this);
         this.scene.input.off("gameobjectdown", this.collect, this);
         this.units.clear();
