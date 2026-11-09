@@ -124,7 +124,7 @@ export class SurgeSpriteAnimations {
                     state.type === "crusherEnemy" ? 6 : 7;
                 const step = state.type === "drone" || state.type === "hijacker" ? 5 : 7;
                 const isAttacking = Boolean(props.isAttacking);
-                sprite.anims.timeScale = isAttacking ? 1 :
+                sprite.anims.timeScale = isAttacking && state.type !== "rangedEnemy" ? 1 :
                     Phaser.Math.Clamp((speed / step) / fps, state.type === "drone" ? 0.3 : 0, 2.2);
             } else {
                 sprite.anims.timeScale = 1;
