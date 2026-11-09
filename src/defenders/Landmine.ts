@@ -51,6 +51,7 @@ export class Landmine extends Defender {
         const blast = this.scene.add.circle(this.x, this.y, radius, 0xffa329, 0.45).setDepth(7);
         this.scene.tweens.add({ targets: blast, alpha: 0, scale: 1.2, duration: 220,
             onComplete: () => blast.destroy() });
+        this.scene.events.emit("landmine-detonated", this.x, this.y);
         this.destroy();
         return true;
     }
