@@ -97,18 +97,28 @@ export class DefenderCollision {
                             return;
                         }
 
-                        defender.takeDamage(enemy.damage);
-
-                        if (!defender.active) {
-                            this.grid.removeOccupant(row, col);
-
-                            const index = this.defenders.indexOf(defender);
-                            if (index !== -1) {
-                                this.defenders.splice(index, 1);
+                        const applyDamage = () => {
+                            if (!enemy.active || !defender.active || !enemy.isAttacking) {
+                                if (!enemy.active || !defender.active) this.stopAttack(enemy);
+                                return;
                             }
 
-                            this.stopAttack(enemy);
+                            defender.takeDamage(enemy.damage);
+
+                            if (!defender.active) {
+                                this.grid.removeOccupant(row, col);
+                                const index = this.defenders.indexOf(defender);
+                                if (index !== -1) this.defenders.splice(index, 1);
+                                this.stopAttack(enemy);
+                            }
+                        };
+
+                        if (!(enemy instanceof CrusherEnemy) ||
+                            !this.scene.events.emit("crusher-hit", enemy, applyDamage)) {
+                            applyDamage();
                         }
+
+
                     },
                     loop: true
                 });
