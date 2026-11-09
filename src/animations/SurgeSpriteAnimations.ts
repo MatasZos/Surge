@@ -20,6 +20,8 @@ type Tracked = {
     health: number;
     level: number;
     recovering: boolean;
+    lastX: number;
+    lastY: number;
 };
 
 export class SurgeSpriteAnimations {
@@ -34,10 +36,11 @@ export class SurgeSpriteAnimations {
         scene.events.on("enemy-killed", this.enemyKilled, this);
         scene.events.on("landmine-detonated", this.mineDetonated, this);
         scene.events.on("surge-projectile-hit", this.projectileHit, this);
+        scene.events.on("energy-picked-up", this.energyPickedUp, this);
+        scene.events.on("dualbarrel-fire", this.dualBarrelFire, this);
         scene.events.on("generator-produced", this.generatorProduced, this);
         scene.events.on("crusher-hit", this.crusherHit, this);
         scene.events.on("boss-shield-activated", this.shield, this);
-        scene.input.on("gameobjectdown", this.collect, this);
         scene.events.once(Phaser.Scenes.Events.SHUTDOWN, this.destroy, this);
     }
 
@@ -52,7 +55,7 @@ export class SurgeSpriteAnimations {
         };
         for (const type of ["shooter", "dualbarrel", "cryogunner"] as Unit[]) {
             add(type, "idle", 0, 2, 5);
-            add(type, "shoot", 2, 7, 16, 0);
+            add(type, "shoot", 2, 7, type === "dualbarrel" ? 20 : 16, 0);
         }
         add("generator", "idle", 0, 0, 1);
         add("generator", "produce", 0, 3, 10, 0);
@@ -64,7 +67,7 @@ export class SurgeSpriteAnimations {
         add("scrapper", "recover", 5, 7, 4);
         for (const type of ["meleeEnemy", "rangedEnemy", "overlord"] as Unit[]) {
             add(type, "idle", 0, 3, 7);
-            add(type, "attack", 4, 7, 10);
+            add(type, "attack", 4, 7, 10, type === "rangedEnemy" ? 0 : -1);
             add(type, "death", 8, 11, 10, 0);
         }
         add("crusherEnemy", "idle", 0, 1, 6);
@@ -97,6 +100,12 @@ export class SurgeSpriteAnimations {
                 this.sparks(sprite.x, sprite.y, 10, 0x55ecff);
             }
             state.level = props.upgradeLevel ?? 1;
+            const pixelsMoved = Phaser.Math.Distance.Between(
+                sprite.x, sprite.y, state.lastX, state.lastY
+            );
+            state.lastX = sprite.x;
+            state.lastY = sprite.y;
+            const speed = pixelsMoved * 1000 / Math.max(1, delta);
             if (state.type === "scrapper" && props.recovering && !state.recovering) {
                 this.once(sprite, "surge-scrapper-bite", "surge-scrapper-recover");
             }
@@ -106,10 +115,20 @@ export class SurgeSpriteAnimations {
             if (state.type === "landmine" && props.armed) target = "surge-landmine-armed";
             else if (state.type === "scrapper" && props.recovering) target = "surge-scrapper-recover";
             else if (props.isAttacking && state.type === "crusherEnemy") target = "surge-crusherEnemy-ready";
-            else if (props.isAttacking && ["meleeEnemy", "rangedEnemy", "overlord"].includes(state.type)) {
+            else if (props.isAttacking && ["meleeEnemy", "overlord"].includes(state.type)) {
                 target = "surge-" + state.type + "-attack";
             }
             this.loop(sprite, target);
+            if (["meleeEnemy", "rangedEnemy", "crusherEnemy", "drone", "hijacker"].includes(state.type)) {
+                const fps = state.type === "drone" ? 9 : state.type === "hijacker" ? 8 :
+                    state.type === "crusherEnemy" ? 6 : 7;
+                const step = state.type === "drone" || state.type === "hijacker" ? 5 : 7;
+                const isAttacking = Boolean(props.isAttacking);
+                sprite.anims.timeScale = isAttacking ? 1 :
+                    Phaser.Math.Clamp((speed / step) / fps, state.type === "drone" ? 0.3 : 0, 2.2);
+            } else {
+                sprite.anims.timeScale = 1;
+            }
         }
     }
 
@@ -149,16 +168,17 @@ object.setDisplaySize(
                 const stats = object as unknown as { health?: number; upgradeLevel?: number };
                 this.units.set(object, {
                     type, sprite: object, health: stats.health ?? 0,
-                    level: stats.upgradeLevel ?? 1, recovering: false
+                    level: stats.upgradeLevel ?? 1, recovering: false,
+                    lastX: object.x, lastY: object.y
                 });
                 this.loop(object, idle[type]);
             } else if (object instanceof Phaser.GameObjects.Image && object.active
                 && object.texture.key === "energy" && !this.pickups.has(object)) {
                 this.pickups.add(object);
-                const width = object.displayWidth, height = object.displayHeight;
+                object.setDisplaySize(56, 56);
                 if (this.scene.textures.exists("surge_energy")) {
                     object.setTexture("surge_energy", 0);
-                    object.setDisplaySize(width, height);
+                    object.setDisplaySize(56, 56);
                     const animationTimer = this.scene.time.addEvent({
                         delay: 120, loop: true,
                         callback: () => {
@@ -252,14 +272,14 @@ object.setDisplaySize(
         const src = this.nearest(projectile.x - 25, projectile.y + 2,
             ["shooter", "dualbarrel", "cryogunner"], 58);
         if (!src) return;
-        this.once(src.sprite, "surge-" + src.type + "-shoot", idle[src.type]);
+        if (src.type !== "dualbarrel") this.once(src.sprite, "surge-" + src.type + "-shoot", idle[src.type]);
         this.flash(projectile.x, projectile.y, src.type === "cryogunner" ? 0x66dfff : 0xffe394);
     }
 
     private enemyShot(projectile: Phaser.GameObjects.Rectangle): void {
         this.discover();
         const src = this.nearest(projectile.x + 30, projectile.y, ["rangedEnemy"], 75);
-        if (src) this.loop(src.sprite, "surge-rangedEnemy-attack");
+        if (src) this.once(src.sprite, "surge-rangedEnemy-attack", idle[src.type]);
         this.flash(projectile.x, projectile.y, 0xff604c);
     }
 
@@ -335,7 +355,8 @@ object.setDisplaySize(
         const key = sprite.anims.currentAnim?.key ?? "";
         return sprite.anims.isPlaying && (
             key.endsWith("-shoot") || key.endsWith("-bite") ||
-            key.endsWith("-produce") || key.endsWith("-strike")
+            key.endsWith("-produce") || key.endsWith("-strike") ||
+            key === "surge-rangedEnemy-attack"
         );
     }
 
@@ -386,10 +407,11 @@ object.setDisplaySize(
         this.scene.events.off("enemy-killed", this.enemyKilled, this);
         this.scene.events.off("landmine-detonated", this.mineDetonated, this);
         this.scene.events.off("surge-projectile-hit", this.projectileHit, this);
+        this.scene.events.off("energy-picked-up", this.energyPickedUp, this);
+        this.scene.events.off("dualbarrel-fire", this.dualBarrelFire, this);
         this.scene.events.off("generator-produced", this.generatorProduced, this);
         this.scene.events.off("crusher-hit", this.crusherHit, this);
         this.scene.events.off("boss-shield-activated", this.shield, this);
-        this.scene.input.off("gameobjectdown", this.collect, this);
         this.units.clear();
         this.pickups.clear();
     }
