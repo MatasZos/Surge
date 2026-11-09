@@ -32,6 +32,7 @@ export class SurgeSpriteAnimations {
         scene.events.on("projectile-created", this.friendlyShot, this);
         scene.events.on("enemy-projectile-created", this.enemyShot, this);
         scene.events.on("enemy-killed", this.enemyKilled, this);
+        scene.events.on("landmine-detonated", this.mineDetonated, this);
         scene.events.on("boss-shield-activated", this.shield, this);
         scene.input.on("gameobjectdown", this.collect, this);
         scene.events.once(Phaser.Scenes.Events.SHUTDOWN, this.destroy, this);
@@ -73,7 +74,6 @@ export class SurgeSpriteAnimations {
         this.discover();
         for (const [sprite, state] of this.units) {
             if (!sprite.active) {
-                if (state.type === "landmine") this.effect(sprite.x, sprite.y, 2, 100);
                 this.units.delete(sprite);
                 continue;
             }
@@ -129,16 +129,20 @@ export class SurgeSpriteAnimations {
                 if (this.scene.textures.exists("surge_energy")) {
                     object.setTexture("surge_energy", 0);
                     object.setDisplaySize(width, height);
-                    this.scene.time.addEvent({
-                        delay: 120, repeat: 7,
+                    const animationTimer = this.scene.time.addEvent({
+                        delay: 120, loop: true,
                         callback: () => {
                             if (object.active) object.setFrame((Number(object.frame.name) + 1) % 8);
                         }
                     });
+                    object.once(Phaser.GameObjects.Events.DESTROY, () => animationTimer.remove());
                 }
                 this.scene.tweens.add({ targets: object, y: object.y - 13, duration: 550,
                     yoyo: true, repeat: -1, ease: "Sine.InOut" });
-                object.once(Phaser.GameObjects.Events.DESTROY, () => this.pickups.delete(object));
+                object.once(Phaser.GameObjects.Events.DESTROY, () => {
+                    this.pickups.delete(object);
+                    this.scene.tweens.killTweensOf(object);
+                });
             }
         }
     }
@@ -171,6 +175,11 @@ export class SurgeSpriteAnimations {
             src.sprite.setVisible(false);
         } else this.effect(x, y, 2, 70);
         this.sparks(x, y, 11, 0xff694e);
+    }
+
+    private mineDetonated(x: number, y: number): void {
+        this.effect(x, y, 2, 110);
+        this.sparks(x, y, 15, 0xffad48);
     }
 
     private shield(): void {
@@ -257,6 +266,7 @@ export class SurgeSpriteAnimations {
         this.scene.events.off("projectile-created", this.friendlyShot, this);
         this.scene.events.off("enemy-projectile-created", this.enemyShot, this);
         this.scene.events.off("enemy-killed", this.enemyKilled, this);
+        this.scene.events.off("landmine-detonated", this.mineDetonated, this);
         this.scene.events.off("boss-shield-activated", this.shield, this);
         this.scene.input.off("gameobjectdown", this.collect, this);
         this.units.clear();
