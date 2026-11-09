@@ -84,8 +84,8 @@ export class SurgeSpriteAnimations {
             };
             if (typeof props.health === "number" && props.health < state.health && props.health > 0) {
                 this.sparks(sprite.x, sprite.y, 4, 0xff6b4c);
-                sprite.setTintFill(0xffffff);
-                this.scene.time.delayedCall(80, () => { if (sprite.active) sprite.clearTint(); });
+                sprite.setAlpha(0.65);
+                this.scene.time.delayedCall(80, () => { if (sprite.active) sprite.setAlpha(1); });
             }
             state.health = props.health ?? state.health;
             if ((props.upgradeLevel ?? 1) > state.level) {
