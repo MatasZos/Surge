@@ -95,28 +95,24 @@ export class ProjectileCollision {
                 });
             }
             
+            const impactType = projectile instanceof CryoProjectile
+                ? (projectile.frozenShock ? "freeze" : "cryo")
+                : projectile.chainShot ? "electric"
+                : projectile.explosiveShot ? "explosive" : "laser";
+
+            enemy.scene.events.emit("surge-projectile-hit", enemy.x, enemy.y, impactType);
             enemy.takeDamage(projectile.damage);
 
-    if (
-        projectile instanceof CryoProjectile && 
-        enemy.active && 
-        !(enemy instanceof BossEnemy)
-    ) {
-
-    if (projectile.frozenShock) {
-        // Freeze enemy for 2 second 
-        enemy.applySlow(0, 2000);
-    } else {
-
-        enemy.applySlow(
-            projectile.slowMultiplier,
-            projectile.slowDurationMs
-        );
-    }
-
-    projectile.destroy();
-    break;
+            if (projectile instanceof CryoProjectile && enemy.active && !(enemy instanceof BossEnemy)) {
+                if (projectile.frozenShock) {
+                    enemy.applySlow(0, 2000);
+                } else {
+                    enemy.applySlow(projectile.slowMultiplier, projectile.slowDurationMs);
                 }
+            }
+
+            projectile.destroy();
+            break;
             }
         }
     }
