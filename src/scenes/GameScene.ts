@@ -1,3 +1,4 @@
+import { SurgeAnimations } from "../animations/SurgeAnimations.ts";
 import Phaser from "phaser";
 import { SETTINGS } from "../config/settings.ts";
 import { GRID_ROWS, GRID_COLS, CELL_HEIGHT, GRID_X, GRID_Y } from "../constants.ts";
@@ -31,6 +32,7 @@ import { setupGameDefenders } from "../helpers/GameDefenderSetup.ts";
 import { updateEnemies, updateProjectiles } from "../helpers/GameEntityUpdates.ts";
 
 export class GameScene extends Phaser.Scene {
+    private surgeAnimations!: SurgeAnimations;
     private grid!: Grid;
     private battlefieldView!: BattlefieldView;
     private selectedDefender: string | null = null;
@@ -354,6 +356,7 @@ export class GameScene extends Phaser.Scene {
         this.setupCombat();
         this.setupInput();
         
+        this.surgeAnimations = new SurgeAnimations(this);
         this.startEnemySpawning();
         this.showNotification(`LEVEL ${this.currentLevel} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
     }
@@ -409,5 +412,6 @@ export class GameScene extends Phaser.Scene {
         this.battlefieldView.updateWaveProgressBar(
             this.waveManager.getWaveProgress()
         );
+        this.surgeAnimations.update(delta);
     }
 }
