@@ -100,6 +100,7 @@ export class SurgeAnimations {
                     if (hover) this.pulse(sprite.x, sprite.y + 22, 0xff3344, 9, 480);
                     else if (!attacking) this.dust(sprite.x, sprite.y + sprite.displayHeight / 2 - 5);
                     else if (state.texture === "crusherEnemy") this.pulse(sprite.x - 25, sprite.y, 0xff7a36, 10, 260);
+                    else if (attacking) this.hitSparks(sprite.x - 24, sprite.y, 0xff7644);
                 }
                 if (state.texture === "overlord" && this.elapsed >= state.nextFX) {
                     state.nextFX = this.elapsed + 1200;
@@ -232,6 +233,7 @@ export class SurgeAnimations {
 
     private pulse(x: number, y: number, color: number, radius: number, duration: number): void {
         const ring = this.scene.add.circle(x, y, radius, color, 0).setStrokeStyle(2.5, color, 0.82).setDepth(45);
+        ring.setAlpha(0.9);
         ring.setScale(0.45);
         this.scene.tweens.add({ targets: ring, scaleX: 1.45, scaleY: 1.45, alpha: 0,
             duration, ease: "Quad.Out", onComplete: () => ring.destroy() });
