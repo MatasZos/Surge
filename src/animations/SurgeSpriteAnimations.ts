@@ -260,6 +260,7 @@ object.setDisplaySize(
             cleanup();
         };
 
+        sprite.anims.timeScale = 1;
         sprite.play(animationKey, true);
         sprite.on(Phaser.Animations.Events.ANIMATION_UPDATE, onUpdate);
         sprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE, onComplete);
@@ -458,6 +459,7 @@ object.setDisplaySize(
 
     private once(sprite: Phaser.GameObjects.Sprite, key: string, restore: string): void {
         if (!this.scene.anims.exists(key)) return;
+        sprite.anims.timeScale = 1;
         sprite.play(key, true);
         sprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
             if (sprite.active) this.loop(sprite, restore);
