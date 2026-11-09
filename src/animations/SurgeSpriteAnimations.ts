@@ -34,6 +34,8 @@ export class SurgeSpriteAnimations {
         scene.events.on("enemy-killed", this.enemyKilled, this);
         scene.events.on("landmine-detonated", this.mineDetonated, this);
         scene.events.on("surge-projectile-hit", this.projectileHit, this);
+        scene.events.on("generator-produced", this.generatorProduced, this);
+        scene.events.on("crusher-hit", this.crusherHit, this);
         scene.events.on("boss-shield-activated", this.shield, this);
         scene.input.on("gameobjectdown", this.collect, this);
         scene.events.once(Phaser.Scenes.Events.SHUTDOWN, this.destroy, this);
@@ -52,7 +54,8 @@ export class SurgeSpriteAnimations {
             add(type, "idle", 0, 2, 5);
             add(type, "shoot", 2, 7, 16, 0);
         }
-        add("generator", "idle", 0, 3, 5);
+        add("generator", "idle", 0, 0, 1);
+        add("generator", "produce", 0, 3, 10, 0);
         add("landmine", "idle", 0, 1, 3);
         add("landmine", "armed", 2, 3, 5);
         add("landmine", "explode", 4, 7, 12, 0);
@@ -65,7 +68,8 @@ export class SurgeSpriteAnimations {
             add(type, "death", 8, 11, 10, 0);
         }
         add("crusherEnemy", "idle", 0, 1, 6);
-        add("crusherEnemy", "attack", 2, 3, 8);
+        add("crusherEnemy", "ready", 2, 2, 1);
+        add("crusherEnemy", "strike", 2, 3, 8, 0);
         add("drone", "idle", 0, 3, 9);
         add("hijacker", "idle", 0, 3, 8);
     }
@@ -101,7 +105,8 @@ export class SurgeSpriteAnimations {
             let target = idle[state.type];
             if (state.type === "landmine" && props.armed) target = "surge-landmine-armed";
             else if (state.type === "scrapper" && props.recovering) target = "surge-scrapper-recover";
-            else if (props.isAttacking && ["meleeEnemy", "rangedEnemy", "crusherEnemy", "overlord"].includes(state.type)) {
+            else if (props.isAttacking && state.type === "crusherEnemy") target = "surge-crusherEnemy-ready";
+            else if (props.isAttacking && ["meleeEnemy", "rangedEnemy", "overlord"].includes(state.type)) {
                 target = "surge-" + state.type + "-attack";
             }
             this.loop(sprite, target);
@@ -170,6 +175,76 @@ object.setDisplaySize(
                 });
             }
         }
+    }
+
+    private generatorProduced(generator: Phaser.GameObjects.Sprite, spawnEnergy: () => void): void {
+        this.discover();
+        this.playImpactFrame(generator, "surge-generator-produce", 3, () => {
+            this.ring(generator.x, generator.y - 20, 0x59e7ff, 24);
+            spawnEnergy();
+        }, "surge-generator-idle");
+    }
+
+    private crusherHit(crusher: Phaser.GameObjects.Sprite, applyDamage: () => void): void {
+        this.discover();
+        this.playImpactFrame(crusher, "surge-crusherEnemy-strike", 2, () => {
+            this.sparks(crusher.x - 28, crusher.y, 8, 0xffad63);
+            applyDamage();
+        }, "surge-crusherEnemy-ready");
+    }
+
+    private playImpactFrame(
+        sprite: Phaser.GameObjects.Sprite,
+        animationKey: string,
+        impactFrame: number,
+        onImpact: () => void,
+        restore: string
+    ): void {
+        if (!sprite.active) return;
+
+        if (!this.scene.anims.exists(animationKey)) {
+            onImpact();
+            return;
+        }
+
+        let applied = false;
+        const impact = () => {
+            if (applied) return;
+            applied = true;
+            if (sprite.active) onImpact();
+        };
+
+        const onUpdate = (_animation: Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame) => {
+            if (frame.index >= impactFrame) impact();
+        };
+
+        const cleanup = () => {
+            sprite.off(Phaser.Animations.Events.ANIMATION_UPDATE, onUpdate);
+            sprite.off(Phaser.Animations.Events.ANIMATION_COMPLETE, onComplete);
+            sprite.off(Phaser.Animations.Events.ANIMATION_STOP, onStop);
+            sprite.off(Phaser.GameObjects.Events.DESTROY, onDestroy);
+        };
+
+        const onComplete = () => {
+            cleanup();
+            impact();
+            if (sprite.active) this.loop(sprite, restore);
+        };
+
+        const onStop = () => {
+            cleanup();
+            impact();
+        };
+
+        const onDestroy = () => {
+            cleanup();
+        };
+
+        sprite.play(animationKey, true);
+        sprite.on(Phaser.Animations.Events.ANIMATION_UPDATE, onUpdate);
+        sprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE, onComplete);
+        sprite.once(Phaser.Animations.Events.ANIMATION_STOP, onStop);
+        sprite.once(Phaser.GameObjects.Events.DESTROY, onDestroy);
     }
 
     private friendlyShot(projectile: Phaser.GameObjects.Sprite): void {
@@ -258,7 +333,10 @@ object.setDisplaySize(
 
     private shotPlaying(sprite: Phaser.GameObjects.Sprite): boolean {
         const key = sprite.anims.currentAnim?.key ?? "";
-        return sprite.anims.isPlaying && (key.endsWith("-shoot") || key.endsWith("-bite"));
+        return sprite.anims.isPlaying && (
+            key.endsWith("-shoot") || key.endsWith("-bite") ||
+            key.endsWith("-produce") || key.endsWith("-strike")
+        );
     }
 
     private once(sprite: Phaser.GameObjects.Sprite, key: string, restore: string): void {
@@ -308,6 +386,8 @@ object.setDisplaySize(
         this.scene.events.off("enemy-killed", this.enemyKilled, this);
         this.scene.events.off("landmine-detonated", this.mineDetonated, this);
         this.scene.events.off("surge-projectile-hit", this.projectileHit, this);
+        this.scene.events.off("generator-produced", this.generatorProduced, this);
+        this.scene.events.off("crusher-hit", this.crusherHit, this);
         this.scene.events.off("boss-shield-activated", this.shield, this);
         this.scene.input.off("gameobjectdown", this.collect, this);
         this.units.clear();
