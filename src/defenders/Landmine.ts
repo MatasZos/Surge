@@ -34,24 +34,35 @@ export class Landmine extends Defender {
         ? SETTINGS.defenders.landmine.blastRadius * 1.5
         : SETTINGS.defenders.landmine.blastRadius;
 
-        for (const enemy of enemies) {
-            if (enemy.active && Phaser.Math.Distance.Between(this.x, this.y, enemy.x, enemy.y) <= radius) {
-                let damage = this.damage;
+        const targets = enemies.filter(enemy =>
+            enemy.active && Phaser.Math.Distance.Between(this.x, this.y, enemy.x, enemy.y) <= radius
+        );
+        const damage = this.damage * (
+            this.upgradeLevel >= 2 ? SETTINGS.defenders.landmine.upgradeDamageMultiplier : 1
+        );
+        const x = this.x;
+        const y = this.y;
+        const scene = this.scene;
+        let applied = false;
 
-                // Level 2 damage upgrade
-                if (this.upgradeLevel >= 2) {
-                    damage *= SETTINGS.defenders.landmine.upgradeDamageMultiplier;
-                }
-                
-                console.log("Landmine Level:", this.upgradeLevel, "Damage:", damage);
+        const explode = () => {
+            if (applied) return;
+            applied = true;
 
-                enemy.takeDamage(damage);
+            for (const enemy of targets) {
+                if (enemy.active) enemy.takeDamage(damage);
             }
+
+            const blast = scene.add.circle(x, y, radius, 0xffa329, 0.45).setDepth(7);
+            scene.tweens.add({
+                targets: blast, alpha: 0, scale: 1.2, duration: 220,
+                onComplete: () => blast.destroy()
+            });
+        };
+
+        if (!scene.events.emit("landmine-detonated", x, y, explode, this.displayWidth)) {
+            explode();
         }
-        const blast = this.scene.add.circle(this.x, this.y, radius, 0xffa329, 0.45).setDepth(7);
-        this.scene.tweens.add({ targets: blast, alpha: 0, scale: 1.2, duration: 220,
-            onComplete: () => blast.destroy() });
-        this.scene.events.emit("landmine-detonated", this.x, this.y);
         this.destroy();
         return true;
     }
