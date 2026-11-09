@@ -36,14 +36,17 @@ export class DualBarrel extends Defender {
             ),
             callback: () => {
                 if (this.active && this.hasEnemyInRow(this.enemies)) {
-                    this.shoot();
+                    const firstShot = () => {
+                        if (this.active && this.hasEnemyInRow(this.enemies)) this.shoot();
+                    };
+                    const secondShot = () => {
+                        if (this.active && this.hasEnemyInRow(this.enemies)) this.shoot();
+                    };
 
-                    // Second shot after 150ms
-                    this.scene.time.delayedCall(150, () => {
-                        if (this.active && this.hasEnemyInRow(this.enemies)) {
-                            this.shoot();
-                        }
-                    });
+                    if (!this.scene.events.emit("dualbarrel-fire", this, firstShot, secondShot)) {
+                        firstShot();
+                        this.scene.time.delayedCall(150, secondShot);
+                    }
                 }
             },
             loop: true
