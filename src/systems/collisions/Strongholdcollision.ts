@@ -44,16 +44,26 @@ export class StrongholdCollision {
                         return;
                     }
 
-                    this.stronghold.takeDamage(enemy.damage);
+                    const applyDamage = () => {
+                        if (!enemy.active || this.stronghold.health <= 0 || !enemy.isAttacking) {
+                            if (!enemy.active || this.stronghold.health <= 0) this.stopAttack(enemy);
+                            return;
+                        }
 
-                    // Stronghold retaliates if it survives.
-                    if (this.stronghold.health > 0 && enemy.active) {
-                        enemy.takeDamage(SETTINGS.stronghold.retaliationDamage);
-                    }
+                        this.stronghold.takeDamage(enemy.damage);
 
-                    // Stop attacking if either is destroyed.
-                    if (!enemy.active || this.stronghold.health <= 0) {
-                        this.stopAttack(enemy);
+                        if (this.stronghold.health > 0 && enemy.active) {
+                            enemy.takeDamage(SETTINGS.stronghold.retaliationDamage);
+                        }
+
+                        if (!enemy.active || this.stronghold.health <= 0) {
+                            this.stopAttack(enemy);
+                        }
+                    };
+
+                    if (!(enemy instanceof CrusherEnemy) ||
+                        !this.scene.events.emit("crusher-hit", enemy, applyDamage)) {
+                        applyDamage();
                     }
                 },
                 loop: true
