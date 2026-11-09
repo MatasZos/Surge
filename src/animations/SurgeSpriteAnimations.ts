@@ -115,8 +115,32 @@ export class SurgeSpriteAnimations {
                 const sheet = keys[type];
                 if (!sheet || !this.scene.textures.exists(sheet)) continue;
                 const width = object.displayWidth, height = object.displayHeight;
-                object.setTexture(sheet, 0);
-                object.setDisplaySize(width, height);
+                
+object.setTexture(sheet, 0);
+
+const spriteSizes: Record<string, number> = {
+    shooter: 1.5,
+    dualbarrel: 1.5,
+    cryogunner: 1.5,
+    generator: 1.5,
+    landmine: 1.4,
+    scrapper: 1.5,
+
+    meleeEnemy: 1.5,
+    rangedEnemy: 1.5,
+    crusherEnemy: 1.7,
+    drone: 1.4,
+    hijacker: 1.4,
+    overlord: 2.0
+};
+
+const multiplier = spriteSizes[type] ?? 1;
+
+object.setDisplaySize(
+    width * multiplier,
+    height * multiplier
+);
+
                 const stats = object as unknown as { health?: number; upgradeLevel?: number };
                 this.units.set(object, {
                     type, sprite: object, health: stats.health ?? 0,
