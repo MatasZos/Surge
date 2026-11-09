@@ -26,7 +26,7 @@ export class EnergyDrops {
 
         const energy = this.scene.add.image(x, y, "energy");
 
-        energy.setDisplaySize(35, 35);
+        energy.setDisplaySize(56, 56);
         energy.setDepth(15);
         energy.setInteractive({ useHandCursor: true });
 
@@ -34,12 +34,13 @@ export class EnergyDrops {
         energy.on("pointerdown", () => {
             if (!energy.active) return;
 
-            this.scene.events.emit(
-                "energy-collected",
-                SETTINGS.energy.enemyDropValue
-            );
-
+            const x = energy.x;
+            const y = energy.y;
+            energy.disableInteractive();
             energy.destroy();
+            if (!this.scene.events.emit("energy-picked-up", x, y, SETTINGS.energy.enemyDropValue)) {
+                this.scene.events.emit("energy-collected", SETTINGS.energy.enemyDropValue);
+            }
         });
 
         // Remove uncollected energy
