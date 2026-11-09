@@ -36,6 +36,18 @@ export class Generator extends Defender {
   private generateEnergy() {
     if (!this.active) return;
 
+    const produce = () => {
+      if (this.active) this.spawnEnergy();
+    };
+
+    if (!this.scene.events.emit("generator-produced", this, produce)) {
+      produce();
+    }
+  }
+
+  private spawnEnergy() {
+    if (!this.active) return;
+
     const energy = this.scene.add.image(
       this.x,
       this.y - 25,
