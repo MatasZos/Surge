@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { createOverlordArt } from "../boss/OverlordArt.ts";
 
 type Unit = "shooter" | "dualbarrel" | "cryogunner" | "generator" | "landmine" | "scrapper"
     | "meleeEnemy" | "rangedEnemy" | "crusherEnemy" | "drone" | "hijacker" | "overlord";
@@ -8,7 +9,7 @@ const keys: Record<Unit, string> = {
     generator: "surge_generator", landmine: "surge_landmine", scrapper: "surge_scrapper",
     meleeEnemy: "surge_meleeEnemy", rangedEnemy: "surge_rangedEnemy",
     crusherEnemy: "surge_crusherEnemy", drone: "surge_drone", hijacker: "surge_hijacker",
-    overlord: "surge_overlord"
+    overlord: "surge_overlord_mk2"
 };
 const idle: Record<Unit, string> = Object.fromEntries(
     Object.keys(keys).map(k => [k, "surge-" + k + "-idle"])
@@ -28,8 +29,10 @@ export class SurgeSpriteAnimations {
     private units = new Map<Phaser.GameObjects.Sprite, Tracked>();
     private pickups = new Set<Phaser.GameObjects.Image>();
     private elapsed = 0;
+    private bossSummoning = false;
 
     constructor(private scene: Phaser.Scene) {
+        createOverlordArt(scene);
         this.register();
         scene.events.on("projectile-created", this.friendlyShot, this);
         scene.events.on("enemy-projectile-created", this.enemyShot, this);
@@ -41,6 +44,9 @@ export class SurgeSpriteAnimations {
         scene.events.on("generator-produced", this.generatorProduced, this);
         scene.events.on("crusher-hit", this.crusherHit, this);
         scene.events.on("boss-shield-activated", this.shield, this);
+        scene.events.on("boss-summoning-finished", this.summoningFinished, this);
+        scene.events.on("boss-shield-ended", this.bossShieldEnded, this);
+        scene.events.on("boss-fired", this.bossFired, this);
         scene.events.once(Phaser.Scenes.Events.SHUTDOWN, this.destroy, this);
     }
 
@@ -65,11 +71,16 @@ export class SurgeSpriteAnimations {
         add("scrapper", "idle", 0, 1, 4);
         add("scrapper", "bite", 2, 4, 12, 0);
         add("scrapper", "recover", 5, 7, 4);
-        for (const type of ["meleeEnemy", "rangedEnemy", "overlord"] as Unit[]) {
+        for (const type of ["meleeEnemy", "rangedEnemy"] as Unit[]) {
             add(type, "idle", 0, 3, 7);
             add(type, "attack", 4, 7, 10, type === "rangedEnemy" ? 0 : -1);
             add(type, "death", 8, 11, 10, 0);
         }
+        add("overlord", "idle", 0, 5, 6);
+        add("overlord", "shield", 6, 11, 8);
+        add("overlord", "summon", 12, 17, 12);
+        add("overlord", "attack", 18, 23, 12, 0);
+        add("overlord", "death", 18, 23, 10, 0);
         add("crusherEnemy", "idle", 0, 1, 6);
         add("crusherEnemy", "ready", 2, 2, 1);
         add("crusherEnemy", "strike", 2, 3, 8, 0);
@@ -112,10 +123,16 @@ export class SurgeSpriteAnimations {
             state.recovering = props.recovering ?? false;
             if (this.shotPlaying(sprite)) continue;
             let target = idle[state.type];
+            if (state.type === "overlord") {
+                const phase = (sprite as unknown as { phases?: { shieldActive: boolean } }).phases;
+                if (phase?.shieldActive) {
+                    target = this.bossSummoning ? "surge-overlord-summon" : "surge-overlord-shield";
+                }
+            }
             if (state.type === "landmine" && props.armed) target = "surge-landmine-armed";
             else if (state.type === "scrapper" && props.recovering) target = "surge-scrapper-recover";
             else if (props.isAttacking && state.type === "crusherEnemy") target = "surge-crusherEnemy-ready";
-            else if (props.isAttacking && ["meleeEnemy", "overlord"].includes(state.type)) {
+            else if (props.isAttacking && state.type === "meleeEnemy") {
                 target = "surge-" + state.type + "-attack";
             }
             this.loop(sprite, target);
@@ -161,8 +178,8 @@ const spriteSizes: Record<string, number> = {
 const multiplier = spriteSizes[type] ?? 1;
 
 object.setDisplaySize(
-    width * multiplier,
-    height * multiplier
+    type === "overlord" ? 350 : width * multiplier,
+    type === "overlord" ? 350 : height * multiplier
 );
 
                 const stats = object as unknown as { health?: number; upgradeLevel?: number };
@@ -348,11 +365,31 @@ object.setDisplaySize(
     }
 
     private shield(): void {
-        const boss = [...this.units.values()].find(t => t.type === "overlord" && t.sprite.active);
-        if (boss) {
-            this.ring(boss.sprite.x, boss.sprite.y, 0x47dfff, 85);
-            this.sparks(boss.sprite.x, boss.sprite.y, 18, 0x5ceaff);
-        }
+        this.bossSummoning = true;
+        this.discover();
+        const boss = [...this.units.values()].find(t => t.type === "overlord" && t.sprite.active)?.sprite;
+        if (!boss) return;
+        this.loop(boss, "surge-overlord-summon");
+        this.ring(boss.x - 44, boss.y, 0x47dfff, 140);
+        this.sparks(boss.x - 75, boss.y + 60, 22, 0xff6455);
+    }
+
+    private summoningFinished(): void {
+        this.bossSummoning = false;
+    }
+
+    private bossShieldEnded(): void {
+        this.bossSummoning = false;
+    }
+
+    private bossFired(boss: Phaser.GameObjects.Sprite, x: number, y: number): void {
+        this.discover();
+        this.flash(x, y, 0xff5244);
+        this.sparks(x, y, 7, 0xff8761);
+        if (!boss.active || this.bossSummoning) return;
+        const shield = (boss as unknown as { phases?: { shieldActive: boolean } }).phases?.shieldActive;
+        this.once(boss, "surge-overlord-attack",
+            shield ? "surge-overlord-shield" : "surge-overlord-idle");
     }
 
     private energyPickedUp(x: number, y: number, amount: number): void {
@@ -453,6 +490,7 @@ object.setDisplaySize(
         return sprite.anims.isPlaying && (
             key.endsWith("-shoot") || key.endsWith("-bite") ||
             key.endsWith("-produce") || key.endsWith("-strike") ||
+            key === "surge-overlord-attack" ||
             key === "surge-rangedEnemy-attack"
         );
     }
@@ -510,6 +548,9 @@ object.setDisplaySize(
         this.scene.events.off("generator-produced", this.generatorProduced, this);
         this.scene.events.off("crusher-hit", this.crusherHit, this);
         this.scene.events.off("boss-shield-activated", this.shield, this);
+        this.scene.events.off("boss-summoning-finished", this.summoningFinished, this);
+        this.scene.events.off("boss-shield-ended", this.bossShieldEnded, this);
+        this.scene.events.off("boss-fired", this.bossFired, this);
         this.units.clear();
         this.pickups.clear();
     }
