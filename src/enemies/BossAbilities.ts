@@ -53,6 +53,7 @@ export class BossAbilities {
         );
 
         projectile.damage = this.getAttackDamage();
+        this.scene.events.emit("boss-fired", this.boss, projectile.x, projectile.y);
     }
 
     private getAttackInterval(): number {
