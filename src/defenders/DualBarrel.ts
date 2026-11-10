@@ -28,7 +28,6 @@ export class DualBarrel extends Defender {
         this.damage = SETTINGS.defenders.dualbarrel.damage;
         this.enemies = enemies;
 
-        // Fires two shots every second
         this.shootTimer = scene.time.addEvent({
             delay: Math.max(
                 1,
@@ -37,10 +36,10 @@ export class DualBarrel extends Defender {
             callback: () => {
                 if (this.active && this.hasEnemyInRow(this.enemies)) {
                     const firstShot = () => {
-                        if (this.active && this.hasEnemyInRow(this.enemies)) this.shoot();
+                        if (this.active) this.shoot(0);
                     };
                     const secondShot = () => {
-                        if (this.active && this.hasEnemyInRow(this.enemies)) this.shoot();
+                        if (this.active) this.shoot(1);
                     };
 
                     if (!this.scene.events.emit("dualbarrel-fire", this, firstShot, secondShot)) {
@@ -53,7 +52,7 @@ export class DualBarrel extends Defender {
         });
     }
 
-    private shoot() {
+    private shoot(barrel: 0 | 1) {
         if (!this.active) return;
 
         if (this.scene.cache.audio.exists("laserSound")) {
@@ -64,8 +63,8 @@ export class DualBarrel extends Defender {
 
         const projectile = new Projectile(
             this.scene,
-            this.x + 25,
-            this.y - 2
+            this.x + 27,
+            this.y + (barrel === 0 ? -13 : 13)
         );
 
         //use dual barrel own projectile stats
