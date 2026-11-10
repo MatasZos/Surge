@@ -12,16 +12,19 @@ export class ProjectileCollision {
     ) {}
 
     update(): void {
+        const targets = this.enemies.filter(enemy => enemy.active).sort((a, b) => a.x - b.x);
+
         for (const projectile of this.projectiles) {
             if (!projectile.active) continue;
 
-            for (const enemy of this.enemies) {
+            for (const enemy of targets) {
                 if (!enemy.active) continue;
+                if (enemy instanceof BossEnemy && enemy.phases.shieldActive) continue;
 
-                const hit = Phaser.Geom.Intersects.RectangleToRectangle(
-                    projectile.getBounds(),
-                    enemy.getBounds()
-                );
+                const bounds = projectile.getBounds();
+                const hit = enemy instanceof BossEnemy
+                    ? bounds.right >= enemy.x - 105 && bounds.left <= enemy.x + 100
+                    : Phaser.Geom.Intersects.RectangleToRectangle(bounds, enemy.getBounds());
 
             if (!hit) continue;
 
