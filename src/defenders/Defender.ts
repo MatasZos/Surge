@@ -110,14 +110,8 @@ export class Defender extends Phaser.GameObjects.Sprite {
                 return false;
             }
 
-            // Boss spans across all five lanes
             if (enemy instanceof BossEnemy) {
-                const bounds = enemy.getBounds();
-
-                return (
-                    this.y >= bounds.top &&
-                    this.y <= bounds.bottom
-                );
+                return !enemy.phases.shieldActive;
             }
             //normal enemies stay in their own lane
             return Math.abs(enemy.y - this.y) < 20;
