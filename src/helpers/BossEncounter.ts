@@ -154,6 +154,7 @@ export class BossEncounter {
         this.effects?.destroy();
         this.effects = undefined;
 
+        this.reinforcements?.destroy();
         this.reinforcements = undefined;
         this.abilities = undefined;
         this.bossEnemy = null;
