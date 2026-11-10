@@ -13,6 +13,7 @@ type RobotType = "melee" | "ranged" | "crusher";
 export class OverlordReinforcements {
     private summonedEnemies: Enemy[] = [];
     private pending = 0;
+    private summoningFinished = false;
     private timers: Phaser.Time.TimerEvent[] = [];
 
     constructor(
@@ -35,12 +36,13 @@ export class OverlordReinforcements {
 
         const robots = waves[phase] ?? [];
         this.pending = robots.length;
+        this.summoningFinished = false;
 
         for (let i = 0; i < robots.length; i++) {
             const type = robots[i];
             const row = (i * 3 + phase) % GRID_ROWS;
-            const x = Math.min(GRID_X + GRID_COLS * CELL_WIDTH - 18, this.boss.x - 45)
-                - Math.floor(i / GRID_ROWS) * 14;
+            const x = Math.min(GRID_X + GRID_COLS * CELL_WIDTH - 4, this.boss.x - 15)
+                - Math.floor(i / GRID_ROWS) * 7;
             const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
 
             const timer = this.scene.time.delayedCall(220 + i * 280, () => {
@@ -66,6 +68,10 @@ export class OverlordReinforcements {
                         this.showLandingEffect(x, y);
                     }
                     this.pending = Math.max(0, this.pending - 1);
+                    if (this.pending === 0 && !this.summoningFinished) {
+                        this.summoningFinished = true;
+                        this.scene.events.emit("boss-summoning-finished");
+                    }
                 }));
             });
 
@@ -137,6 +143,7 @@ export class OverlordReinforcements {
         this.cancelTimers();
         this.summonedEnemies = [];
         this.pending = 0;
+        this.summoningFinished = false;
     }
 
     private cancelTimers(): void {
