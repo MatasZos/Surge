@@ -52,7 +52,7 @@ export class BossEncounter {
         }
 
         // Create the boss outside the grid
-        const x = GRID_X + GRID_COLS * CELL_WIDTH + 15;
+        const x = GRID_X + GRID_COLS * CELL_WIDTH - 52;
         const y = GRID_Y + GRID_ROWS * CELL_HEIGHT / 2;
 
         const boss = new BossEnemy(this.scene, x, y);
