@@ -477,6 +477,7 @@ object.setDisplaySize(
             defender.off(Phaser.Animations.Events.ANIMATION_UPDATE, onFrame);
             defender.off(Phaser.Animations.Events.ANIMATION_COMPLETE, onComplete);
             defender.off(Phaser.Animations.Events.ANIMATION_STOP, onStop);
+            defender.off(Phaser.GameObjects.Events.DESTROY, onDestroy);
         };
         const onComplete = () => {
             cleanup();
@@ -485,14 +486,16 @@ object.setDisplaySize(
         };
         const onStop = () => {
             cleanup();
-            second();
+            if (defender.active) second();
         };
+        const onDestroy = () => cleanup();
 
         defender.anims.timeScale = 1;
+        defender.play(animationKey, true);
         defender.on(Phaser.Animations.Events.ANIMATION_UPDATE, onFrame);
         defender.once(Phaser.Animations.Events.ANIMATION_COMPLETE, onComplete);
         defender.once(Phaser.Animations.Events.ANIMATION_STOP, onStop);
-        defender.play(animationKey, true);
+        defender.once(Phaser.GameObjects.Events.DESTROY, onDestroy);
     }
 
     private nearest(x: number, y: number, types: Unit[], max: number): Tracked | undefined {
