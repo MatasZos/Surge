@@ -88,6 +88,21 @@ export class OverlordReinforcements {
     }
 
     private showDropEffect(x: number, y: number): void {
+        const pod = this.scene.add.container(this.boss.x - 85, this.boss.y - 55);
+        pod.setDepth(this.boss.depth + 6);
+        pod.add([
+            this.scene.add.ellipse(0, 2, 36, 22, 0x162535).setStrokeStyle(3, 0xbac9d3),
+            this.scene.add.rectangle(0, -11, 28, 25, 0x405261).setStrokeStyle(3, 0x111e2a),
+            this.scene.add.circle(0, -16, 8, 0xff5962).setStrokeStyle(2, 0xffced0),
+            this.scene.add.rectangle(-16, 6, 7, 14, 0x9eacb9),
+            this.scene.add.rectangle(16, 6, 7, 14, 0x9eacb9)
+        ]);
+        this.scene.tweens.add({
+            targets: pod, x, y: y - 14, angle: 20,
+            duration: 320, ease: "Cubic.In",
+            onComplete: () => pod.destroy()
+        });
+
         const ring = this.scene.add.circle(x, y + 20, 24, 0xff314d, 0.08)
             .setStrokeStyle(3, 0xff4f61, 0.95).setDepth(35);
         const beam = this.scene.add.rectangle(x, y - 70, 11, 125, 0xff4f63, 0.48)
