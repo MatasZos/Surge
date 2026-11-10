@@ -41,7 +41,7 @@ export class OverlordReinforcements {
         for (let i = 0; i < robots.length; i++) {
             const type = robots[i];
             const row = (i * 3 + phase) % GRID_ROWS;
-            const x = Math.min(GRID_X + GRID_COLS * CELL_WIDTH - 4, this.boss.x - 15)
+            const x = Math.min(GRID_X + GRID_COLS * CELL_WIDTH - 60, this.boss.x - 140)
                 - Math.floor(i / GRID_ROWS) * 7;
             const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
 
