@@ -22,6 +22,7 @@ export function loadGameAssets(scene: Phaser.Scene): void {
 
     scene.load.spritesheet("surge_shooter", "assets/animations/shooter.png", { frameWidth: 192, frameHeight: 192 });
     scene.load.spritesheet("surge_dualbarrel", "assets/animations/dualbarrel.png", { frameWidth: 192, frameHeight: 192 });
+    scene.load.spritesheet("surge_dualbarrel_v3", "assets/animations/dualbarrel_v3.png", { frameWidth: 256, frameHeight: 256 });
     scene.load.spritesheet("surge_cryogunner", "assets/animations/cryogunner.png", { frameWidth: 192, frameHeight: 192 });
     scene.load.spritesheet("surge_generator", "assets/animations/generator.png", { frameWidth: 192, frameHeight: 192 });
     scene.load.spritesheet("surge_landmine", "assets/animations/landmine.png", { frameWidth: 192, frameHeight: 192 });
@@ -32,6 +33,7 @@ export function loadGameAssets(scene: Phaser.Scene): void {
     scene.load.spritesheet("surge_drone", "assets/animations/drone.png", { frameWidth: 192, frameHeight: 192 });
     scene.load.spritesheet("surge_hijacker", "assets/animations/hijacker.png", { frameWidth: 192, frameHeight: 192 });
     scene.load.spritesheet("surge_overlord", "assets/animations/overlord.png", { frameWidth: 192, frameHeight: 192 });
+    scene.load.spritesheet("surge_overlord_v3", "assets/animations/overlord_v3.png", { frameWidth: 256, frameHeight: 256 });
     scene.load.spritesheet("surge_energy", "assets/animations/energy.png", { frameWidth: 192, frameHeight: 192 });
     scene.load.spritesheet("surge_fx", "assets/animations/fx.png", { frameWidth: 192, frameHeight: 192 });
 
