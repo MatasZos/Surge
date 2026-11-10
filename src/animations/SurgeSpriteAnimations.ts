@@ -31,16 +31,10 @@ export class SurgeSpriteAnimations {
     private bossSummoning = false;
 
     constructor(private scene: Phaser.Scene) {
-        if (scene.textures.exists("surge_overlord_v3")) {
-            keys.overlord = "surge_overlord_v3";
-        } else {
-            keys.overlord = "surge_overlord";
-        }
-        if (scene.textures.exists("surge_dualbarrel_v3")) {
-            keys.dualbarrel = "surge_dualbarrel_v3";
-        } else {
-            keys.dualbarrel = "surge_dualbarrel";
-        }
+        keys.overlord = scene.textures.exists("surge_overlord_v4")
+            ? "surge_overlord_v4"
+            : "surge_overlord";
+        keys.dualbarrel = "surge_dualbarrel";
         this.register();
         scene.events.on("projectile-created", this.friendlyShot, this);
         scene.events.on("enemy-projectile-created", this.enemyShot, this);
@@ -71,14 +65,8 @@ export class SurgeSpriteAnimations {
             add(type, "idle", 0, 2, 5);
             add(type, "shoot", 2, 7, 16, 0);
         }
-        if (keys.dualbarrel === "surge_dualbarrel_v3") {
-            add("dualbarrel", "idle", 0, 6, 5);
-            add("dualbarrel", "shoot", 7, 13, 14, 0);
-            add("dualbarrel", "cooldown", 14, 20, 14, 0);
-        } else {
-            add("dualbarrel", "idle", 0, 0, 1);
-            add("dualbarrel", "shoot", 0, 3, 12, 0);
-        }
+        add("dualbarrel", "idle", 0, 0, 1);
+        add("dualbarrel", "shoot", 0, 3, 12, 0);
         add("generator", "idle", 0, 0, 1);
         add("generator", "produce", 0, 3, 10, 0);
         add("landmine", "idle", 0, 1, 3);
@@ -92,7 +80,7 @@ export class SurgeSpriteAnimations {
             add(type, "attack", 4, 7, 10, type === "rangedEnemy" ? 0 : -1);
             add(type, "death", 8, 11, 10, 0);
         }
-        if (keys.overlord === "surge_overlord_v3") {
+        if (keys.overlord === "surge_overlord_v4") {
             add("overlord", "idle", 0, 6, 6);
             add("overlord", "shield", 7, 13, 8);
             add("overlord", "attack", 14, 20, 12, 0);
@@ -470,8 +458,8 @@ object.setDisplaySize(
         };
 
         const onFrame = (_animation: Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame) => {
-            if (frame.index >= (keys.dualbarrel === "surge_dualbarrel_v3" ? 3 : 2)) first();
-            if (frame.index >= (keys.dualbarrel === "surge_dualbarrel_v3" ? 5 : 4)) second();
+            if (frame.index >= 2) first();
+            if (frame.index >= 4) second();
         };
         const cleanup = () => {
             defender.off(Phaser.Animations.Events.ANIMATION_UPDATE, onFrame);
