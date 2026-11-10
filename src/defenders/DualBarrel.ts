@@ -63,8 +63,8 @@ export class DualBarrel extends Defender {
 
         const projectile = new Projectile(
             this.scene,
-            this.x + 27,
-            this.y + (barrel === 0 ? -13 : 13)
+            this.x + 30,
+            this.y + (barrel === 0 ? -9 : 4)
         );
 
         //use dual barrel own projectile stats
