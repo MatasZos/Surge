@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import { createOverlordArt } from "../boss/OverlordArt.ts";
 
 type Unit = "shooter" | "dualbarrel" | "cryogunner" | "generator" | "landmine" | "scrapper"
     | "meleeEnemy" | "rangedEnemy" | "crusherEnemy" | "drone" | "hijacker" | "overlord";
@@ -9,7 +8,7 @@ const keys: Record<Unit, string> = {
     generator: "surge_generator", landmine: "surge_landmine", scrapper: "surge_scrapper",
     meleeEnemy: "surge_meleeEnemy", rangedEnemy: "surge_rangedEnemy",
     crusherEnemy: "surge_crusherEnemy", drone: "surge_drone", hijacker: "surge_hijacker",
-    overlord: "surge_overlord_mk2"
+    overlord: "surge_overlord"
 };
 const idle: Record<Unit, string> = Object.fromEntries(
     Object.keys(keys).map(k => [k, "surge-" + k + "-idle"])
@@ -32,7 +31,16 @@ export class SurgeSpriteAnimations {
     private bossSummoning = false;
 
     constructor(private scene: Phaser.Scene) {
-        createOverlordArt(scene);
+        if (scene.textures.exists("surge_overlord_v3")) {
+            keys.overlord = "surge_overlord_v3";
+        } else {
+            keys.overlord = "surge_overlord";
+        }
+        if (scene.textures.exists("surge_dualbarrel_v3")) {
+            keys.dualbarrel = "surge_dualbarrel_v3";
+        } else {
+            keys.dualbarrel = "surge_dualbarrel";
+        }
         this.register();
         scene.events.on("projectile-created", this.friendlyShot, this);
         scene.events.on("enemy-projectile-created", this.enemyShot, this);
@@ -59,9 +67,17 @@ export class SurgeSpriteAnimations {
                 frameRate: fps, repeat
             });
         };
-        for (const type of ["shooter", "dualbarrel", "cryogunner"] as Unit[]) {
+        for (const type of ["shooter", "cryogunner"] as Unit[]) {
             add(type, "idle", 0, 2, 5);
-            add(type, "shoot", 2, 7, type === "dualbarrel" ? 20 : 16, 0);
+            add(type, "shoot", 2, 7, 16, 0);
+        }
+        if (keys.dualbarrel === "surge_dualbarrel_v3") {
+            add("dualbarrel", "idle", 0, 6, 5);
+            add("dualbarrel", "shoot", 7, 13, 14, 0);
+            add("dualbarrel", "cooldown", 14, 20, 14, 0);
+        } else {
+            add("dualbarrel", "idle", 0, 0, 1);
+            add("dualbarrel", "shoot", 0, 3, 12, 0);
         }
         add("generator", "idle", 0, 0, 1);
         add("generator", "produce", 0, 3, 10, 0);
@@ -76,11 +92,19 @@ export class SurgeSpriteAnimations {
             add(type, "attack", 4, 7, 10, type === "rangedEnemy" ? 0 : -1);
             add(type, "death", 8, 11, 10, 0);
         }
-        add("overlord", "idle", 0, 5, 6);
-        add("overlord", "shield", 6, 11, 8);
-        add("overlord", "summon", 12, 17, 12);
-        add("overlord", "attack", 18, 23, 12, 0);
-        add("overlord", "death", 18, 23, 10, 0);
+        if (keys.overlord === "surge_overlord_v3") {
+            add("overlord", "idle", 0, 6, 6);
+            add("overlord", "shield", 7, 13, 8);
+            add("overlord", "attack", 14, 20, 12, 0);
+            add("overlord", "summon", 21, 27, 9);
+            add("overlord", "death", 28, 34, 10, 0);
+        } else {
+            add("overlord", "idle", 0, 3, 5);
+            add("overlord", "shield", 0, 3, 6);
+            add("overlord", "summon", 0, 3, 7);
+            add("overlord", "attack", 4, 7, 10, 0);
+            add("overlord", "death", 8, 11, 9, 0);
+        }
         add("crusherEnemy", "idle", 0, 1, 6);
         add("crusherEnemy", "ready", 2, 2, 1);
         add("crusherEnemy", "strike", 2, 3, 8, 0);
@@ -178,8 +202,8 @@ const spriteSizes: Record<string, number> = {
 const multiplier = spriteSizes[type] ?? 1;
 
 object.setDisplaySize(
-    type === "overlord" ? 350 : width * multiplier,
-    type === "overlord" ? 350 : height * multiplier
+    type === "overlord" ? 310 : width * multiplier,
+    type === "overlord" ? 310 : height * multiplier
 );
 
                 const stats = object as unknown as { health?: number; upgradeLevel?: number };
@@ -446,8 +470,8 @@ object.setDisplaySize(
         };
 
         const onFrame = (_animation: Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame) => {
-            if (frame.index >= 2) first();
-            if (frame.index >= 5) second();
+            if (frame.index >= (keys.dualbarrel === "surge_dualbarrel_v3" ? 3 : 2)) first();
+            if (frame.index >= (keys.dualbarrel === "surge_dualbarrel_v3" ? 5 : 4)) second();
         };
         const cleanup = () => {
             defender.off(Phaser.Animations.Events.ANIMATION_UPDATE, onFrame);
