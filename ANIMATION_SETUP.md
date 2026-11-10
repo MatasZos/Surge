@@ -31,24 +31,16 @@ Gameplay balance and CSV configuration are inherited unchanged from the main bra
 
 Review in-game visuals and performance before merging. This branch has not been fully playtested.
 
+## Overlord v4 artwork
 
-## Overlord and Dual Barrel artwork update
+The new boss sheet uses a 7-column by 5-row grid with 212 × 212 PNG frames. The game looks for `public/assets/animations/overlord_v4.png` and falls back to the previous Overlord sheet when that file is absent.
 
-The new animation code supports two higher-detail sprite sheets:
+Animations:
 
-```text
-public/assets/animations/overlord_v3.png
-public/assets/animations/dualbarrel_v3.png
-```
+- Idle: frames 0–6
+- Shield: frames 7–13
+- Attack: frames 14–20
+- Summon: frames 21–27
+- Death: frames 28–34
 
-Extract the `public` directory from `SURGE_Realistic_Boss_DualBarrel_Assets.zip` into your repository root and commit the new PNG files to this branch.
-
-The Overlord atlas is a 7-column, 5-row sheet of 256 × 256 frames:
-idle 0–6, shield 7–13, attack 14–20, summon 21–27, death 28–34.
-
-The Dual Barrel atlas is a 7-column, 4-row sheet of 256 × 256 frames:
-idle 0–6, alternating muzzle-fire 7–13, cooldown 14–20.
-
-The code selects these new atlases when present. Without them, it uses the earlier PNG atlases. The old procedurally drawn flat Overlord has been removed.
-
-Dual Barrel attacks always issue two projectiles from separate muzzle positions, with the firing frames 2 and 4 of the attack sequence controlling their release. Gameplay balance values remain in the CSV files.
+No new Dual Barrel artwork is used. The existing Dual Barrel sprite sheet and the two-shot bug fix are retained.
