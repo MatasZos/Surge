@@ -51,8 +51,10 @@ export class Defender extends Phaser.GameObjects.Sprite {
     }
 
     protected increaseMaxHealth(multiplier: number): void {
-        this.maxHealth *= multiplier;
-        this.health = Math.min(this.health, this.maxHealth);
+        let extraHealth = this.maxHealth * (multiplier - 1);
+
+        this.maxHealth += extraHealth;
+        this.health += extraHealth;
         this.updateHealthBar();
     }
 

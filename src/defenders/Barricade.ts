@@ -35,8 +35,6 @@ export class Barricade extends Defender {
                 SETTINGS.defenders.barricade.upgradeHealthMultiplier
 
             );
-
-            this.heal(50);
         }
         console.log("Barricade Level:", this.upgradeLevel, "Health:", this.health);
         return true;
