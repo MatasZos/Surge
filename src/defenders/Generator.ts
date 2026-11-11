@@ -5,7 +5,6 @@ import { SETTINGS } from "../config/settings.ts";
 
 export class Generator extends Defender {
   private energyTimer?: Phaser.Time.TimerEvent;
-  private pickupCount = 0;
 
   //keep track of energy pickups belonging to this generator
   private energyPickups: Phaser.GameObjects.Image[] = [];
@@ -22,39 +21,66 @@ export class Generator extends Defender {
       if (!this.active) return;
 
       this.generateEnergy();
+      this.startProductionTimer();
 
-      // Produce energy every 24 seconds
-      this.energyTimer = scene.time.addEvent({
-        delay: SETTINGS.energy.generatorProductionIntervalMs,
-        callback: this.generateEnergy,
-        callbackScope: this,
-        loop: true
-      });
     });
   }
 
-  private generateEnergy() {
-    if (!this.active) return;
+  private startProductionTimer() {
+    // Remove the old timer
+    this.energyTimer?.remove();
 
-    const energy = this.scene.add.image(
-      this.x,
-      this.y - 25,
-      "energy"
-    );
+    let interval = SETTINGS.energy.generatorProductionIntervalMs;
 
-    energy.setDisplaySize(35, 35);
-    energy.setDepth(5);
-    energy.setInteractive({ useHandCursor: true });
+    // Level 2 and 3 generate faster
+    if (this.upgradeLevel >= 2) {
+        interval = 16000;
+    }
 
-    //remember which pickup belongs to this generator
-    this.energyPickups.push(energy);
+    this.energyTimer = this.scene.time.addEvent({
+        delay: interval,
+        callback: this.generateEnergy,
+        callbackScope: this,
+        loop: true
+    });
+    }
 
-    //then remove destroyed pickups from the tracker list
-    energy.once("destroy", () => {
-        const index = this.energyPickups.indexOf(energy);
+    override upgrade(): boolean {
+    // Check if upgrade was successful
+    if (!super.upgrade()) {
+        return false;
+    }
 
-        if(index != -1){
-            this.energyPickups.splice(index, 1);
+    // Make generator faster at Level 2
+    if (this.upgradeLevel === 2) {
+        this.startProductionTimer();
+    }
+
+    return true;
+    }
+
+    private generateEnergy() {
+        if (!this.active) return;
+
+        const energy = this.scene.add.image(
+        this.x,
+        this.y - 25,
+        "energy"
+        );
+
+        energy.setDisplaySize(35, 35);
+        energy.setDepth(5);
+        energy.setInteractive({ useHandCursor: true });
+
+        //remember which pickup belongs to this generator
+        this.energyPickups.push(energy);
+
+        //then remove destroyed pickups from the tracker list
+        energy.once("destroy", () => {
+            const index = this.energyPickups.indexOf(energy);
+
+            if(index != -1){
+                this.energyPickups.splice(index, 1);
         }
 
     })
@@ -62,38 +88,15 @@ export class Generator extends Defender {
     energy.on("pointerdown", () => {
         if (!energy.active) return;
 
-        let amount = SETTINGS.energy.generatorPickupValue;
+        let amount = 50;
 
-        if (this.upgradeLevel >= 2) {
-            amount *= SETTINGS.defenders.generator.upgradeEnergyMultiplier;
-    }
-
-    // Level 3 Energy Jackpot
-    if (this.upgradeLevel === 3) {
-        this.pickupCount++;
-
-        if (this.pickupCount % 4 === 0) {
-            amount *= 3;
-
-            // Golden effect for jackpot
-            const effect = this.scene.add.circle(
-                energy.x, energy.y, 25, 0xffd700, 0.6
-            );
-
-            this.scene.tweens.add({
-                targets: effect,
-                alpha: 0,
-                scale: 1.5,
-                duration: 400,
-                onComplete: () => effect.destroy()
-            });
+        //level 3 gives more energy
+        if (this.upgradeLevel === 3) {
+            amount = 75;
         }
-    }
 
-    console.log("Generator Level:", this.upgradeLevel, "Energy:", amount);
-
-    this.scene.events.emit("energy-collected", amount);
-    energy.destroy();
+        this.scene.events.emit("energy-collected", amount);
+        energy.destroy();
     });
 
     // Energy disappears if not collected
