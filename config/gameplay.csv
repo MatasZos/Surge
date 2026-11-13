@@ -160,7 +160,7 @@ defenders.scrapper.upgrade_energy_multiplier,1
 defenders.scrapper.upgrade_health_multiplier,1
 defenders.scrapper.recovery_ms,42000
 defenders.scrapper.upgrade_level3_cost,200
-energy.starting_energy,50
+energy.starting_energy,10000
 energy.generator_pickup_value,50
 energy.generator_first_production_ms,7000
 energy.generator_production_interval_ms,24000

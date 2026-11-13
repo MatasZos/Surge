@@ -12,6 +12,7 @@ export class DefenderToolbar {
     private cooldownTexts: Partial<Record<DefenderType, Phaser.GameObjects.Text>> = {};
     private defenderButtons: Partial<Record<DefenderType, Phaser.GameObjects.Rectangle>> = {};
     private selectedType: string | null = null;
+    private hoveredType: string | null = null;
     private readonly normalColor = 0x34465c;
     private readonly selectedColor = 0x205d60;
 
@@ -130,8 +131,24 @@ export class DefenderToolbar {
 
     private addButton(x: number, y: number, name: string, type: DefenderType): void {
         const button = this.scene.add.rectangle(x, y, 100, 88, this.normalColor)
-            .setDepth(11).setInteractive({ useHandCursor: true });
+            .setStrokeStyle(1, 0x72839a).setDepth(11).setInteractive({ useHandCursor: true });
         this.buttons.push(button);
+
+        button.on("pointerover", () => {
+            if (this.currentLevel < this.getUnlockLevel(type)) return;
+            if (this.getEnergy() < SETTINGS.defenders[type].cost) return;
+
+            this.hoveredType = type;
+        });
+
+        button.on("pointerout", () => {
+            this.hoveredType = null;
+            if (this.selectedType === type) {
+                button.setStrokeStyle(2, 0x00ff99);
+            } else {
+                button.setStrokeStyle(1, 0x72839a);
+            }
+        });
         
         this.defenderButtons[type] = button;
         this.scene.input.setDraggable(button);
@@ -261,14 +278,17 @@ export class DefenderToolbar {
                 text.setVisible(true);
             } else {
                 text.setVisible(false);
-                if (this.selectedType === type) {
+                if (this.hoveredType === type && this.getEnergy() >= SETTINGS.defenders[type].cost) {
+                    button.setFillStyle(0x406b85);
+                    button.setStrokeStyle(4, 0x00ccff);
+                } else if (this.selectedType === type) {
                     button.setFillStyle(this.selectedColor);
                     button.setStrokeStyle(2, 0x00ff99);
                 } else {
                     button.setFillStyle(this.normalColor);
-                    button.setStrokeStyle();
+                    button.setStrokeStyle(1, 0x72839a);
                 }
-            }
+            } 
         }
     }
 }
