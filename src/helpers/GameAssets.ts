@@ -4,7 +4,20 @@ import Phaser from "phaser";
 export function loadGameAssets(scene: Phaser.Scene): void {
 
     // Defenders
-    scene.load.image("shooter", "assets/defenders/shooterdefender.png");
+    //shooter sprite and animations
+    //idle
+    scene.load.spritesheet("shooter", "assets/defenders/shooter/Idle.png", {frameWidth:68, frameHeight: 72});
+
+    //shoot 
+    scene.load.spritesheet("shooter-shot", "assets/defenders/shooter/Shot_1.png",{frameWidth:68,frameHeight:72});
+
+    //hurt
+    scene.load.spritesheet("shooter-hurt","assets/defenders/shooter/Hurt.png",{frameWidth:68,frameHeight:72});
+
+    //dead
+    scene.load.spritesheet("shooter-dead","assets/defenders/shooter/Dead.png",{frameWidth:68, frameHeight:72});
+
+
     scene.load.image("generator", "assets/defenders/generator.png");
     scene.load.image("barricade", "assets/defenders/barricade.png");
     scene.load.image("dualbarrel", "assets/defenders/dualbarrel.png");
