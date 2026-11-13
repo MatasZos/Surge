@@ -166,6 +166,44 @@ export class GameScene extends Phaser.Scene {
         });
     }
 
+private createPauseButton(): void {
+    const pauseButton = this.add.text(
+        90, 145, "II  PAUSE", {
+            fontSize: "21px",
+            color: "#ffffff",
+            backgroundColor: "#244b73",
+            padding: { x: 14, y: 10 }
+        }
+    );
+
+    pauseButton.setOrigin(0.5);
+    pauseButton.setDepth(200);
+    pauseButton.setInteractive({
+        useHandCursor: true
+    });
+
+    pauseButton.on("pointerover", () => {
+        pauseButton.setBackgroundColor("#087d92");
+    });
+
+    pauseButton.on("pointerout", () => {
+        pauseButton.setBackgroundColor("#244b73");
+    });
+
+    pauseButton.on("pointerdown", (
+        _pointer: Phaser.Input.Pointer,
+        _localX: number,
+        _localY: number,
+        event: Phaser.Types.Input.EventData
+    ) => {
+        event.stopPropagation();
+
+        this.scene.launch("PauseScene");
+        this.scene.pause();
+        this.sound.pauseAll();
+    });
+}
+
     private setupGameEvents(): void {
         setupGameEvents(
             this,
@@ -353,6 +391,7 @@ export class GameScene extends Phaser.Scene {
 
         this.setupCombat();
         this.setupInput();
+        this.createPauseButton();
         
         this.startEnemySpawning();
         this.showNotification(`LEVEL ${this.currentLevel} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);

@@ -1,7 +1,7 @@
-
 import Phaser from "phaser";
 import { GameScene } from "./scenes/GameScene.ts";
 import { MainMenu } from "./scenes/MainMenu.ts";
+import { PauseScene } from "./scenes/PauseScene.ts";
 import { GameOver } from "./scenes/GameOver.ts";
 import { LevelComplete } from "./scenes/LevelComplete.ts";
 
@@ -33,7 +33,7 @@ async function startGame(){
             }
         },
 
-        scene: [MainMenu,GameScene, GameOver, LevelComplete]
+        scene: [MainMenu,GameScene, GameOver, LevelComplete, PauseScene]
     });
 
 }
