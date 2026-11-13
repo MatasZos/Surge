@@ -12,6 +12,7 @@ export class Defender extends Phaser.GameObjects.Sprite {
 
     private maxHealth: number;
     private healthBar: Phaser.GameObjects.Graphics;
+    private displayedHealthPercent = 1;
     private upgradeIndicator: DefenderUpgradeIndicator;
     
     constructor(
@@ -82,29 +83,52 @@ export class Defender extends Phaser.GameObjects.Sprite {
     }
 
     private updateHealthBar() {
-
         this.healthBar.clear();
 
-        const width = 60;
-        const height = 7;
-
+        const width = 62;
+        const height = 9;
         const x = this.x - width / 2;
-        const y = this.y - this.displayHeight / 2 - 12;
+        const y = this.y - this.displayHeight / 2 - 14;
 
-        // Red background
-        this.healthBar.fillStyle(0xff0000);
-        this.healthBar.fillRect(x, y, width, height);
+        const targetPercent = Phaser.Math.Clamp(this.health / this.maxHealth, 0, 1);
 
-        // Green remaining health
-        this.healthBar.fillStyle(0x00ff00);
-        this.healthBar.fillRect(
-            x,
-            y,
-            width * (this.health / this.maxHealth),
-            height
-        );
+        //smoothly animate health changes
+        this.displayedHealthPercent += (targetPercent - this.displayedHealthPercent) * 0.18;
+
+        if (Math.abs(targetPercent - this.displayedHealthPercent) < 0.005) {this.displayedHealthPercent = targetPercent;}
+
+        let color = 0x29f4a0;
+
+        if (targetPercent <= 0.3) {
+            color = 0xff485c;
+        } else if (targetPercent <= 0.6) {
+            color = 0xffd04a;
+        }
+
+        //soft outer glow
+        this.healthBar.fillStyle(color, 0.16);
+        this.healthBar.fillRoundedRect(x - 3, y - 3, width + 6, height + 6, 5);
+
+        //dark background
+        this.healthBar.fillStyle(0x101b2b);
+        this.healthBar.fillRoundedRect(x, y, width, height, 4);
+
+        //remaining health
+        this.healthBar.fillStyle(color);
+        this.healthBar.fillRoundedRect(x + 1, y + 1, Math.max(0, (width - 2) * this.displayedHealthPercent), height - 2, 3);
+
+        //subtle border
+        this.healthBar.lineStyle(1, 0x7896b8, 0.8);
+        this.healthBar.strokeRoundedRect(x, y, width, height, 4);
     }
 
+    protected preUpdate(time: number, delta: number): void {
+        super.preUpdate(time, delta);
+
+        if (this.active) {
+            this.updateHealthBar();
+        }
+    }
 
     protected hasEnemyInRow(enemies: Enemy[]): boolean {
         return enemies.some(enemy => {
