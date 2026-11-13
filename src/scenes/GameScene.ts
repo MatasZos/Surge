@@ -229,9 +229,17 @@ private createPauseButton(): void {
             },
             this.projectiles,
             this.enemyProjectiles,
-            (amount: number) => {
+            (amount: number, x?:number,y?:number) => {
+                //credit the energy right away
                 this.energyManager.addEnergy(amount);
-                this.updateEnergyText();
+
+                if(x !== undefined && y !== undefined){
+                    //animate collected pickups towars the hud
+                    this.gameUI.animateEnergyPickup(amount,x,y);
+                }else{
+                    //normal update for events without pickup positions
+                     this.updateEnergyText();
+                }
             }
         );
     }

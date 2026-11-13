@@ -113,10 +113,9 @@ export class ProjectileCollision {
             projectile.slowDurationMs
         );
     }
-
-    projectile.destroy();
-    break;
-                }
+}
+projectile.destroy();
+break;
             }
         }
     }

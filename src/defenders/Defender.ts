@@ -164,20 +164,16 @@ export class Defender extends Phaser.GameObjects.Sprite {
             this.setActive(false);
             this.healthBar.setVisible(false);
 
-            const startScale = this.scaleX;
-
-            let step = 0;
-
-            const shrink = setInterval(() => {
-                step++;
-
-                this.setScale(startScale * (1 - step / 10));
-
-                if (step >= 10) {
-                    clearInterval(shrink);
+            this.scene.tweens.add({
+                targets:this,
+                scaleX: 0,
+                scaleY: 0,
+                duration:200,
+                ease:"Linear",
+                onComplete:()=>{
                     this.destroy();
                 }
-            }, 20);
+            })
         }
     }
 

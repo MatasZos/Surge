@@ -8,7 +8,7 @@ export function setupGameEvents(
     onNextLevel: (level: number) => void,
     projectiles: Projectile[],
     enemyProjectiles: EnemyProjectile[],
-    onEnergyCollected: (amount: number) => void
+    onEnergyCollected: (amount: number, x?:number, y?:number) => void
 
 ): void {
     

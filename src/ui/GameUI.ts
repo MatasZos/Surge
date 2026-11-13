@@ -58,6 +58,11 @@ export class GameUI {
         this.energyHUD.update();
     }
 
+    //Animate the energy pickup
+    public animateEnergyPickup(amount:number,x:number,y:number): void{
+        this.energyHUD.animatePickup(amount,x,y)
+    }
+
     // Update defender cooldowns and affordability
     public updateToolbar(
         currentTime: number,

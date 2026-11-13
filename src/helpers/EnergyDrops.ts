@@ -34,11 +34,7 @@ export class EnergyDrops {
         energy.on("pointerdown", () => {
             if (!energy.active) return;
 
-            this.scene.events.emit(
-                "energy-collected",
-                SETTINGS.energy.enemyDropValue
-            );
-
+            this.scene.events.emit( "energy-collected",SETTINGS.energy.enemyDropValue, energy.x, energy.y);
             energy.destroy();
         });
 

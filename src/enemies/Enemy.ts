@@ -164,20 +164,16 @@ export class Enemy extends Phaser.GameObjects.Sprite {
             this.isAttacking = false;
             this.healthBar.setVisible(false);
 
-            const startScale = this.scaleX;
-
-            let step = 0;
-
-            const shrink = setInterval(() => {
-                step++;
-
-                this.setScale(startScale * (1 - step / 10));
-
-                if (step >= 10) {
-                    clearInterval(shrink);
+            this.scene.tweens.add({
+                targets:this,
+                scaleX:0,
+                scaleY:0,
+                duration:200,
+                ease:"Linear",
+                onComplete:()=>{
                     this.destroy();
                 }
-            }, 20);
+            })
         
             const explosion = this.scene.add.circle(
                 this.x,
@@ -216,7 +212,11 @@ export class Enemy extends Phaser.GameObjects.Sprite {
         }
 
     destroy(fromScene?: boolean) {
-        this.scene.tweens.killTweensOf(this.healthBar);
+        if(this.scene?.tweens && this.healthBar){
+            this.scene.tweens.killTweensOf(this.healthBar);
+        }
+
+        //remove health bar
         if (this.healthBar?.active) {
             this.healthBar.destroy();
         }

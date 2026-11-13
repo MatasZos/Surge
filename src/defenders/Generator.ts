@@ -95,7 +95,7 @@ export class Generator extends Defender {
             amount = 75;
         }
 
-        this.scene.events.emit("energy-collected", amount);
+        this.scene.events.emit("energy-collected", amount, energy.x, energy.y);
         energy.destroy();
     });
 
