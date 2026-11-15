@@ -29,3 +29,8 @@ area = "side"
 resource = "CELBRIDGE.md"
 icon = "bs-book"
 open-on-load = true
+
+[[shortcut]]
+resource = "src/python.console"
+area = "bottom"
+open-on-load = true
