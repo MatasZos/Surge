@@ -372,6 +372,13 @@ private createPauseButton(): void {
         this.createUI();
         this.createStronghold();
 
+        this.events.removeAllListeners("dev-add-energy");
+        this.events.on("dev-add-energy", () => { //developer energy
+            this.energyManager.addEnergy(500);
+            this.updateEnergyText();
+            this.showNotification("+500 ENERGY");
+        });
+
         //boss encounter
         this.bossEncounter = new BossEncounter(
             this,
