@@ -1,112 +1,37 @@
-
 html,
-body {
-    height: 100%;
-}
-
 body,
-main {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-}
-
-/* Main page container */
-main {
-    flex: none;
-    width: 100%;
-    max-width: 1500px;
-    margin: 0 auto;
-}
-
-/* Page title */
-h1 {
-    flex: none;
-}
-
-
-
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    width: 100%;
-    max-width: 1400px;
-    min-height: 0;
-    height: auto;
-
-    margin: 0 auto 1rem;
-}
-
-/* Phaser canvas container */
+main,
+.container,
 #game-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
     width: 100%;
-    min-width: 0;
-    min-height: 0;
-    height: auto;
-
-    overflow: hidden;
-}
-
-/* Scale the 1200 x 800 Phaser canvas
-   while preserving its aspect ratio */
-#game-container canvas {
-    display: block;
-    max-width: 100%;
-}
-
-body.menu-active {
-    padding: 0;
-    overflow: hidden;
-}
-
-body.menu-active main {
-    width: 100%;
+    height: 100%;
     max-width: none;
-    height: 100vh;
-    height: 100dvh;
+    margin: 0;
+    padding: 0;
 }
 
-body.menu-active h1 {
+body {
+    overflow: hidden;
+    background: #000;
+}
+
+main > h1 {
     display: none;
 }
 
-body.menu-active .container {
-    width: 100%;
-    max-width: none;
-    height: 100%;
-
-    padding: 0;
-    margin: 0;
-    border: none;
+.container {
+    border: 0;
     border-radius: 0;
     box-shadow: none;
     background: #000;
 }
 
-body.menu-active #game-container {
-    width: 100%;
-    height: 100%;
-    flex: 1 1 auto;
+#game-container {
+    display: grid;
+    place-items: center;
+    overflow: hidden;
 }
 
-
-
-@media (max-width: 650px) {
-    body {
-        padding: 0;
-    }
-
-    .container {
-        width: 100%;
-    }
-
-    #game-container {
-        width: 100%;
-    }
+#game-container canvas {
+    display: block;
 }

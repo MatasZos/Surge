@@ -12,6 +12,8 @@ import {
     CELL_HEIGHT
 } from "../constants.ts";
 
+import type {Grid} from "../grid/Grid.ts";
+
 
 export class BattlefieldView {
     constructor(private scene: Phaser.Scene) {}
@@ -129,5 +131,32 @@ createBackground(): void {
                 }
             }
         );
+    }
+
+    private moveHighlight?: Phaser.GameObjects.Graphics;
+
+    updateMoveHighlight(grid:Grid, moveActive: boolean): void{
+        if(!moveActive){
+            this.moveHighlight?.setVisible(false);
+            return;
+        }
+
+        this.moveHighlight ??= this.scene.add.graphics().setDepth(-1);
+        const highlight = this.moveHighlight;
+        highlight.setVisible(true)
+        highlight.clear();
+
+        for(let row=0; row<GRID_ROWS;row++){
+            for(let col=0;col<GRID_COLS;col++){
+                const x=GRID_X+col*CELL_WIDTH+2;
+                const y=GRID_Y+row*CELL_HEIGHT+2;
+                const color = grid.getCell(row,col).isEmpty()?0x32e678:0xf25460;
+
+                highlight.fillStyle(color,0.28);
+                highlight.fillRect(x,y,CELL_WIDTH-4,CELL_HEIGHT-4);
+                highlight.lineStyle(2,color,0.8);
+                highlight.strokeRect(x,y,CELL_WIDTH-4,CELL_HEIGHT-4);
+            }
+        }
     }
 }

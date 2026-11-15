@@ -450,6 +450,7 @@ private createPauseButton(): void {
 
         this.collisionSystem.update();
         this.bossEncounter.update(delta);
+        this.battlefieldView.updateMoveHighlight(this.grid,this.selectedDefender === "move");
         this.updateWaveProgress();
 
         //update wave progress bar
