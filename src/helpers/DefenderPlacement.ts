@@ -66,11 +66,25 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
         const warning = this.scene.add.text(
             this.scene.scale.width / 2,
             this.scene.scale.height / 2,
-            message
+            message,
+            {
+                fontSize: "20px",
+                color: "#ff6666",
+                fontStyle: "bold",
+                stroke: "#101b2b",
+                strokeThickness: 4
+            }
         ).setOrigin(0.5).setDepth(200);
 
-        this.scene.time.delayedCall(1200, () => {
-            warning.destroy();
+        this.scene.tweens.add({
+            targets: warning,
+            y: warning.y - 30,
+            alpha: 0,
+            duration: 1000,
+            ease: "Sine.easeOut",
+            onComplete: () => {
+                warning.destroy();
+            }
         });
     }
 
@@ -78,17 +92,22 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
          const { row, col } = this.getGridPosition(pointer);
 
         if (row < 0 || row >= GRID_ROWS || col < 0 || col >= GRID_COLS) return;
-        if (!this.grid.getCell(row, col).isEmpty()) return;
-        if (!selectedDefender) return;
+        if (!this.grid.getCell(row, col).isEmpty()) {
+            if (selectedDefender && selectedDefender !== "recall" && selectedDefender !== "move") {
+                this.flashGridCell(row, col, 0xff4444);
+            }
+            return;
+        }
 
 
         const validTypes = ["shooter", "generator", "barricade",
         "dualbarrel", "cryogunner", "landmine", "scrapper"];
 
-        if (!validTypes.includes(selectedDefender)) return;
+        if (!selectedDefender || !validTypes.includes(selectedDefender)) return;
 
         const type = selectedDefender as DefenderType;
         if (!this.isUnlocked(type)){
+            this.flashGridCell(row, col, 0xff4444);
             this.showWarning("Defender Locked");
             return;
         }
@@ -96,6 +115,7 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
         const cooldown = SETTINGS.defenders[type].cooldownMs;
 
         if (!this.energyManager.canAfford(cost)) {
+            this.flashGridCell(row, col, 0xff4444);
             this.showWarning("Not Enough Energy");
             return;
         }
@@ -104,6 +124,7 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
         const last = this.lastPlaced[type];
 
         if (last !== undefined && now - last < cooldown) {
+            this.flashGridCell(row, col, 0xff4444);
             this.showWarning("Not Ready Yet");
             return;
         }
@@ -130,9 +151,60 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
         });
 
         this.energyManager.spendEnergy(cost);
+        this.flashGridCell(row, col, 0x00ff99);
+
+        //purchase confirmation
+        const purchaseText = this.scene.add.text(
+            pointer.worldX,
+            pointer.worldY - 35,
+            "DEPLOYED",
+            {
+                fontSize: "15px",
+                color: "#00ff99",
+                fontStyle: "bold",
+                stroke: "#101b2b",
+                strokeThickness: 3
+            }
+        ).setOrigin(0.5).setDepth(30);
+
+        this.scene.tweens.add({
+            targets: purchaseText,
+            y: purchaseText.y - 25,
+            alpha: 0,
+            duration: 650,
+            ease: "Sine.easeOut",
+            onComplete: () => {
+                purchaseText.destroy();
+            }
+        });
+
         this.updateEnergyText();
 
         this.lastPlaced[type] = now;
+    }
+
+    private flashGridCell(row: number, col: number, color: number): void {
+        const x = GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2;
+        const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
+
+        const flash = this.scene.add.rectangle(
+            x,
+            y,
+            CELL_WIDTH - 4,
+            CELL_HEIGHT - 4,
+            color,
+            0.35
+        ).setDepth(20);
+
+        this.scene.tweens.add({
+            targets: flash,
+            alpha: 0,
+            duration: 350,
+            ease: "Sine.easeOut",
+            onComplete: () => {
+                flash.destroy();
+            }
+        });
     }
 
     recall(pointer: Phaser.Input.Pointer): void {

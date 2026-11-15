@@ -139,10 +139,33 @@ export class DefenderToolbar {
             if (this.getEnergy() < SETTINGS.defenders[type].cost) return;
 
             this.hoveredType = type;
+
+            this.scene.tweens.killTweensOf(button);
+
+            this.scene.tweens.add({
+                targets: button,
+                scaleX: 1.06,
+                scaleY: 1.06,
+                duration: 120,
+                ease: "Sine.easeOut"
+            });
+
+            button.setStrokeStyle(3, 0x00ccff);
         });
 
         button.on("pointerout", () => {
             this.hoveredType = null;
+
+            this.scene.tweens.killTweensOf(button);
+
+            this.scene.tweens.add({
+                targets: button,
+                scaleX: 1,
+                scaleY: 1,
+                duration: 120,
+                ease: "Sine.easeOut"
+            });
+
             if (this.selectedType === type) {
                 button.setStrokeStyle(2, 0x00ff99);
             } else {
@@ -194,6 +217,20 @@ export class DefenderToolbar {
             this.resetButtons();
             button.setFillStyle(this.selectedColor);
             button.setStrokeStyle(2, 0x00ff99);
+
+            this.scene.tweens.killTweensOf(button);
+
+            this.scene.tweens.add({
+                targets: button,
+                scaleX: 1.1,
+                scaleY: 1.1,
+                duration: 100,
+                yoyo: true,
+                ease: "Sine.easeOut",
+                onComplete: () => {
+                    button.setScale(1);
+                }
+            });
         });
     }
 
@@ -273,7 +310,12 @@ export class DefenderToolbar {
 
             if (remaining > 0) {
                 button.setFillStyle(0x27303d);
-                button.setStrokeStyle();
+
+                if (this.selectedType === type) {
+                    button.setStrokeStyle(2, 0x00ff99);
+                } else {
+                    button.setStrokeStyle(1, 0x72839a);
+                }
                 text.setText((remaining / 1000).toFixed(1) + "s");
                 text.setVisible(true);
             } else {

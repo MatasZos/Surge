@@ -3,13 +3,13 @@ import Phaser from "phaser";
 export class DevMenu{
     private panel: Phaser.GameObjects.Container;
 
-    constructor(scene:Phaser.Scene, onSelectLevel: (level:number) => void){
+    constructor(scene:Phaser.Scene, onSelectLevel: (level:number) => void, onAddEnergy: () => void){
         //dark panel background
-        const background = scene.add.rectangle(0,0,360,220,0x172c45);
+        const background = scene.add.rectangle(0,0,360,290,0x172c45);
         background.setStrokeStyle(3,0x00ccff);
 
         //menu heading
-        const title = scene.add.text(0,-75,"DEVELOPER MENU",{fontSize:"24px",color:"#ffffff"});
+        const title = scene.add.text(0,-115,"DEVELOPER MENU",{fontSize:"24px",color:"#ffffff"});
         title.setOrigin(0.5);
 
         //level buttons
@@ -34,13 +34,49 @@ export class DevMenu{
                 levelButtons.push(button)
         }
 
+        //add energy button through menu
+        const energyButton = scene.add.text(
+            0, 115,
+            "+500 ENERGY",
+            {
+                fontSize: "18px",
+                color: "#00ff99",
+                backgroundColor: "#225580",
+                padding: { x: 18, y: 5 }
+            }
+        );
+
+        energyButton.setOrigin(0.5);
+        energyButton.setInteractive({ useHandCursor: true });
+
+        energyButton.on("pointerdown", (
+            _pointer: Phaser.Input.Pointer,
+            _localX: number,
+            _localY: number,
+            event: Phaser.Types.Input.EventData
+        ) => {
+            event.stopPropagation();
+            onAddEnergy();
+        });
+
         //put background and title together
-        this.panel = scene.add.container(scene.scale.width/2,scene.scale.height/2,[background,title, ...levelButtons]);
+        this.panel = scene.add.container(scene.scale.width/2,scene.scale.height/2,[background,title, ...levelButtons, energyButton ]);
 
         this.panel.setDepth(100);
         this.panel.setVisible(false);
     }
     public toggle(): void{
         this.panel.setVisible(!this.panel.visible);
+    }
+
+    //close developer menu when clicking outside the box
+    public closeIfOutside(pointer: Phaser.Input.Pointer): void {
+        if (!this.panel.visible) return;
+
+        const bounds = this.panel.getBounds();
+
+        if (!bounds.contains(pointer.x, pointer.y)) {
+            this.panel.setVisible(false);
+        }
     }
 }
