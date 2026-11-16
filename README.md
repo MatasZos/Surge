@@ -419,18 +419,18 @@ A new visual indicator has also been added to show when a defender reaches Level
 
 ## 2.32 Defender Repositioning
 
-A defender repositioning system is being developed.
+Players can move a defender that is already on the battlefield to another empty grid cell.
 
-This allows players to move already placed defenders to different available grid cells instead of removing and replacing them.
+To move a defender, select Move in the defender toolbar, click the defender, then click an enemy cell. While Move mode is active, empty cells are highlighted in green and occupied cells are highlighted in green and occupied cells are highlighted in red. After the move, the old cell turns green and the new cell turns red.
 
-The defender toolbar has also been updated with a move button and new styling.
+Moving costs 50 energy, and each defender can only be moved once.
 
 ### 2.33 Developer Menu
 
-A developer menu has been added to make testing easier.
+Press F2 to open or close the developer menu. Select any level from 1 to 5 restart the game at that level with its waves and defender unlocks. This lets developers test later levels without playing through the earlier ones.
 
-- Press F2 to open the developer menu.
-- Select Levels 1 to 5 using the menu buttons.
+Developers can also give themselves 500 energy top up to test more features.
+
 - Allows developers to test different levels without playing through the entire game.
 
 ## 3 Player Input/Controls
