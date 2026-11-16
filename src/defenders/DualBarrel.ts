@@ -19,6 +19,48 @@ export class DualBarrel extends Defender {
     ) {
         super(scene, x, y, "dualbarrel");
 
+        //idle animation
+        if (!scene.anims.exists("dualbarrel-idle")) {scene.anims.create({
+                key: "dualbarrel-idle",
+                frames: scene.anims.generateFrameNumbers("dualbarrel-idle-sheet",{start: 0,end: 5}),frameRate: 6,repeat: -1
+            });
+        }
+        //attack animation
+        if(!scene.anims.exists("dualbarrel-attack")){
+            scene.anims.create({
+                key:"dualbarrel-attack",
+                frames:scene.anims.generateFrameNumbers("dualbarrel-attack-sheet",{start:0, end:7}), frameRate:16,repeat:0
+            });
+        }
+        //return to idle after attack
+        this.on(Phaser.Animations.Events.ANIMATION_COMPLETE_KEY +"dualbarrel-attack",()=>{
+            if(this.active) this.play("dualbarrel-idle");
+        });
+
+        //hurt animation
+        if(!scene.anims.exists("dualbarrel-hurt")){
+            scene.anims.create({
+                key:"dualbarrel-hurt",
+                frames:scene.anims.generateFrameNumbers("dualbarrel-hurt-sheet",{start:0, end:3}), frameRate:14,repeat:0
+            });
+        }
+
+        //death animation
+        if(!scene.anims.exists("dualbarrel-dead")){
+            scene.anims.create({
+                key:"dualbarrel-dead",
+                frames:scene.anims.generateFrameNumbers("dualbarrel-dead-sheet",{start:0, end:11}), frameRate:16,repeat:0
+            });
+        }
+
+        //return to idle after being hurt
+        this.on(Phaser.Animations.Events.ANIMATION_COMPLETE_KEY +"dualbarrel-hurt",()=>{
+            if(this.active) this.play("dualbarrel-idle");
+        });
+        
+
+        this.play("dualbarrel-idle");
+
         this.setDisplaySize(65, 65);
 
         this.setDefenderHealth(
@@ -36,6 +78,7 @@ export class DualBarrel extends Defender {
             ),
             callback: () => {
                 if (this.active && this.hasEnemyInRow(this.enemies)) {
+                    this.play("dualbarrel-attack",true)
                     this.shoot();
 
                     // Second shot after 150ms
@@ -78,6 +121,30 @@ export class DualBarrel extends Defender {
             projectile.explosiveShot = true;
         }
     }
+
+    override takeDamage(amount:number):void{
+        if(!this.active){
+            return;
+        }
+
+        //preserve existing health and healthbar
+        super.takeDamage(amount);
+
+        if(this.health>0){
+            this.play("dualbarrel-hurt",true);
+            return;
+        }
+        const deathSprite = this.scene.add.sprite(this.x,this.y,"dualbarrel-dead-sheet",0).setDisplaySize(this.displayWidth, this.displayHeight).setDepth(this.depth);
+
+        this.setVisible(false);
+
+        deathSprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE,()=>{
+            deathSprite.destroy();
+        });
+        deathSprite.play("dualbarrel-dead");
+    }
+
+    
 
     destroy(fromScene?: boolean) {
         this.shootTimer?.destroy();

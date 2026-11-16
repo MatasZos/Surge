@@ -6,8 +6,8 @@ export function loadGameAssets(scene: Phaser.Scene): void {
     // Defenders
 
 
-    
-    //shooter sprite and animations
+
+    //SHOOTER SPRITE AND ANIMATIONS
     //idle
     scene.load.spritesheet("shooter", "assets/defenders/shooter/Idle.png", {frameWidth:68, frameHeight: 72});
     //shoot 
@@ -28,11 +28,23 @@ export function loadGameAssets(scene: Phaser.Scene): void {
     //icon
     scene.load.image("generator", "assets/defenders/generator.png");
 
-
-
-
-
+    //BARRICADE SPRITE AND ANIMATIONS
+    //icon
     scene.load.image("barricade", "assets/defenders/barricade.png");
+
+
+    //DUALBARREL SPRITE AND ANIMATION
+    //idle
+    scene.load.spritesheet("dualbarrel-idle-sheet","assets/defenders/dualbarrel/Idle.png",{ frameWidth:96,frameHeight:96});
+    //attack
+    scene.load.spritesheet("dualbarrel-attack-sheet","assets/defenders/dualbarrel/Attack.png",{frameWidth:96,frameHeight:96});
+    //hurt
+    scene.load.spritesheet("dualbarrel-hurt-sheet","assets/defenders/dualbarrel/Hurt.png",{frameWidth:96,frameHeight:96});
+    //dead
+    scene.load.spritesheet("dualbarrel-dead-sheet","assets/defenders/dualbarrel/Dead.png",{frameWidth:96,frameHeight:96});
+
+
+
     scene.load.image("dualbarrel", "assets/defenders/dualbarrel.png");
     scene.load.image("cryogunner", "assets/defenders/cryogunner.png");
     scene.load.image("landmine", "assets/defenders/landmine.png");
