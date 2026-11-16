@@ -12,6 +12,28 @@ export class Generator extends Defender {
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, "generator");
 
+
+//generator idle animation
+    if(!scene.anims.exists("generator-idle")){
+        scene.anims.create({
+            key:"generator-idle",
+            frames: scene.anims.generateFrameNumbers("generator-idle-sheet",{start:0, end:1}), frameRate:2,repeat:-1
+        });
+    }
+
+    //generator hurt animation
+    if(!scene.anims.exists("generator-hurt")){
+        scene.anims.create({
+            key:"generator-hurt",
+            frames:scene.anims.generateFrameNumbers("generator-hurt-sheet",{start:0,end:2}),frameRate:12,repeat:0
+        });
+    }
+
+    this.on(Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + "generator-hurt",()=>{
+        if(this.active) this.play("generator-idle");
+    })
+    this.play("generator-idle")
+
     this.setDisplaySize(60, 60);
     this.setDefenderHealth(SETTINGS.defenders.generator.health);
     this.damage = SETTINGS.defenders.generator.damage;
@@ -103,6 +125,31 @@ export class Generator extends Defender {
     this.scene.time.delayedCall(SETTINGS.energy.pickupLifetimeMs, () => {
       if (energy.active) energy.destroy();
     });
+  }
+
+  override takeDamage(amount:number): void{
+    if(!this.active){
+        return;
+    }
+    super.takeDamage(amount);
+    if(this.health>0){
+        this.play("generator-hurt",true)
+        return;
+    }
+    const scene = this.scene
+
+    if(!scene.anims.exists("generator-dead")){
+        scene.anims.create({
+            key:"generator-dead",
+            frames:scene.anims.generateFrameNumbers("generator-dead-sheet",{start:0,end:3}),frameRate:10, repeat:0
+        });
+    }
+
+    const deathSprite = scene.add.sprite(this.x,this.y, "generator-dead-sheet",0).setDisplaySize(this.displayWidth, this.displayHeight).setDepth(this.depth);
+
+    this.setVisible(false)
+    deathSprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE, ()=>{deathSprite.destroy()});
+    deathSprite.play("generator-dead");
   }
 
   destroy(fromScene?: boolean) {

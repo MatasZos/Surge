@@ -4,21 +4,34 @@ import Phaser from "phaser";
 export function loadGameAssets(scene: Phaser.Scene): void {
 
     // Defenders
+
+
+    
     //shooter sprite and animations
     //idle
     scene.load.spritesheet("shooter", "assets/defenders/shooter/Idle.png", {frameWidth:68, frameHeight: 72});
-
     //shoot 
     scene.load.spritesheet("shooter-shot", "assets/defenders/shooter/Shot_1.png",{frameWidth:68,frameHeight:72});
-
     //hurt
     scene.load.spritesheet("shooter-hurt","assets/defenders/shooter/Hurt.png",{frameWidth:68,frameHeight:72});
-
     //dead
     scene.load.spritesheet("shooter-dead","assets/defenders/shooter/Dead.png",{frameWidth:68, frameHeight:72});
 
 
+    //GENERATOR SPRITE AND ANIMATIONS
+    //idle
+    scene.load.spritesheet("generator-idle-sheet","assets/defenders/generator/Idle.png",{frameWidth: 568, frameHeight: 648})
+    //dead
+    scene.load.spritesheet("generator-dead-sheet","assets/defenders/generator/Dead.png",{ frameWidth: 568, frameHeight: 648 });
+    //hurt
+    scene.load.spritesheet("generator-hurt-sheet","assets/defenders/generator/Hurt.png",{ frameWidth: 568, frameHeight: 648 });
+    //icon
     scene.load.image("generator", "assets/defenders/generator.png");
+
+
+
+
+
     scene.load.image("barricade", "assets/defenders/barricade.png");
     scene.load.image("dualbarrel", "assets/defenders/dualbarrel.png");
     scene.load.image("cryogunner", "assets/defenders/cryogunner.png");
