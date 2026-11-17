@@ -26,6 +26,13 @@ export class EnergyDrops {
 
         const energy = this.scene.add.image(x, y, "energy");
 
+        // Play sound when energy appears
+        if (this.scene.cache.audio.exists("sfx_energy_spawn")) {
+         this.scene.sound.play("sfx_energy_spawn", {
+                volume: 0.2
+         });
+        }
+
         energy.setDisplaySize(35, 35);
         energy.setDepth(15);
         energy.setInteractive({ useHandCursor: true });

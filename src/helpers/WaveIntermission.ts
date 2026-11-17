@@ -83,6 +83,13 @@ export class WaveIntermission {
         this.active = true;
         this.bossNext = bossNext;
 
+        // Play wave completion sound
+            if (this.scene.cache.audio.exists("sfx_wave_complete")) {
+                this.scene.sound.play("sfx_wave_complete", {
+                  volume: 0.4
+                });
+            }
+
         // Don't allow skipping the boss intermission
         this.earlyWaveButton.setVisible(!bossNext);
 
@@ -167,6 +174,13 @@ export class WaveIntermission {
             this.startBossWave();
         } else {
             this.waveManager.nextWave();
+
+            // Play next wave sound
+            if (this.scene.cache.audio.exists("sfx_wave_start")) {
+             this.scene.sound.play("sfx_wave_start", {
+                   volume: 0.35
+                });
+            }
 
             this.resetWaveProgress();
 

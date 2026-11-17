@@ -25,8 +25,22 @@ export function setupGameEvents(
         enemyProjectiles.push(projectile);
     });
 
-    //energy collection
-    scene.events.on("energy-collected", onEnergyCollected);
+    // Energy collection
+    scene.events.on(
+    "energy-collected",
+    (amount: number, x?: number, y?: number) => {
+
+        // Play energy collection sound
+        if (scene.cache.audio.exists("sfx_energy_collect")) {
+            scene.sound.play("sfx_energy_collect", {
+                volume: 0.25
+            });
+        }
+
+        // Keep existing energy collection behaviour
+        onEnergyCollected(amount, x, y);
+    }
+);
 
     new EnergyDrops(scene).setup();
 }

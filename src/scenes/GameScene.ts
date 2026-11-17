@@ -409,6 +409,14 @@ private createPauseButton(): void {
         this.createPauseButton();
         
         this.startEnemySpawning();
+
+        // Play first wave sound
+        if (this.cache.audio.exists("sfx_wave_start")) {
+            this.sound.play("sfx_wave_start", {
+             volume: 0.35
+            });
+        }
+        
         this.showNotification(`LEVEL ${this.currentLevel} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
     }
 
