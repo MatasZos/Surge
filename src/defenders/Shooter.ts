@@ -101,9 +101,18 @@ export class Shooter extends Defender {
         if (!this.active) return;
         this.play("shooter-fire",true);
 
-        if (this.scene.cache.audio.exists("laserSound")) {
-            this.scene.sound.play("laserSound", { volume: 0.3 });
+        
+        // Randomly alternate between two rifle sounds
+        const soundKey = Math.random() < 0.5
+            ? "sfx_shooter_fire"
+            : "sfx_shooter_fire_alt";
+
+        if (this.scene.cache.audio.exists(soundKey)) {
+            this.scene.sound.play(soundKey, {
+                volume: 0.16
+            });
         }
+
 
         const projectile = new Projectile(this.scene, this.x + 25, this.y - 2);
         // Level 3 electric shot every third projectile

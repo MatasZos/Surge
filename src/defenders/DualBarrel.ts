@@ -78,13 +78,13 @@ export class DualBarrel extends Defender {
             ),
             callback: () => {
                 if (this.active && this.hasEnemyInRow(this.enemies)) {
-                    this.play("dualbarrel-attack",true)
-                    this.shoot();
+                    this.play("dualbarrel-attack", true);
+                    this.shoot("sfx_dualbarrel_fire_1");
 
                     // Second shot after 150ms
                     this.scene.time.delayedCall(150, () => {
                         if (this.active && this.hasEnemyInRow(this.enemies)) {
-                            this.shoot();
+                            this.shoot("sfx_dualbarrel_fire_2");
                         }
                     });
                 }
@@ -93,12 +93,13 @@ export class DualBarrel extends Defender {
         });
     }
 
-    private shoot() {
+    private shoot(soundKey: string) {
         if (!this.active) return;
 
-        if (this.scene.cache.audio.exists("laserSound")) {
-            this.scene.sound.play("laserSound", {
-                volume: 0.3
+        // Play the sound for the selected barrel
+        if (this.scene.cache.audio.exists(soundKey)) {
+            this.scene.sound.play(soundKey, {
+                volume: 0.20
             });
         }
 

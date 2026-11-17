@@ -33,9 +33,14 @@ export class CryoGunner extends Defender {
     }
 
     private shoot(): void {
-        if (this.scene.cache.audio.exists("laserSound")) {
-            this.scene.sound.play("laserSound", { volume: 0.3 });
+        
+        // Play the Cryo Gunner's ice weapon sound
+        if (this.scene.cache.audio.exists("sfx_cryogunner_fire")) {
+            this.scene.sound.play("sfx_cryogunner_fire", {
+                volume: 0.18
+            });
         }
+
         const projectile = new CryoProjectile(this.scene, this.x + 25, this.y - 2);
 
         // Level 2 damage upgrade
