@@ -121,6 +121,15 @@ export class Stronghold extends Phaser.GameObjects.Sprite {
         }
 
         this.health -= amount;
+
+    // Play sound when Stronghold takes damage
+    if (amount > 0 && this.scene.cache.audio.exists("sfx_stronghold_hit")) {
+        this.scene.sound.play("sfx_stronghold_hit", {
+            volume: 0.3
+        });
+    }
+
+    this.health -= amount;
         this.health = Math.max(0, this.health);
 
         this.updateHealthBar();

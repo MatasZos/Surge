@@ -18,6 +18,13 @@ export class LevelComplete extends Phaser.Scene {
         const y = this.scale.height / 2;
         const isFinalLevel = this.completedLevel >= 5;
 
+        // Play level completion sound
+        if (this.cache.audio.exists("sfx_level_complete")) {
+         this.sound.play("sfx_level_complete", {
+              volume: 0.5
+            });
+        }
+
         // Background
         this.cameras.main.setBackgroundColor("#101b2a");
 

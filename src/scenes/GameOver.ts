@@ -10,6 +10,13 @@ export class GameOver extends Phaser.Scene{
         //gameplay page layout
         document.body.classList.remove("menu-active")
 
+        // Play Game Over sound
+    if (this.cache.audio.exists("sfx_game_over")) {
+        this.sound.play("sfx_game_over", {
+            volume: 0.5
+        });
+    }
+
         //dark background
         this.add.rectangle(
             GAME_WIDTH/2,
