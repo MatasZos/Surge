@@ -79,7 +79,14 @@ export class MainMenu extends Phaser.Scene {
 
         // Hover effect
         playButton.on("pointerover", () => {
-            playButton.setBackgroundColor("#11a5bd");
+    playButton.setBackgroundColor("#11a5bd");
+
+    // Play hover sound
+    if (this.cache.audio.exists("sfx_ui_hover")) {
+        this.sound.play("sfx_ui_hover", {
+            volume: 0.15
+                 });
+            }
         });
 
         playButton.on("pointerout", () => {
@@ -87,7 +94,15 @@ export class MainMenu extends Phaser.Scene {
         });
 
         // Start game
-        playButton.on("pointerdown", () => {
+       playButton.on("pointerdown", () => {
+
+        // Play click sound
+            if (this.cache.audio.exists("sfx_ui_click")) {
+             this.sound.play("sfx_ui_click", {
+                 volume: 0.25
+             });
+            }
+
             this.scene.start("GameScene");
         });
     }

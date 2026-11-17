@@ -85,17 +85,33 @@ export class DefenderUpgradeMenu {
                 }
 
                 // Check if player has enough energy
-                if (!this.energyManager.canAfford(cost)) {
-                    upgradeButton.setText("NOT ENOUGH ENERGY");
-                    return;
-                }
+               if (!this.energyManager.canAfford(cost)) {
+
+                // Play error sound
+                if (this.scene.cache.audio.exists("sfx_ui_error")) {
+                    this.scene.sound.play("sfx_ui_error", {
+                      volume: 0.25
+                 });
+            }
+
+         upgradeButton.setText("NOT ENOUGH ENERGY");
+            return;
+        }
 
                 // Upgrade the defender and deduct energy
                 if (defender.upgrade()) {
-                    this.energyManager.spendEnergy(cost);
-                    this.updateEnergyText();
-                    this.show(defender);
-                }
+
+    // Play upgrade sound
+    if (this.scene.cache.audio.exists("sfx_ui_upgrade")) {
+        this.scene.sound.play("sfx_ui_upgrade", {
+            volume: 0.35
+        });
+    }
+
+    this.energyManager.spendEnergy(cost);
+    this.updateEnergyText();
+    this.show(defender);
+}
             });
         }
 

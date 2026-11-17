@@ -44,10 +44,18 @@ export class PauseScene extends Phaser.Scene {
         });
 
         resumeButton.on("pointerdown", () => {
-            this.sound.resumeAll();
-            this.scene.resume("GameScene");
-            this.scene.stop();
+    this.sound.resumeAll();
+
+    // Play resume sound
+    if (this.cache.audio.exists("sfx_ui_resume")) {
+        this.sound.play("sfx_ui_resume", {
+            volume: 0.3
         });
+    }
+
+    this.scene.resume("GameScene");
+    this.scene.stop();
+});
 
         const menuButton = this.add.text(
             x, y + 90, "MAIN MENU", {
@@ -63,8 +71,16 @@ export class PauseScene extends Phaser.Scene {
         });
 
         menuButton.on("pointerdown", () => {
-            this.scene.stop("GameScene");
-            this.sound.stopAll();
+        this.scene.stop("GameScene");
+        this.sound.stopAll();
+
+    // Play back sound
+    if (this.cache.audio.exists("sfx_ui_back")) {
+        this.sound.play("sfx_ui_back", {
+            volume: 0.3
+        });
+    }
+
             this.scene.start("MainMenu");
         });
     }

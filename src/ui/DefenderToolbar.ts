@@ -138,6 +138,13 @@ export class DefenderToolbar {
             if (this.currentLevel < this.getUnlockLevel(type)) return;
             if (this.getEnergy() < SETTINGS.defenders[type].cost) return;
 
+            // Play hover sound
+            if (this.scene.cache.audio.exists("sfx_ui_hover")) {
+             this.scene.sound.play("sfx_ui_hover", {
+                   volume: 0.1
+                });
+            }
+
             this.hoveredType = type;
 
             this.scene.tweens.killTweensOf(button);
@@ -208,12 +215,28 @@ export class DefenderToolbar {
                 this.onSelect(type);
                 return;
             }
-            //check if player has enough energy
-            if(this.getEnergy() < SETTINGS.defenders[type].cost){
-                return;
+            // Check if player has enough energy
+            if (this.getEnergy() < SETTINGS.defenders[type].cost) {
+
+            // Play error sound
+             if (this.scene.cache.audio.exists("sfx_ui_error")) {
+                this.scene.sound.play("sfx_ui_error", {
+                    volume: 0.2
+             });
             }
+
+        return;
+    }
             this.selectedType = type;
             this.onSelect(type);
+           
+            // Play selection sound
+            if (this.scene.cache.audio.exists("sfx_ui_click")) {
+                 this.scene.sound.play("sfx_ui_click", {
+                     volume: 0.2
+                });
+            }
+
             this.resetButtons();
             button.setFillStyle(this.selectedColor);
             button.setStrokeStyle(2, 0x00ff99);

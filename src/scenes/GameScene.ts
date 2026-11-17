@@ -201,6 +201,13 @@ private createPauseButton(): void {
         this.scene.launch("PauseScene");
         this.scene.pause();
         this.sound.pauseAll();
+
+        // Play pause sound after pausing existing audio
+        if (this.cache.audio.exists("sfx_ui_pause")) {
+            this.sound.play("sfx_ui_pause", {
+                volume: 0.3
+            });
+        }
     });
 }
 
