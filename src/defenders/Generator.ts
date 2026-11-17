@@ -38,6 +38,7 @@ export class Generator extends Defender {
     this.setDefenderHealth(SETTINGS.defenders.generator.health);
     this.damage = SETTINGS.defenders.generator.damage;
 
+
     // First energy after 7 seconds
     this.energyTimer = scene.time.delayedCall(SETTINGS.energy.generatorFirstProductionMs, () => {
       if (!this.active) return;
@@ -83,6 +84,14 @@ export class Generator extends Defender {
 
     private generateEnergy() {
         if (!this.active) return;
+
+
+        // Play a sound when energy is produced
+        if (this.scene.cache.audio.exists("sfx_generator_produce")) {
+            this.scene.sound.play("sfx_generator_produce", {
+                volume: 0.18
+            });
+        }
 
         const energy = this.scene.add.image(
         this.x,

@@ -34,6 +34,15 @@ export class Scrapper extends Defender {
 
         if (!target) return false;
 
+
+        // Play the Scrapper's mechanical attack sound
+        if (this.scene.cache.audio.exists("sfx_scrapper_attack")) {
+            this.scene.sound.play("sfx_scrapper_attack", {
+                volume: 0.25
+            });
+        }
+
+
         // Normal enemies are eliminated; Crushers only take heavy damage.
         let damage = target instanceof CrusherEnemy
             ? this.heavyEnemyDamage

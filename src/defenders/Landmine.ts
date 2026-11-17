@@ -19,6 +19,14 @@ export class Landmine extends Defender {
             if (!this.active) return;
             this.armed = true;
             this.indicator.setFillStyle(0x23ff8e);
+
+            // Play a sound when the landmine is armed
+            if (this.scene.cache.audio.exists("sfx_landmine_arm")) {
+                this.scene.sound.play("sfx_landmine_arm", {
+                    volume: 0.20
+                });
+            }
+
         });
     }
 
@@ -27,6 +35,14 @@ export class Landmine extends Defender {
         const triggered = enemies.some(enemy => enemy.active &&
             Phaser.Geom.Intersects.RectangleToRectangle(enemy.getBounds(), this.getBounds()));
         if (!triggered) return false;
+
+
+        // Play explosion sound when an enemy triggers the mine
+        if (this.scene.cache.audio.exists("sfx_landmine_explosion")) {
+            this.scene.sound.play("sfx_landmine_explosion", {
+                volume: 0.30
+            });
+        }
 
         // Level 3 increases the explosion radius by 50%
         const radius = this.upgradeLevel === 3

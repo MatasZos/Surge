@@ -40,6 +40,19 @@ export class Barricade extends Defender {
         return true;
     }
 
+    override takeDamage(amount: number): void {
+        if (!this.active) return;
+
+        // Play a metallic impact when hit
+        if (this.scene.cache.audio.exists("sfx_barricade_hit")) {
+            this.scene.sound.play("sfx_barricade_hit", {
+                volume: 0.16
+            });
+        }
+
+        super.takeDamage(amount);
+    }
+
         override destroy(fromScene?: boolean): void {
         this.repairTimer?.remove(false);
         super.destroy(fromScene);
