@@ -96,8 +96,15 @@ export class DefenderCollision {
                             this.stopAttack(enemy);
                             return;
                         }
+                // Play melee or crusher attack sound
+                const soundKey = enemy instanceof CrusherEnemy
+                     ? "sfx_crusher_smash"
+                     : "sfx_melee_attack";
 
-                        defender.takeDamage(enemy.damage);
+                if (this.scene.cache.audio.exists(soundKey)) {
+                    this.scene.sound.play(soundKey, { volume: 0.25 });
+                }           
+                     defender.takeDamage(enemy.damage);
 
                         if (!defender.active) {
                             this.grid.removeOccupant(row, col);

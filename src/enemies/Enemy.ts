@@ -155,9 +155,9 @@ export class Enemy extends Phaser.GameObjects.Sprite {
             //informs gamescene that an enemy was killed
             this.scene.events.emit("enemy-killed", this.x, this.y);
 
-            // Play explosion sound when enemy dies
-            if (this.scene.cache.audio.exists("explosionSound")) {
-                this.scene.sound.play("explosionSound", { volume: 0.5 });
+            // Play robot destruction sound
+            if (this.scene.cache.audio.exists("sfx_robot_destroy")) {
+             this.scene.sound.play("sfx_robot_destroy", { volume: 0.4 });
             }
 
             this.setActive(false);
@@ -190,10 +190,10 @@ export class Enemy extends Phaser.GameObjects.Sprite {
 
         } else {
 
-            // Play sound when enemy takes damage
-            if (this.scene.cache.audio.exists("enemyHitSound")) {
-                this.scene.sound.play("enemyHitSound", { volume: 0.3 });
-            }
+            // Play robot hit sound
+             if (this.scene.cache.audio.exists("sfx_robot_hit")) {
+             this.scene.sound.play("sfx_robot_hit", { volume: 0.2 });
+          }
         }
     }
 

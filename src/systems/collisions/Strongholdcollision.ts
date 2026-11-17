@@ -44,6 +44,14 @@ export class StrongholdCollision {
                         return;
                     }
 
+                    // Play enemy attack sound against stronghold
+                        const soundKey = enemy instanceof CrusherEnemy
+                         ? "sfx_crusher_smash"
+                        : "sfx_melee_attack";
+
+                    if (this.scene.cache.audio.exists(soundKey)) {
+                          this.scene.sound.play(soundKey, { volume: 0.25 });
+                }
                     this.stronghold.takeDamage(enemy.damage);
 
                     // Stronghold retaliates if it survives.

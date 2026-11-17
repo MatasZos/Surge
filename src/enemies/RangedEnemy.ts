@@ -26,7 +26,13 @@ export class RangedEnemy extends Enemy {
             callback: () => {
                 if (this.active && this.isAttacking) {
                     console.log("Ranged enemy shooting!");
-                    const projectile = new EnemyProjectile(this.scene, this.x - 30, this.y);
+
+            // Play ranged attack sound
+            if (this.scene.cache.audio.exists("sfx_ranged_fire")) {
+            this.scene.sound.play("sfx_ranged_fire", { volume: 0.25 });
+        }
+
+const projectile = new EnemyProjectile(this.scene, this.x - 30, this.y);
                     projectile.damage = Math.round(projectile.damage * this.projectileDamageMultiplier)
                 }
             },
