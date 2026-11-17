@@ -1,4 +1,3 @@
-
 import Phaser from "phaser";
 
 import { BossEnemy } from "../enemies/BossEnemy.ts";
@@ -57,6 +56,13 @@ export class BossEncounter {
 
         const boss = new BossEnemy(this.scene, x, y);
         boss.setDepth(5);
+
+        // Play Overlord entrance sound
+            if (this.scene.cache.audio.exists("sfx_boss_entrance")) {
+                 this.scene.sound.play("sfx_boss_entrance", {
+                    volume: 0.5
+            });
+        }
 
         this.bossEnemy = boss;
         this.active = true;
@@ -135,8 +141,23 @@ export class BossEncounter {
 
     // Spawn the enemies for a new shield phase
     private handleShieldActivated(phase: number): void {
-        this.reinforcements?.spawn(phase);
+
+    // Shield activation sound
+    if (this.scene.cache.audio.exists("sfx_boss_shield_activate")) {
+        this.scene.sound.play("sfx_boss_shield_activate", {
+            volume: 0.4
+        });
     }
+
+    // Reinforcement arrival sound
+    if (this.scene.cache.audio.exists("sfx_boss_reinforcements")) {
+        this.scene.sound.play("sfx_boss_reinforcements", {
+            volume: 0.35
+        });
+    }
+
+    this.reinforcements?.spawn(phase);
+}
 
     // Stop the encounter and clean up
     public stop(): void {

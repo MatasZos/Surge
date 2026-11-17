@@ -57,6 +57,13 @@ export class OverlordLaser {
 
     private startCharging(): void {
         this.charging = true;
+
+        // Laser charging sound
+        if (this.scene.cache.audio.exists("sfx_boss_laser_charge")) {
+             this.scene.sound.play("sfx_boss_laser_charge", {
+                 volume: 0.3
+        });
+    }
         this.targetRow = Phaser.Math.Between(0, GRID_ROWS - 1);
         this.chargeTimer = this.boss.phases.phase === 4 ? 1500 : 2000;
 
@@ -76,6 +83,14 @@ export class OverlordLaser {
 
     private fire(): void {
         this.charging = false;
+        
+        // Laser firing sound
+        if (this.scene.cache.audio.exists("sfx_boss_laser_fire")) {
+         this.scene.sound.play("sfx_boss_laser_fire", {
+              volume: 0.45
+            });
+        }
+
         this.warning?.destroy();
         this.warning = undefined;
 

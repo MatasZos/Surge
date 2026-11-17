@@ -33,7 +33,7 @@ export class HijackerEnemy extends Enemy {
         if (this.phase === "descending") {
             this.y = Math.min(this.targetY, this.y + this.descentSpeed * seconds);
 
-            // Play grab sound without overlapping
+            // Play grab sound
                 if (this.scene.cache.audio.exists("sfx_hijacker_grab")) {
                   if (!this.scene.sound.get("sfx_hijacker_grab")?.isPlaying) {
                       this.scene.sound.play("sfx_hijacker_grab", {

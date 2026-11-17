@@ -26,6 +26,8 @@ export class BossAbilities {
     update(delta: number): void {
         if (!this.boss.active || this.boss.health <= 0) return;
 
+        this.laser.update(delta);
+
         this.attackTimer += delta;
         this.empTimer += delta;
 
@@ -41,6 +43,14 @@ export class BossAbilities {
     }
 
     private shoot(): void {
+        
+        // Play Overlord cannon sound
+        if (this.scene.cache.audio.exists("sfx_boss_cannon")) {
+         this.scene.sound.play("sfx_boss_cannon", {
+             volume: 0.35
+            });
+        }
+
         const row = this.attackLane % GRID_ROWS;
         this.attackLane++;
 

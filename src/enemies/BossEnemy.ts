@@ -27,7 +27,17 @@ export class BossEnemy extends Enemy {
     }
 
      override takeDamage(amount: number): void {
-        if (!this.active || amount <= 0 || this.phases.shieldActive) return;
+    if (!this.active || amount <= 0) return;
+
+    // Shield blocks damage
+    if (this.phases.shieldActive) {
+        if (this.scene.cache.audio.exists("sfx_boss_shield_hit")) {
+            this.scene.sound.play("sfx_boss_shield_hit", {
+                volume: 0.15
+            });
+        }
+        return;
+    }
 
         const threshold = BossEnemy.HEALTH * (1 - this.phases.phase * 0.25);
 
@@ -36,8 +46,19 @@ export class BossEnemy extends Enemy {
             : amount;
 
         if (damage > 0) {
+            const wasAlive = this.active;
+
             super.takeDamage(damage);
+
+            // Play boss death sound only once
+            if (wasAlive && !this.active) {
+                if (this.scene.cache.audio.exists("sfx_boss_death")) {
+                 this.scene.sound.play("sfx_boss_death", {
+                     volume: 0.5
+                });
+            }
         }
+    }
 
         if (this.active && this.phases.update(this.health, BossEnemy.HEALTH)) {
             this.scene.events.emit("boss-shield-activated", this.phases.phase);
@@ -47,7 +68,23 @@ export class BossEnemy extends Enemy {
     }
 
     completeShield(): void {
-        this.phases.completeShield();
-        this.isOverdrive = this.phases.phase >= 3;
+
+    // Shield breaking
+    if (this.scene.cache.audio.exists("sfx_boss_shield_break")) {
+        this.scene.sound.play("sfx_boss_shield_break", {
+            volume: 0.4
+        });
+    }
+
+    this.phases.completeShield();
+
+    // New boss phase
+    if (this.scene.cache.audio.exists("sfx_boss_phase_change")) {
+        this.scene.sound.play("sfx_boss_phase_change", {
+            volume: 0.4
+        });
+    }
+
+    this.isOverdrive = this.phases.phase >= 3;
     }
 }
