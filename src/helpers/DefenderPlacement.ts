@@ -24,6 +24,10 @@ import {
 type DefenderType = "shooter" | "generator" | "barricade" | "dualbarrel" | "cryogunner" | "landmine" | "scrapper";
 
 export class DefenderPlacement {
+
+    //check if a generator has been placed for tutorieal
+    private generatorPlaced = false;    
+
     constructor(
         private scene: Phaser.Scene,
         private grid: Grid,
@@ -106,6 +110,14 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
         if (!selectedDefender || !validTypes.includes(selectedDefender)) return;
 
         const type = selectedDefender as DefenderType;
+
+        //make the player place a generator first in Level 1
+        if (type === "shooter" && !this.generatorPlaced) {
+            this.flashGridCell(row, col, 0xff4444);
+            this.showWarning("PLACE A GENERATOR FIRST!");
+            return;
+        }
+
         if (!this.isUnlocked(type)){
             this.flashGridCell(row, col, 0xff4444);
             this.showWarning("Defender Locked");
@@ -181,6 +193,13 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
         this.updateEnergyText();
 
         this.lastPlaced[type] = now;
+
+        //emember when the first generator is placed
+        if (type === "generator") {
+            this.generatorPlaced = true;
+        }
+
+
         //update tutorial after a successful placement
         this.scene.events.emit("defender-placed", type);
     }

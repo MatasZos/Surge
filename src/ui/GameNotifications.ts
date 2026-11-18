@@ -44,7 +44,7 @@ export class GameNotifications {
         this.updateTutorialText("DRAG A SHOOTER ONTO AN EMPTY CELL");
     }
 
-    // Show an instruction until the player completes it
+    //show an instruction until the player completes it
     private updateTutorialText(message: string): void {
         if (!this.tutorialText) {
             this.tutorialText = this.scene.add.text(this.scene.scale.width / 2, 165, message,
