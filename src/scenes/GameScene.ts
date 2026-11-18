@@ -425,6 +425,8 @@ private createPauseButton(): void {
         }
         
         this.showNotification(`LEVEL ${this.currentLevel} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
+
+        this.notifications.showLevelHint(this.currentLevel);
     }
 
     private updateWaveProgress(): void {

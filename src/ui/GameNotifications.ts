@@ -10,6 +10,13 @@ export class GameNotifications {
         this.scene = scene;
     }
 
+    //show instructions when Level 1 starts
+    public showLevelHint(level: number): void {
+        if (level !== 1) return;
+
+        this.show("SELECT A DEFENDER FROM THE TOOLBAR");
+        this.show("Drag A Defender ONTO AN EMPTY GRID CELL");
+    }
     public show(message: string): void {
         this.queue.push(message);
         this.displayNext();
