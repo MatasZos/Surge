@@ -5,6 +5,9 @@ export class GameNotifications {
     private scene: Phaser.Scene;
     private queue: string[] = [];
     private showing = false;
+    //guide user
+    private tutorialStep = 0;
+    private tutorialText?: Phaser.GameObjects.Text;
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
@@ -14,9 +17,51 @@ export class GameNotifications {
     public showLevelHint(level: number): void {
         if (level !== 1) return;
 
-        this.show("SELECT A DEFENDER FROM THE TOOLBAR");
-        this.show("Drag A Defender ONTO AN EMPTY GRID CELL");
+        this.tutorialStep = 1;
+        this.updateTutorialText("DRAG A GENERATOR ONTO AN EMPTY CELL");
     }
+
+    //called after successfully placing a defender
+    public defenderPlaced(type: string): void {
+        if (this.tutorialStep === 1 && type === "generator") {
+            this.tutorialStep = 2;
+            this.updateTutorialText("COLLECT ENERGY TO BUY A SHOOTER");
+        }
+
+        if (this.tutorialStep === 3 && type === "shooter") {
+            this.tutorialStep = 4;
+            this.tutorialText?.destroy();
+            this.tutorialText = undefined;
+            this.show("TUTORIAL COMPLETE!");
+        }
+    }
+
+    //check if the player has enough energy
+    public checkTutorialEnergy(canAffordShooter: boolean): void {
+        if (this.tutorialStep !== 2 || !canAffordShooter) return;
+
+        this.tutorialStep = 3;
+        this.updateTutorialText("DRAG A SHOOTER ONTO AN EMPTY CELL");
+    }
+
+    // Show an instruction until the player completes it
+    private updateTutorialText(message: string): void {
+        if (!this.tutorialText) {
+            this.tutorialText = this.scene.add.text(this.scene.scale.width / 2, 165, message,
+                {
+                    fontSize: "22px",
+                    color: "#ffffff",
+                    fontStyle: "bold",
+                    backgroundColor: "#1012ba",
+                    padding: { x: 20, y: 12 },
+                    align: "center"
+                }
+            ).setOrigin(0.5).setDepth(100).setScrollFactor(0);
+        } else {
+            this.tutorialText.setText(message);
+        }
+    }
+
     public show(message: string): void {
         this.queue.push(message);
         this.displayNext();

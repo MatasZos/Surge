@@ -369,7 +369,14 @@ private createPauseButton(): void {
     create(): void {
         document.body.classList.remove("menu-active");
         this.resetGameState();
+
+        //notification system
         this.notifications = new GameNotifications(this);
+        //update the tutorial when a defender is placed
+        this.events.on("defender-placed", (type: string) =>
+            this.notifications.defenderPlaced(type)
+        );
+        
         startGameMusic(this);
 
         this.setupBattlefield();
@@ -480,6 +487,11 @@ private createPauseButton(): void {
         //update wave progress bar
         this.battlefieldView.updateWaveProgressBar(
             this.waveManager.getWaveProgress()
+        );
+
+        //check if the player has enough energy for the tutorial
+        this.notifications.checkTutorialEnergy(
+            this.energyManager.canAfford(SETTINGS.defenders.shooter.cost)
         );
     }
 }

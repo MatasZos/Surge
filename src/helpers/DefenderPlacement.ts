@@ -181,6 +181,8 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
         this.updateEnergyText();
 
         this.lastPlaced[type] = now;
+        //update tutorial after a successful placement
+        this.scene.events.emit("defender-placed", type);
     }
 
     private flashGridCell(row: number, col: number, color: number): void {
