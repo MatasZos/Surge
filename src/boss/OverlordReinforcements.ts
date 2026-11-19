@@ -52,7 +52,7 @@ export class OverlordReinforcements {
 
         for (const type of robots) {
             const row = Phaser.Math.Between(0, GRID_ROWS - 1);
-            const x = GRID_X + GRID_COLS * CELL_WIDTH + 50;
+            const x = this.boss.x - this.boss.displayWidth / 2 - 60;
             const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
 
             let enemy: Enemy;
@@ -70,6 +70,7 @@ export class OverlordReinforcements {
             } else {
                 enemy = new CrusherEnemy(this.scene, x, y);
             }
+            enemy.setDepth(this.boss.depth + 1);
 
             this.enemies.push(enemy);
             this.summonedEnemies.push(enemy);
