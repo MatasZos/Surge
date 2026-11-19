@@ -141,14 +141,11 @@ export class Defender extends Phaser.GameObjects.Sprite {
             }
 
             // Boss spans across all five lanes
+            //stop shooting while shield is active
             if (enemy instanceof BossEnemy) {
-                const bounds = enemy.getBounds();
+                    return !enemy.phases.shieldActive;
+        }
 
-                return (
-                    this.y >= bounds.top &&
-                    this.y <= bounds.bottom
-                );
-            }
             //normal enemies stay in their own lane
             return Math.abs(enemy.y - this.y) < 20;
         });

@@ -1,4 +1,3 @@
-
 import Phaser from "phaser";
 import { BossEnemy } from "../enemies/BossEnemy.ts";
 import { Enemy } from "../enemies/Enemy.ts";
@@ -8,11 +7,8 @@ import { CrusherEnemy } from "../enemies/CrusherEnemy.ts";
 import { Defender } from "../defenders/Defender.ts";
 import { Stronghold } from "../objects/Stronghold.ts";
 import {
-    GRID_X,
     GRID_Y,
     GRID_ROWS,
-    GRID_COLS,
-    CELL_WIDTH,
     CELL_HEIGHT
 } from "../constants.ts";
 
@@ -20,6 +16,8 @@ type RobotType = "melee" | "ranged" | "crusher";
 
 export class OverlordReinforcements {
     private summonedEnemies: Enemy[] = [];
+    private pending = 0;
+    private spawnTimers: Phaser.Time.TimerEvent[] = [];
 
     constructor(
         private scene: Phaser.Scene,
@@ -30,12 +28,14 @@ export class OverlordReinforcements {
     ) {}
 
     spawn(phase: number): void {
+        this.clearSpawnTimers();
         this.summonedEnemies = [];
 
         let robots: RobotType[] = [];
 
         if (phase === 1) {
             robots = ["melee", "melee", "melee", "melee", "ranged", "ranged"];
+
         } else if (phase === 2) {
             robots = [
                 "melee", "melee", "melee", "melee",
@@ -50,39 +50,56 @@ export class OverlordReinforcements {
             ];
         }
 
-        for (const type of robots) {
-            const row = Phaser.Math.Between(0, GRID_ROWS - 1);
-            const x = this.boss.x - this.boss.displayWidth / 2 - 60;
-            const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
+       this.pending = robots.length;
 
-            let enemy: Enemy;
+        robots.forEach((type, i) => {
+        const timer = this.scene.time.delayedCall(i * 280, () => {
 
-            if (type === "melee") {
-                enemy = new MeleeEnemy(this.scene, x, y);
-            } else if (type === "ranged") {
-                enemy = new RangedEnemy(
-                    this.scene,
-                    x,
-                    y,
-                    this.defenders,
-                    this.stronghold
-                );
-            } else {
-                enemy = new CrusherEnemy(this.scene, x, y);
-            }
-            enemy.setDepth(this.boss.depth + 1);
-
-            this.enemies.push(enemy);
-            this.summonedEnemies.push(enemy);
+        // Do not spawn if the boss is defeated
+        if (!this.boss.active || !this.boss.phases.shieldActive) {
+            this.pending--;
+            return;
         }
+
+        const row = Phaser.Math.Between(0, GRID_ROWS - 1);
+        const x = this.boss.x - this.boss.displayWidth / 2 - 60;
+        const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
+
+        let enemy: Enemy;
+
+        if (type === "melee") {
+            enemy = new MeleeEnemy(this.scene, x, y);
+        } else if (type === "ranged") {
+            enemy = new RangedEnemy(
+                this.scene, x, y,
+                this.defenders,
+                this.stronghold
+            );
+        } else {
+            enemy = new CrusherEnemy(this.scene, x, y);
+        }
+
+        enemy.setDepth(this.boss.depth + 1);
+
+        this.enemies.push(enemy);
+        this.summonedEnemies.push(enemy);
+
+        this.pending--;
+    });
+
+    this.spawnTimers.push(timer);
+
+  });
+
     }
 
-    update(): void {
+        update(): void {
         if (!this.boss.active || !this.boss.phases.shieldActive) {
             return;
         }
 
-        if (this.summonedEnemies.length === 0) {
+        // Wait until all reinforcements have spawned
+        if (this.pending > 0 || this.summonedEnemies.length === 0) {
             return;
         }
 
@@ -95,4 +112,19 @@ export class OverlordReinforcements {
             this.boss.completeShield();
         }
     }
+
+    destroy(): void {
+        this.clearSpawnTimers();
+        this.summonedEnemies = [];
+        this.pending = 0;
+    }
+
+    private clearSpawnTimers(): void {
+        for (const timer of this.spawnTimers) {
+            timer.remove(false);
+        }
+
+        this.spawnTimers = [];
+    }
 }
+

@@ -12,18 +12,35 @@ export class ProjectileCollision {
     ) {}
 
     update(): void {
-        for (const projectile of this.projectiles) {
-            if (!projectile.active) continue;
+        
+        // Check enemies from left to right
+const targets = this.enemies
+    .filter(enemy => enemy.active)
+    .sort((a, b) => a.x - b.x);
 
-            for (const enemy of this.enemies) {
-                if (!enemy.active) continue;
+for (const projectile of this.projectiles) {
+    if (!projectile.active) continue;
 
-                const hit = Phaser.Geom.Intersects.RectangleToRectangle(
-                    projectile.getBounds(),
-                    enemy.getBounds()
-                );
+    for (const enemy of targets) {
+        if (!enemy.active) continue;
 
-            if (!hit) continue;
+        // Projectiles pass through the active boss shield
+        if (enemy instanceof BossEnemy && enemy.phases.shieldActive) {
+            continue;
+        }
+
+        const bounds = projectile.getBounds();
+
+        // All five lanes can damage the boss
+        const hit = enemy instanceof BossEnemy
+            ? bounds.right >= enemy.x - 105 &&
+              bounds.left <= enemy.x + 100
+            : Phaser.Geom.Intersects.RectangleToRectangle(
+                bounds,
+                enemy.getBounds()
+            );
+
+        if (!hit) continue;
 
             // Level 3 electric chain
             if (projectile.chainShot) {
