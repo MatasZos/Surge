@@ -27,6 +27,24 @@ export class DefenderUpgradeMenu {
             ? config?.upgradeCost
             : config?.upgradeLevel3Cost;
 
+        //check if the defender can upgrade and if the player has enough energy
+        const canUpgrade = defender.canUpgrade();
+        const enoughEnergy = cost !== undefined && this.energyManager.canAfford(cost);
+
+        //choose the message to display
+        const upgradeMessage = !canUpgrade
+            ? "MAX LEVEL REACHED"
+            : !enoughEnergy
+                ? "NEED " + cost + " ENERGY"
+                : "UPGRADE - " + cost + " Energy";
+
+        //choose a colour for the button
+        const upgradeColor = !canUpgrade
+            ? "#555555"
+            : !enoughEnergy
+                ? "#aa3333"
+                : "#008855";
+
         const menuWidth = 200;
         const menuHeight = 100;
 
@@ -56,18 +74,20 @@ export class DefenderUpgradeMenu {
             { fontSize: "15px", color: "#00ccff" }
         ).setOrigin(0.5);
 
+
+        //display upgrade status using different colours
         const upgradeButton = this.scene.add.text(
-            0, 25,
-            defender.canUpgrade() ? "UPGRADE - " + cost + " Energy" : "MAX LEVEL",
+            0, 25, upgradeMessage,
             {
-                fontSize: "16px",
+                fontSize: "14px",
                 color: "#ffffff",
-                backgroundColor: defender.canUpgrade() ? "#008855" : "#555555",
-                padding: { x: 12, y: 6 }
+                backgroundColor: upgradeColor,
+                padding: { x: 10, y: 6 }
             }
         ).setOrigin(0.5);
 
-        if (defender.canUpgrade()) {
+        //allow click if defender is not max lvl
+        if (canUpgrade) {
             upgradeButton.setInteractive({ useHandCursor: true });
 
             upgradeButton.on("pointerdown", () => {
@@ -94,7 +114,7 @@ export class DefenderUpgradeMenu {
                  });
             }
 
-         upgradeButton.setText("NOT ENOUGH ENERGY");
+         upgradeButton.setText("NEED " + cost + " ENERGY");
             return;
         }
 
