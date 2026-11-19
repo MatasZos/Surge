@@ -67,6 +67,9 @@ export function loadGameAssets(scene: Phaser.Scene): void {
     // UI
     scene.load.image("recall", "assets/ui/recall button.png");
     scene.load.image("move", "assets/ui/move.png");
+    //stronghold healthbar
+    scene.load.image("stronghold-hp-frame","assets/ui/stronghold-hp-frame.png")
+    scene.load.image("stronghold-hp-fill","assets/ui/stronghold-hp-fill.png")
 
     // Stronghold and battlefield
     scene.load.image("stronghold", "assets/stronghold/stronghold_wall.png");

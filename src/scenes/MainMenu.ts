@@ -12,6 +12,14 @@ export class MainMenu extends Phaser.Scene {
             "menuBackground",
             "./assets/mainmenu/menu-background.png"
         );
+
+        this.load.image("menuPanel","./assets/mainmenu/menu-panel.png")
+
+        this.load.image("newGameButton", "./assets/mainmenu/new-game.png");
+
+        this.load.image("optionsButton","./assets/mainmenu/options.png");
+
+        this.load.image("howToPlayButton", "./assets/mainmenu/how-to-play.png");
     }
 
     create() {
@@ -36,61 +44,43 @@ export class MainMenu extends Phaser.Scene {
         ).setDepth(-5);
 
         // Simple background 
-        this.add.rectangle(
-            GAME_WIDTH / 2,
-            290,
-            420,
-            160,
-            0x000000,
-            0.55
-        ).setDepth(0);
+        this.add.image(GAME_WIDTH/2,370,"menuPanel").setDisplaySize(GAME_WIDTH,GAME_HEIGHT).setAlpha(0.55).setDepth(0);
 
         // Game title
-        this.add.text(
-            GAME_WIDTH / 2, 250,
-            "SURGE",
-            {
+        this.add.text(GAME_WIDTH / 2, 110,"SURGE",{
                 fontSize: "60px",
                 color: "#49dcef",
                 fontStyle: "bold"
-            }
-        ).setOrigin(0.5);
+            }).setOrigin(0.5);
 
         // Subtitle
         this.add.text(
-            GAME_WIDTH / 2, 330,
+            GAME_WIDTH / 2, 180,
             "DEFEND YOUR STRONGHOLD",
             { fontSize: "22px", color: "#aaaaaa" }
         ).setOrigin(0.5);
 
         // Play button
-        const playButton = this.add.text(
-            GAME_WIDTH / 2, 460,
-            "PLAY",
-            {
-                fontSize: "32px",
-                color: "#ffffff",
-                backgroundColor: "#087d92",
-                padding: { x: 50, y: 20 }
-            }
-        ).setOrigin(0.5);
+        const playButton = this.add.image(110, 330,"newGameButton").setOrigin(0,0.5).setDisplaySize(260,47.5).setAlpha(0.8);
+
+        //options button
+        const optionsButton = this.add.image(110,420,"optionsButton").setOrigin(0,0.5).setDisplaySize(205,55).setAlpha(0.8);
+
+        //howtoplaybutton
+        const howToPlayButton =this.add.image(98, 510, "howToPlayButton").setOrigin(0, 0.5).setDisplaySize(280, 93.33).setAlpha(0.8);
 
         playButton.setInteractive({ useHandCursor: true });
 
-        // Hover effect
-        playButton.on("pointerover", () => {
-    playButton.setBackgroundColor("#11a5bd");
+        playButton.on("pointerover",()=>{
+            playButton.setAlpha(1);
 
-    // Play hover sound
-    if (this.cache.audio.exists("sfx_ui_hover")) {
-        this.sound.play("sfx_ui_hover", {
-            volume: 0.15
-                 });
+            if(this.cache.audio.exists("sfx_ui_hover")){
+                this.sound.play("sfx_ui_hover",{volume:0.15});
             }
         });
 
-        playButton.on("pointerout", () => {
-            playButton.setBackgroundColor("#087d92");
+        playButton.on("pointerout", ()=>{
+            playButton.setAlpha(0.8);
         });
 
         // Start game

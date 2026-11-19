@@ -12,7 +12,8 @@ export class Stronghold extends Phaser.GameObjects.Sprite {
     health: number;
 
     private maxHealth: number;
-    private healthBar: Phaser.GameObjects.Graphics;
+    private healthFrame: Phaser.GameObjects.Image;
+    private healthBar:Phaser.GameObjects.Image;
     private healthText: Phaser.GameObjects.Text;
     private healthLabel: Phaser.GameObjects.Text;
 
@@ -39,70 +40,33 @@ export class Stronghold extends Phaser.GameObjects.Sprite {
         this.x += 20;
         this.setDepth(2);
 
-
+         // Health bar
+        const meterX=GRID_X-42;
+        const meterY=GRID_Y+90;
 
         // Health label
-        this.healthLabel = scene.add.text(
-            GRID_X - 85,
-            GRID_Y - 42,
-            "STRONGHOLD",
-            {
-                fontSize: "14px",
-                color: "#ffffff"
-            }
-        );
+        this.healthLabel = scene.add.text(meterX,meterY-14,"BASE",{fontSize:"14px",color:"#ffffff"}).setOrigin(0.5).setDepth(20);
 
-        this.healthLabel.setOrigin(0.5);
-        this.healthLabel.setDepth(20);
+        this.healthFrame = scene.add.image(meterX,meterY,"stronghold-hp-frame").setOrigin(0.5,0).setScale(3,8).setDepth(20);
 
-        // Health bar
-        this.healthBar = scene.add.graphics();
-        this.healthBar.setDepth(20);
+        this.healthBar = scene.add.image(meterX,meterY,"stronghold-hp-fill").setOrigin(0.5,0).setScale(3,8).setDepth(21);
 
         // Health text
-        this.healthText = scene.add.text(
-            GRID_X - 85,
-            GRID_Y - 10,
-            "",
-            {
-                fontSize: "16px",
-                color: "#ffffff"
-            }
-        );
-
-        this.healthText.setOrigin(0.5);
-        this.healthText.setDepth(20);
+        this.healthText = scene.add.text(meterX-20, meterY+274,"", {fontSize:"16px",color: "#ffffff"}).setOrigin(0.5).setDepth(20);
 
         this.updateHealthBar();
     }
 
     private updateHealthBar() {
-        this.healthBar.clear();
+        const ratio = this.maxHealth>0?Phaser.Math.Clamp(this.health/this.maxHealth,0,1):0;
 
-        const width = 140;
-        const height = 14;
+        const fillHeight = Math.round(24*ratio);
+        this.healthBar.setVisible(fillHeight>0);
 
-        const x = GRID_X - 85 - width / 2;
-        const y = GRID_Y - 25;
-
-        // Red background
-        this.healthBar.fillStyle(0xff0000);
-        this.healthBar.fillRect(x, y, width, height);
-
-        // Remaining health
-        this.healthBar.fillStyle(0x00ff00);
-        this.healthBar.fillRect(
-            x,
-            y,
-            this.maxHealth > 0
-                ? width * (this.health / this.maxHealth)
-                : 0,
-            height
-        );
-
-        this.healthText.setText(
-            this.health + " / " + this.maxHealth + " HP"
-        );
+        if(fillHeight >0){
+            this.healthBar.setCrop(0,28 - fillHeight,16,fillHeight);
+        }
+        this.healthText.setText(`${this.health} / ${this.maxHealth} HP`);
     }
 
     // All five lanes share one Stronghold collision boundary
@@ -120,8 +84,7 @@ export class Stronghold extends Phaser.GameObjects.Sprite {
             return;
         }
 
-        this.health -= amount;
-
+        
     // Play sound when Stronghold takes damage
     if (amount > 0 && this.scene.cache.audio.exists("sfx_stronghold_hit")) {
         this.scene.sound.play("sfx_stronghold_hit", {
@@ -144,6 +107,7 @@ export class Stronghold extends Phaser.GameObjects.Sprite {
     }
 
     destroy(fromScene?: boolean) {
+        this.healthFrame?.destroy();
         this.healthBar?.destroy();
         this.healthText?.destroy();
         this.healthLabel?.destroy();
