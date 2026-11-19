@@ -63,7 +63,11 @@ export class Defender extends Phaser.GameObjects.Sprite {
         if (!this.canUpgrade()) return false;
 
         this.upgradeLevel++;
+        //display the permanent aura
         this.upgradeIndicator.show();
+
+        //play the upgrade animation
+        this.upgradeIndicator.playUpgradeEffect();
         return true;
     }
 

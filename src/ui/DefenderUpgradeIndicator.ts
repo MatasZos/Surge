@@ -4,7 +4,7 @@ import type { Defender } from "../defenders/Defender.ts";
 
 export class DefenderUpgradeIndicator {
     private levelText: Phaser.GameObjects.Text;
-    private outline: Phaser.GameObjects.Rectangle;
+    private aura: Phaser.GameObjects.Sprite;
 
     constructor(
         private scene: Phaser.Scene,
@@ -14,26 +14,45 @@ export class DefenderUpgradeIndicator {
             0, 0, "LVL 2",
             {
                 fontSize: "14px",
-                color: "#00ff99",
+                color: "#299dff",
                 fontStyle: "bold",
                 backgroundColor: "#162536",
                 padding: { x: 4, y: 2 }
             }
         );
+        
 
         this.levelText.setOrigin(0.5);
         this.levelText.setDepth(30);
         this.levelText.setVisible(false);
 
-        this.outline = scene.add.rectangle(0, 0, 10, 10);
-        this.outline.setStrokeStyle(2, 0x00ff99);
-        this.outline.setDepth(15);
-        this.outline.setVisible(false);
+        //create animated aura at the defender's feet
+        this.aura = scene.add.sprite(0, 0, "defenderAura");
+        this.aura.setDisplaySize(55, 55);
+        this.aura.setDepth(10);
+        this.aura.setVisible(false);
+
+        //level 2 blue animation
+        if (!scene.anims.exists("blueAura")) {
+            scene.anims.create({key: "blueAura", frames: scene.anims.generateFrameNumbers("defenderAura", {start: 24, end: 35}),
+                frameRate: 12,
+                repeat: -1
+            });
+        }
+
+        //level 3 purple animation
+        if (!scene.anims.exists("purpleAura")) {
+            scene.anims.create({key: "purpleAura",frames: scene.anims.generateFrameNumbers("defenderAura", {start: 12, end: 23}),
+                frameRate: 12,
+                repeat: -1
+            });
+        }
 
         defender.once(Phaser.GameObjects.Events.DESTROY, () => {
             this.levelText.destroy();
-            this.outline.destroy();
+            this.aura.destroy();
         });
+
     }
 
     show(): void {
@@ -41,33 +60,57 @@ export class DefenderUpgradeIndicator {
 
         this.levelText.setText("LVL " + this.defender.upgradeLevel);
 
-        const color = this.defender.upgradeLevel === 3
-            ? 0xffd700
-            : 0x00ff99;
+        this.levelText.setColor(this.defender.upgradeLevel === 3 ? "#b46aff" : "#299dff");
 
-        this.levelText.setColor(
-            this.defender.upgradeLevel === 3 ? "#ffd700" : "#00ff99"
-        );
+       //choose animation based on defender level
+        const animation = this.defender.upgradeLevel === 3
+            ? "purpleAura"
+            : "blueAura";
 
-        this.outline.setStrokeStyle(2, color);
+        if (this.aura.anims.currentAnim?.key !== animation) {
+            this.aura.play(animation);
+        }
 
-        // Use the defender's final display size
-        this.outline.setPosition(
-            this.defender.x,
-            this.defender.y
-        );
+        this.aura.setPosition(this.defender.x, this.defender.y + this.defender.displayHeight / 2 - 12);
 
-        this.outline.setSize(
-            this.defender.displayWidth + 8,
-            this.defender.displayHeight + 8
-        );
+        //position the level text above the defender
+        this.levelText.setPosition(this.defender.x, this.defender.y - this.defender.displayHeight / 2 - 35);
 
-        this.levelText.setPosition(
-            this.defender.x,
-            this.defender.y - this.defender.displayHeight / 2 - 35
-        );
-
-        this.outline.setVisible(true);
+        this.aura.setVisible(true);
         this.levelText.setVisible(true);
+    }
+
+    //play the upgrade animation
+    playUpgradeEffect(): void {
+        if (!this.scene.textures.exists("upgradeEffect")) return;
+
+        const animationKey = "defenderUpgradeAnimation";
+
+        if (!this.scene.anims.exists(animationKey)) {
+            this.scene.anims.create({
+                key: animationKey,
+                frames: this.scene.anims.generateFrameNumbers(
+                    "upgradeEffect",
+                    { start: 0, end: 9 }
+                ),
+                frameRate: 15,
+                repeat: 0
+            });
+        }
+
+        const effect = this.scene.add.sprite(
+            this.defender.x,
+            this.defender.y,
+            "upgradeEffect"
+        );
+
+        effect.setDisplaySize(100, 100);
+        effect.setDepth(40);
+        effect.play(animationKey);
+
+        //remove the effect after the animation finishes
+        effect.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+            effect.destroy();
+        });
     }
 }
