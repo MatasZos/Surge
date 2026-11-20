@@ -116,6 +116,21 @@ export class GameScene extends Phaser.Scene {
         this.notifications.show(message);
         }
 
+    private showDefenderUnlocks(level: number): void {
+        const names: Record<string, string> = {
+             dualbarrel: "DUAL BARREL",
+             cryogunner: "CRYO GUNNER",
+             landmine: "LANDMINE",
+             scrapper: "SCRAPPER"
+        };
+
+    for (const [type, unlockLevel] of Object.entries(this.defenderUnlockLevels)) {
+        if (level > 1 && unlockLevel === level) {
+            this.showNotification(`NEW DEFENDER UNLOCKED: ${names[type] ?? type.toUpperCase()}!`);
+        }
+    }
+}
+
 
     private createUI(): void {
         this.gameUI = new GameUI(
@@ -223,6 +238,7 @@ private createPauseButton(): void {
 
                 //new level notif
                 this.showNotification(`LEVEL ${level} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
+                this.showDefenderUnlocks(level);
 
                 //first ranged enemy notif
                 if (level === 2) {
@@ -432,8 +448,8 @@ private createPauseButton(): void {
         }
         
         this.showNotification(`LEVEL ${this.currentLevel} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
-
         this.notifications.showLevelHint(this.currentLevel);
+        this.showDefenderUnlocks(this.currentLevel);
     }
 
     private updateWaveProgress(): void {
