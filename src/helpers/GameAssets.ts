@@ -92,7 +92,8 @@ export function loadGameAssets(scene: Phaser.Scene): void {
     scene.load.audio("sfx_landmine_arm", "assets/sounds/sfx/defenders/landmine_arm.mp3");
     scene.load.audio("sfx_landmine_explosion", "assets/sounds/sfx/defenders/landmine_explosion.mp3");
     scene.load.audio("sfx_scrapper_attack", "assets/sounds/sfx/defenders/scrapper_attack.mp3");
-    scene.load.audio("sfx_defender_place", "assets/sounds/sfx/defenders/defender_place.mp3");
+    scene.load.audio("sfx_defender_place", "assets/sounds/sfx/defenders/defender_place_custom.mp3");
+    scene.load.audio("sfx_defender_pickup", "assets/sounds/sfx/defenders/defender_pickup.mp3");
     scene.load.audio("sfx_defender_recall", "assets/sounds/sfx/defenders/defender_recall.mp3");
     scene.load.audio("sfx_defender_hit", "assets/sounds/sfx/defenders/defender_hit.mp3");
     scene.load.audio("sfx_defender_destroy", "assets/sounds/sfx/defenders/defender_destroy.mp3");

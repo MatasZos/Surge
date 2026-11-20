@@ -163,7 +163,15 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
         });
 
         this.energyManager.spendEnergy(cost);
-        this.flashGridCell(row, col, 0x00ff99);
+
+        // Sound when a defender is successfully placed
+        if (this.scene.cache.audio.exists("sfx_defender_place")) {
+                this.scene.sound.play("sfx_defender_place", {
+                volume: 0.25
+        });
+    }
+
+this.flashGridCell(row, col, 0x00ff99);
 
         //purchase confirmation
         const purchaseText = this.scene.add.text(

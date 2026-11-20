@@ -97,7 +97,7 @@ export class Shooter extends Defender {
     }
 
 
-    private shoot() {
+        private shoot() {
         if (!this.active) return;
         this.play("shooter-fire",true);
 
@@ -109,7 +109,7 @@ export class Shooter extends Defender {
 
         if (this.scene.cache.audio.exists(soundKey)) {
             this.scene.sound.play(soundKey, {
-                volume: 0.16
+                volume: 0.25
             });
         }
 

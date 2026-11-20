@@ -230,12 +230,12 @@ export class DefenderToolbar {
             this.selectedType = type;
             this.onSelect(type);
            
-            // Play selection sound
-            if (this.scene.cache.audio.exists("sfx_ui_click")) {
-                 this.scene.sound.play("sfx_ui_click", {
+            // Sound when picking up a defender
+            if (this.scene.cache.audio.exists("sfx_defender_pickup")) {
+                     this.scene.sound.play("sfx_defender_pickup", {
                      volume: 0.2
-                });
-            }
+            });
+    }
 
             this.resetButtons();
             button.setFillStyle(this.selectedColor);
