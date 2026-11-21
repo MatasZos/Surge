@@ -21,23 +21,30 @@ export class BattlefieldView {
 private levelText!: Phaser.GameObjects.Text;
 private progressBar!: Phaser.GameObjects.Rectangle;
 
-//create the wave progress bar
+//position the wave progress bar under the wave text
 createWaveProgressBar(): void {
-    const x = this.scene.scale.width - 225;
-    const y = this.scene.scale.height - 115;
+    const x = this.scene.scale.width - 125;
+    const y = this.scene.scale.height - 35;
 
-    const background = this.scene.add.rectangle(
-        x, y, 200, 16, 0x162536
-    );
+    //shadow behind the wave container
+    const shadow = this.scene.add.rectangle(x + 4, y - 24, 230, 85, 0x000000, 0.4);
+    shadow.setDepth(18);
 
-    this.progressBar = this.scene.add.rectangle(
-        x - 100, y, 200, 16, 0x00ccff
-    );
+    //dark container for wave text and progress bar
+    const panel = this.scene.add.rectangle(x, y - 28, 230, 85, 0x101e30, 0.96);
+    panel.setStrokeStyle(2, 0x00ccff, 0.65);
+    panel.setDepth(19);
+
+    //progress bar background
+    const background = this.scene.add.rectangle(x, y, 200, 18, 0x263d50);
+    background.setStrokeStyle(1, 0x4a7085); 
+    background.setDepth(20);
+
+    //progress bar fill
+    this.progressBar = this.scene.add.rectangle(x - 100, y, 200, 18, 0x00ccff);
 
     this.progressBar.setOrigin(0, 0.5);
     this.progressBar.setScale(0, 1);
-
-    background.setDepth(20);
     this.progressBar.setDepth(21);
 }
 
@@ -47,13 +54,16 @@ updateWaveProgressBar(progress: number): void {
 }
 
 createLevelIndicator(level: number): void {this.levelText = this.scene.add.text(this.scene.scale.width - 25,
-        this.scene.scale.height - 75,
-        "Level " + level,
+        this.scene.scale.height - 125,
+        "LEVEL " + level,
         {
             fontSize: "22px",
+            fontStyle: "bold",
             color: "#00ff99",
-            backgroundColor: "#162536",
-            padding: { x: 12, y: 8 }
+            backgroundColor: "#101e30",
+            padding: { x: 12, y: 8 },
+            stroke: "#000000",
+            strokeThickness: 1
         }
     );
 
@@ -62,7 +72,7 @@ createLevelIndicator(level: number): void {this.levelText = this.scene.add.text(
 }
 
 updateLevelIndicator(level: number): void {
-    this.levelText.setText("Level " + level);
+    this.levelText.setText("LEVEL " + level);
 }
 
     

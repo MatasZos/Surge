@@ -35,22 +35,21 @@ export class GameUI {
 
         // Create the wave display
         this.waveText = scene.add.text(
-            scene.scale.width - 25,
-            scene.scale.height - 25,
-            `Wave ${waveManager.getWave()}/${waveManager.getMaxWaves()}`,
+            scene.scale.width - 225,
+            scene.scale.height - 65,
+            `WAVE ${waveManager.getWave()}/${waveManager.getMaxWaves()}`,
             {
-                fontSize: "22px",
+                fontSize: "21px",
                 color: "#00ccff",
-                backgroundColor: "#162536",
-                padding: {
-                    x: 12,
-                    y: 8
-                }
+                fontStyle: "bold",
+                padding: {x: 12, y: 8},
+                stroke: "#000000",
+                strokeThickness: 1
             }
         );
 
-        this.waveText.setOrigin(1, 1);
-        this.waveText.setDepth(20);
+        this.waveText.setOrigin(0, 1);
+        this.waveText.setDepth(22);
     }
 
     // Update the energy display
@@ -80,7 +79,7 @@ export class GameUI {
     // Update the wave number shown on screen
     public updateWaveText(): void {
         this.waveText.setText(
-            `Wave ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`
+            `WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`
         );
     }
 }
