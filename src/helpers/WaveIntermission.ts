@@ -108,7 +108,7 @@ export class WaveIntermission {
                 );
             } else {
                 this.waveText.setText(
-                    `Wave ${completedWave}/${this.waveManager.getMaxWaves()} - Next in ${secondsRemaining}s`
+                    `Wave ${completedWave}/${this.waveManager.getMaxWaves()} | in ${secondsRemaining}s`
                 );
             }
         };

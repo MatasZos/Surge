@@ -35,7 +35,7 @@ export class GameUI {
 
         // Create the wave display
         this.waveText = scene.add.text(
-            scene.scale.width - 225,
+            scene.scale.width - 235,
             scene.scale.height - 65,
             `WAVE ${waveManager.getWave()}/${waveManager.getMaxWaves()}`,
             {

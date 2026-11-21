@@ -53,21 +53,28 @@ updateWaveProgressBar(progress: number): void {
     this.progressBar.setScale(progress, 1);
 }
 
-createLevelIndicator(level: number): void {this.levelText = this.scene.add.text(this.scene.scale.width - 25,
-        this.scene.scale.height - 125,
-        "LEVEL " + level,
+createLevelIndicator(level: number): void {
+    const right = this.scene.scale.width - 25;
+    const bottom = this.scene.scale.height - 125;
+
+    //dark background with green outline
+    const levelBox = this.scene.add.rectangle(right - 65, bottom - 18, 130, 38, 0x101e30, 0.96);
+    levelBox.setStrokeStyle(1, 0x00ff99, 0.65);
+    levelBox.setDepth(19);
+
+    //level text
+    this.levelText = this.scene.add.text(right - 10, bottom - 18, "LEVEL " + level,
         {
             fontSize: "22px",
             fontStyle: "bold",
             color: "#00ff99",
-            backgroundColor: "#101e30",
             padding: { x: 12, y: 8 },
             stroke: "#000000",
             strokeThickness: 1
         }
     );
 
-    this.levelText.setOrigin(1, 1);
+    this.levelText.setOrigin(1, 0.5);
     this.levelText.setDepth(20);
 }
 
