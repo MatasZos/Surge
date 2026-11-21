@@ -16,41 +16,56 @@ export class HijackerEnemy extends Enemy {
         super(scene, x, y, "hijacker", health, 0, 0);
     }
 
-    //Called by a future spawner with the chosen defender's position.
+    // Start descending towards the selected defender
     startDescent(targetX: number, targetY: number): void {
         if (!this.active || this.phase !== "waiting") return;
+
         this.x = targetX;
         this.targetY = targetY;
         this.grabElapsedMs = 0;
         this.phase = "descending";
     }
 
-    //Called by the future scene update loop only when Hijackers are enabled.
     updateHijacker(delta: number): void {
         if (!this.active) return;
+
         const seconds = delta / 1000;
 
+        // Move down towards the defender
         if (this.phase === "descending") {
-            this.y = Math.min(this.targetY, this.y + this.descentSpeed * seconds);
+            this.y = Math.min(
+                this.targetY,
+                this.y + this.descentSpeed * seconds
+            );
 
-            // Play grab sound
-                if (this.scene.cache.audio.exists("sfx_hijacker_grab")) {
-                  if (!this.scene.sound.get("sfx_hijacker_grab")?.isPlaying) {
-                      this.scene.sound.play("sfx_hijacker_grab", {
-                      volume: 0.1
-                });
+            // Start grabbing when the Hijacker reaches the defender
+            if (this.y >= this.targetY) {
+                this.phase = "grabbing";
+                this.grabElapsedMs = 0;
             }
-        }
 
         } else if (this.phase === "grabbing") {
             this.grabElapsedMs += delta;
+
+            // Wait 1 second before stealing
             if (this.grabElapsedMs >= this.grabDelayMs) {
-                // Fire once; wait for the stealing system to confirm removal.
                 this.phase = "awaitingRemoval";
+
+                // Play grab sound once
+                if (this.scene.cache.audio.exists("sfx_hijacker_grab")) {
+                    this.scene.sound.play("sfx_hijacker_grab", {
+                        volume: 0.1
+                    });
+                }
+
+                // Tell the stealing system to remove the defender
                 this.onGrabReady?.(this);
             }
+
         } else if (this.phase === "ascending") {
+            // Fly upwards after stealing
             this.y -= this.ascentSpeed * seconds;
+
             if (this.y < -80) {
                 this.phase = "escaped";
                 this.destroy();
@@ -58,19 +73,20 @@ export class HijackerEnemy extends Enemy {
             }
         }
 
-        // Refresh inherited health-bar position without horizontal movement.
         super.move(0);
     }
 
-    //Called once the future stealing system has removed the target.
+    // Escape after the defender has been stolen
     beginEscape(): void {
         if (!this.active || this.phase !== "awaitingRemoval") return;
+
         this.phase = "ascending";
     }
 
-    //If the target disappears before theft, leave without stealing. 
+    // Escape if the target disappears before stealing
     cancelGrab(): void {
         if (!this.active || this.phase === "ascending" || this.phase === "escaped") return;
+
         this.phase = "ascending";
     }
 }
