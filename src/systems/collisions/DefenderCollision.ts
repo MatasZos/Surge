@@ -107,6 +107,8 @@ export class DefenderCollision {
                 }
                 if(enemy instanceof MeleeEnemy){
                     enemy.play("executioner-attack",true)
+                }else if(enemy instanceof CrusherEnemy){
+                    enemy.play("crusher-attack",true)
                 }
                      defender.takeDamage(enemy.damage);
 

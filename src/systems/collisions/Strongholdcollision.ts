@@ -55,6 +55,8 @@ export class StrongholdCollision {
                 }
                 if(enemy instanceof MeleeEnemy){
                     enemy.play("executioner-attack",true)
+                } else if(enemy instanceof CrusherEnemy){
+                    enemy.play("crusher-attack",true)
                 }
                     this.stronghold.takeDamage(enemy.damage);
 

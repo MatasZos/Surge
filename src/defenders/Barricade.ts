@@ -11,7 +11,51 @@ export class Barricade extends Defender {
         
         super(scene, x, y, "barricade");
 
-        this.setDisplaySize(65, 75);
+        this.setDisplaySize(96, 96);
+
+        if(!scene.anims.exists("barricade-idle")){
+            scene.anims.create({
+                key:"barricade-idle",
+                frames:scene.anims.generateFrameNumbers("barricade",{
+                    start:0,
+                    end:3
+                }),
+                frameRate:6,
+                repeat:-1
+            });
+
+            scene.anims.create({
+                key:"barricade-hurt",
+                frames:scene.anims.generateFrameNumbers("barricade-hurt-sheet",{
+                    start:0,
+                    end:10
+                }),
+                frameRate: 14,
+                repeat:0
+            });
+        }
+
+        this.on(Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + "barricade-hurt",()=>{
+            if(this.active){
+                this.play("barricade-idle");
+            }
+        });
+
+        if(!scene.anims.exists("barricade-dead")){
+            scene.anims.create({
+                key:"barricade-dead",
+                frames:scene.anims.generateFrameNumbers("barricade-dead-sheet",{
+                    start:0,
+                    end:4
+                }),
+                frameRate:12,
+                repeat:0
+            });
+        }
+
+
+
+        this.play("barricade-idle")
 
         this.setDefenderHealth(SETTINGS.defenders.barricade.health);
         this.damage = SETTINGS.defenders.barricade.damage;
@@ -51,7 +95,21 @@ export class Barricade extends Defender {
         }
 
         super.takeDamage(amount);
+        if (this.active) {
+            if (amount > 0) this.play("barricade-hurt", true);
+            return;
+            }
+        
+
+        const deathSprite = this.scene.add.sprite(this.x,this.y, "barricade-dead-sheet",0).setDisplaySize(this.displayWidth,this.displayHeight).setDepth(this.depth).setFlipX(this.flipX);
+
+        this.setVisible(false);
+        deathSprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE,() =>{
+            deathSprite.destroy();
+        });
+        deathSprite.play("barricade-dead");
     }
+
 
         override destroy(fromScene?: boolean): void {
         this.repairTimer?.remove(false);

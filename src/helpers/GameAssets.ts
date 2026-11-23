@@ -32,8 +32,12 @@ export function loadGameAssets(scene: Phaser.Scene): void {
 
 
     //BARRICADE SPRITE AND ANIMATIONS
-    //icon
-    scene.load.image("barricade", "assets/defenders/barricade.png");
+    //idle
+    scene.load.spritesheet("barricade", "assets/defenders/barricade/Idle.png", {frameWidth:40,frameHeight:40});
+    //hurt
+    scene.load.spritesheet("barricade-hurt-sheet", "assets/defenders/barricade/Hurt.png",{frameWidth:40,frameHeight: 40});
+    //dead
+    scene.load.spritesheet("barricade-dead-sheet", "assets/defenders/barricade/Dead.png",{frameWidth:40,frameHeight:40});
 
 
     //DUALBARREL SPRITE AND ANIMATION
@@ -89,9 +93,17 @@ export function loadGameAssets(scene: Phaser.Scene): void {
 
 
 
+    //CRUSHER ENEMY SPRITE AND ANIMATION
+    //idle
+    scene.load.spritesheet("crusherEnemy", "assets/enemies/crusher/Idle.png", {frameWidth: 80,frameHeight: 64});
+    //walk
+    scene.load.spritesheet("crusher-walk-sheet", "assets/enemies/crusher/Walk.png",{frameWidth: 80,frameHeight: 64});
+    //attack
+    scene.load.spritesheet("crusher-attack-sheet", "assets/enemies/crusher/Attack.png",{frameWidth: 80,frameHeight: 64});
 
 
-    scene.load.image("crusherEnemy", "assets/enemies/crusherrobot.png");
+
+
     scene.load.image("overlord", "assets/enemies/overlord.png");
     scene.load.image("drone", "assets/enemies/drone.png");
     scene.load.image("hijacker", "assets/enemies/hijacker.png");
