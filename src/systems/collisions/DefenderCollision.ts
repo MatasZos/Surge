@@ -3,6 +3,7 @@ import { SETTINGS } from "../../config/settings.ts";
 import { Grid } from "../../grid/Grid.ts";
 import { Defender } from "../../defenders/Defender.ts";
 import { Enemy } from "../../enemies/Enemy.ts";
+import { MeleeEnemy } from "../../enemies/MeleeEnemy.ts";
 import { RangedEnemy } from "../../enemies/RangedEnemy.ts";
 import { CrusherEnemy } from "../../enemies/CrusherEnemy.ts";
 import { DroneEnemy } from "../../enemies/DroneEnemy.ts";
@@ -103,7 +104,10 @@ export class DefenderCollision {
 
                 if (this.scene.cache.audio.exists(soundKey)) {
                     this.scene.sound.play(soundKey, { volume: 0.25 });
-                }           
+                }
+                if(enemy instanceof MeleeEnemy){
+                    enemy.play("executioner-attack",true)
+                }
                      defender.takeDamage(enemy.damage);
 
                         if (!defender.active) {

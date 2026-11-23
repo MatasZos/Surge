@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { SETTINGS } from "../../config/settings.ts";
 import { Enemy } from "../../enemies/Enemy.ts";
+import { MeleeEnemy } from "../../enemies/MeleeEnemy.ts";
 import { RangedEnemy } from "../../enemies/RangedEnemy.ts";
 import { CrusherEnemy } from "../../enemies/CrusherEnemy.ts";
 import { Stronghold } from "../../objects/Stronghold.ts";
@@ -51,6 +52,9 @@ export class StrongholdCollision {
 
                     if (this.scene.cache.audio.exists(soundKey)) {
                           this.scene.sound.play(soundKey, { volume: 0.25 });
+                }
+                if(enemy instanceof MeleeEnemy){
+                    enemy.play("executioner-attack",true)
                 }
                     this.stronghold.takeDamage(enemy.damage);
 

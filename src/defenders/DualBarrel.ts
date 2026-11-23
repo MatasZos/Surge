@@ -61,7 +61,7 @@ export class DualBarrel extends Defender {
 
         this.play("dualbarrel-idle");
 
-        this.setDisplaySize(65, 65);
+        this.setDisplaySize(90, 90);
 
         this.setDefenderHealth(
             SETTINGS.defenders.dualbarrel.health

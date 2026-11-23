@@ -34,7 +34,7 @@ export class Generator extends Defender {
     })
     this.play("generator-idle")
 
-    this.setDisplaySize(60, 60);
+    this.setDisplaySize(72, 82);
     this.setDefenderHealth(SETTINGS.defenders.generator.health);
     this.damage = SETTINGS.defenders.generator.damage;
 

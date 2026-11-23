@@ -20,7 +20,7 @@ export class Shooter extends Defender {
     ) {
         super(scene,x,y,"shooter")
 
-        this.setDisplaySize(61,65);
+        this.setDisplaySize(80,85);
         this.setOrigin(0.5,0.5);
 
         this.setDefenderHealth(SETTINGS.defenders.shooter.health);

@@ -20,23 +20,64 @@ export class RangedEnemy extends Enemy {
     ) {
         super(scene,x,y,"rangedEnemy",SETTINGS.enemies.ranged.health,SETTINGS.enemies.ranged.speed,SETTINGS.enemies.ranged.damage);
 
-        // Shoot using the interval from the spreadsheet
-        this.shootTimer = scene.time.addEvent({
-            delay: SETTINGS.enemies.ranged.attackIntervalMs,
-            callback: () => {
-                if (this.active && this.isAttacking) {
-                    console.log("Ranged enemy shooting!");
+        this.setDisplaySize(100,100);
 
-            // Play ranged attack sound
-            if (this.scene.cache.audio.exists("sfx_ranged_fire")) {
-            this.scene.sound.play("sfx_ranged_fire", { volume: 0.25 });
+        //fly and idle animations
+        if(!scene.anims.exists("wizard-fly")){
+            scene.anims.create({
+                key:"wizard-fly",
+                frames: scene.anims.generateFrameNumbers("wizard-fly-sheet",{
+                    start:3,
+                    end:5,
+                }),
+                frameRate: 8,
+                repeat:-1
+            });
+            scene.anims.create({
+                key:"wizard-idle",
+                frames:scene.anims.generateFrameNumbers("rangedEnemy",{
+                    start:0,
+                    end:9
+                }),
+                frameRate:6,
+                repeat:-1
+            });
         }
 
-const projectile = new EnemyProjectile(this.scene, this.x - 30, this.y);
-                    projectile.damage = Math.round(projectile.damage * this.projectileDamageMultiplier)
+        // Shoot using the interval from the spreadsheet
+        if(!scene.anims.exists("wizard-attack")){
+            scene.anims.create({
+                key:"wizard-attack",
+                frames:scene.anims.generateFrameNumbers("wizard-attack-sheet",{
+                    start:0,
+                    end:7
+                }),
+                frameRate:16,
+                repeat:0
+            });
+        }
+
+        this.on(Phaser.Animations.Events.ANIMATION_UPDATE,(animation:Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame)=>{
+            if(animation.key !== "wizard-attack" || frame.index !==7){
+                return;
+            }
+            if(!this.active || !this.isAttacking){
+                return;
+            }
+            if(this.scene.cache.audio.exists("sfx_ranged_fire")){
+                this.scene.sound.play("sfx_ranged_fire",{volume:0.25});
+            }
+            const projectile = new EnemyProjectile(this.scene, this.x -30, this.y);
+            projectile.damage = Math.round(projectile.damage * this.projectileDamageMultiplier);
+        });
+        
+        this.shootTimer = scene.time.addEvent({
+            delay:SETTINGS.enemies.ranged.attackIntervalMs, callback:() => {
+                if(this.active && this.isAttacking){
+                    this.play("wizard-attack",true)
                 }
             },
-            loop: true
+            loop:true
         });
     }
 
@@ -61,11 +102,39 @@ const projectile = new EnemyProjectile(this.scene, this.x - 30, this.y);
         // Stop and shoot
         this.isAttacking = defenderInRange || strongholdInRange;
 
-        if (!this.isAttacking) {
+        if(this.isAttacking){
+            if(!this.anims.isPlaying || this.anims.currentAnim?.key !== "wizard-attack"){
+                this.play("wizard-idle",true)
+            }
+        } else{
+            this.play("wizard-fly", true);
             super.move(delta);
         }
     }
 
+    protected override playDeathEffect(): void{
+        const scene = this.scene;
+
+        if(!scene.anims.exists("wizard-dead")){
+            scene.anims.create({
+                key:"wizard-dead",
+                frames: scene.anims.generateFrameNumbers("wizard-dead-sheet",{
+                    start:0,
+                    end:9
+                }),
+                frameRate: 14,
+                repeat:0
+            });
+        }
+
+        const deathSprite = scene.add.sprite(this.x,this.y,"wizard-dead-sheet",0).setDisplaySize(this.displayWidth, this.displayHeight).setDepth(this.depth);
+
+        deathSprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () =>{
+            deathSprite.destroy();
+        });
+        deathSprite.play("wizard-dead");
+        this.destroy();
+    }
     destroy(fromScene?: boolean) {
         this.shootTimer?.destroy();
         super.destroy(fromScene);

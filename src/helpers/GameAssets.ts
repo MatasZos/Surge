@@ -3,7 +3,8 @@ import Phaser from "phaser";
 
 export function loadGameAssets(scene: Phaser.Scene): void {
 
-    // Defenders
+    // DEFENDERS
+
     //SHOOTER SPRITE AND ANIMATIONS
     //idle
     scene.load.spritesheet("shooter", "assets/defenders/shooter/Idle.png", {frameWidth:68, frameHeight: 72});
@@ -44,17 +45,52 @@ export function loadGameAssets(scene: Phaser.Scene): void {
     scene.load.spritesheet("dualbarrel-hurt-sheet","assets/defenders/dualbarrel/Hurt.png",{frameWidth:96,frameHeight:96});
     //dead
     scene.load.spritesheet("dualbarrel-dead-sheet","assets/defenders/dualbarrel/Dead.png",{frameWidth:96,frameHeight:96});
-
-
-
+    //icon
     scene.load.image("dualbarrel", "assets/defenders/dualbarrel.png");
-    scene.load.image("cryogunner", "assets/defenders/cryogunner.png");
+
+
+    //CRYOGUNNER SPRITE AND ANIMATION
+    //idle
+    scene.load.spritesheet("cryogunner", "assets/defenders/cryogunner/Idle.png", {frameWidth: 128,frameHeight: 128});
+    //shoot
+    scene.load.spritesheet("cryogunner-shoot-sheet", "assets/defenders/cryogunner/Shoot.png", {frameWidth: 128,frameHeight: 128});
+    //hurt
+    scene.load.spritesheet("cryogunner-hurt-sheet", "assets/defenders/cryogunner/Hurt.png",{frameWidth: 128,frameHeight: 128});
+
+
+
+
+
     scene.load.image("landmine", "assets/defenders/landmine.png");
     scene.load.image("scrapper", "assets/defenders/scrapper.png");
 
-    // Enemies
-    scene.load.image("meleeEnemy", "assets/enemies/meleerobot.png");
-    scene.load.image("rangedEnemy", "assets/enemies/rangedEnemy.png");
+    // ENEMIES
+
+    //MELEE ENEMY SPRITE AND ANIMATION
+    //idle
+    scene.load.spritesheet("meleeEnemy", "assets/enemies/executioner/Idle.png",{frameWidth: 100,frameHeight: 100});
+    //attack
+    scene.load.spritesheet("executioner-attack-sheet", "assets/enemies/executioner/Attack.png", {frameWidth: 100,frameHeight: 100});
+    //dead
+    scene.load.spritesheet("executioner-dead-sheet", "assets/enemies/executioner/Dead.png",{frameWidth: 100,frameHeight: 100});
+
+
+
+
+    //RANGED ENEMY SPRITE AND ANIMATION
+    //idle
+    scene.load.spritesheet("rangedEnemy", "assets/enemies/wizard/Idle.png", {frameWidth: 80,frameHeight: 80});
+    //fly
+    scene.load.spritesheet("wizard-fly-sheet", "assets/enemies/wizard/Fly.png", {frameWidth: 80,frameHeight: 80});
+    //attack
+    scene.load.spritesheet("wizard-attack-sheet", "assets/enemies/wizard/Attack.png", {frameWidth: 80,frameHeight: 80});
+    //dead
+    scene.load.spritesheet("wizard-dead-sheet", "assets/enemies/wizard/Dead.png",{frameWidth: 80,frameHeight: 80});
+
+
+
+
+
     scene.load.image("crusherEnemy", "assets/enemies/crusherrobot.png");
     scene.load.image("overlord", "assets/enemies/overlord.png");
     scene.load.image("drone", "assets/enemies/drone.png");

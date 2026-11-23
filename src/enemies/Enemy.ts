@@ -163,31 +163,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
             this.setActive(false);
             this.isAttacking = false;
             this.healthBar.setVisible(false);
-
-            this.scene.tweens.add({
-                targets:this,
-                scaleX:0,
-                scaleY:0,
-                duration:200,
-                ease:"Linear",
-                onComplete:()=>{
-                    this.destroy();
-                }
-            })
-        
-            const explosion = this.scene.add.circle(
-                this.x,
-                this.y,
-                20,
-                0xff3300
-            );
-
-            explosion.setDepth(this.depth - 1);
-
-            this.scene.time.delayedCall(150, () => {
-                explosion.destroy();
-            });
-
+            this.playDeathEffect();
         } else {
 
             // Play robot hit sound
@@ -195,6 +171,22 @@ export class Enemy extends Phaser.GameObjects.Sprite {
              this.scene.sound.play("sfx_robot_hit", { volume: 0.2 });
           }
         }
+    }
+
+    protected playDeathEffect(): void{
+        this.scene.tweens.add({
+            targets:this,
+            scaleX: 0,
+            scaleY:0,
+            duration:200,
+            ease:"Linear",
+            onComplete:()=> this.destroy()
+        });
+
+        const explosion = this.scene.add.circle(this.x,this.y,20,0xff3300);
+        explosion.setDepth(this.depth -1);
+        this.scene.time.delayedCall(150, ()=>
+        explosion.destroy());
     }
 
     move(delta: number) {
