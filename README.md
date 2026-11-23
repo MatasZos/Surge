@@ -433,6 +433,37 @@ Developers can also give themselves 500 energy top up to test more features.
 
 - Allows developers to test different levels without playing through the entire game.
 
+### 2.34 Level 1 Tutorial System
+
+A step-by-step tutorial has been added to Level 1 to help new players understand the basic gameplay mechanics.
+
+The tutorial guides players through three steps:
+- Place a Generator on an empty grid cell.
+- Collect enough energy to purchase a Shooter.
+- Place a Shooter to defend the Stronghold.
+
+The tutorial uses the GameNotifications class to display instructions and track the player's progress.
+
+Phaser events are used to detect successful defender placements, while the EnergyManager checks whether the player has enough energy to purchase a Shooter.
+
+Players are prevented from placing a Shooter before completing the required Generator step. Once all three steps are completed, the tutorial instructions disappear and a completion notification is displayed.
+
+### 2.35 Defender Upgrade Animations
+
+Animated visual effects have been added to defenders when they are upgraded.
+
+- Level 2 defenders display a blue animated aura.
+- Level 3 defenders display a purple animated aura.
+- A separate upgrade animation plays whenever a defender is upgraded.
+
+The animations are managed through DefenderUpgradeIndicator.ts using Phaser spritesheets.
+
+The blue aura uses frames 24–35, while the purple aura uses frames 12–23. The animations loop continuously to show the defender's current upgrade level.
+
+The upgrade effect uses 10 frames, playing at 15 frames per second. It only plays once and is automatically removed when the animation finishes.
+
+These effects make defender upgrades easier to recognise during gameplay.
+
 ## 3 Player Input/Controls
 
 SURGE is primarily controlled using the mouse.
@@ -597,6 +628,11 @@ These values are exported to CSV and used by the game, making it easier to balan
 | Defender Move Button | 2 | Adds a move defender button to the toolbar. | Implemented |
 | Developer Menu | 2 | Allows developers to quickly test different game levels. | Implemented |
 | Developer Level Selection | 2 | Press F2 to open a menu and select Levels 1 to 5. | Implemented |
+| Level 1 Tutorial | 2 | Guides players through Generator placement, energy collection and Shooter placement. | Implemented |
+| Defender Upgrade Animations | 2 | Displays blue and purple animated auras and an upgrade effect. | Implemented |
+| Defender Upgrade Feedback | 2 | Displays colour-coded messages for upgrade availability, insufficient energy and maximum level. | Implemented |
+| Wave and Level HUD Improvements | 2 | Improves the wave progress bar, level indicator and countdown display. | Implemented |
+
 
 
 ### 5.2 Planned Features
