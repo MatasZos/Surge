@@ -1,5 +1,5 @@
-
 import Phaser from "phaser";
+import { SoundManager } from "./SoundManager.ts";
 
 export class BossMusic {
     private music?: Phaser.Sound.BaseSound;
@@ -15,12 +15,9 @@ export class BossMusic {
 
         this.stop();
 
-        this.music = this.scene.sound.add("bossMusic", {
-            volume: 0.15,
-            loop: true
-        });
-
-        this.music.play();
+        this.music = SoundManager.createLoop(this.scene, "bossMusic");
+        this.music?.play();
+        
     }
 
     stop(): void {

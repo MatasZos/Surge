@@ -4,6 +4,12 @@ export class SoundManager {
     private static volume = 1;
     private static muted = false;
     private static lastPlayed = new Map<string, number>();
+    private static loops = new Set<Phaser.Sound.BaseSound>();
+
+    private static sharedLoops = new Map<string, {
+        sound: Phaser.Sound.BaseSound;
+        users: number;
+    }>();
 
     // Individual sound volumes
     // Minimum time between repeated sounds (milliseconds)
@@ -33,7 +39,10 @@ export class SoundManager {
     sfx_boss_phase_change: 0.4,
     sfx_boss_entrance: 0.5,
     sfx_boss_shield_activate: 0.4,
-    sfx_boss_reinforcements: 0.35
+    sfx_boss_reinforcements: 0.35,
+    sfx_drone_engine: 0.1,
+    backgroundMusic: 0.1,
+    bossMusic: 0.15
 
     };
 
@@ -85,11 +94,84 @@ export class SoundManager {
         });
     }
 
+    // Create a looping sound
+static createLoop(scene: Phaser.Scene, key: string): Phaser.Sound.BaseSound | undefined {
+    if (!scene.cache.audio.exists(key)) return;
+
+    const sound = scene.sound.add(key, {
+        volume: this.getVolume(key),
+        loop: true
+    });
+
+    this.loops.add(sound);
+
+    sound.once(Phaser.Sound.Events.DESTROY, () => {
+        this.loops.delete(sound);
+    });
+
+    return sound;
+}
+
+// Share one sound between multiple enemies
+static acquireLoop(scene: Phaser.Scene, key: string): boolean {
+    const existing = this.sharedLoops.get(key);
+
+    if (existing) {
+        existing.users++;
+        return true;
+    }
+
+    const sound = this.createLoop(scene, key);
+    if (!sound) return false;
+
+    this.sharedLoops.set(key, { sound, users: 1 });
+
+    sound.once(Phaser.Sound.Events.DESTROY, () => {
+        this.sharedLoops.delete(key);
+    });
+
+    sound.play();
+    return true;
+}
+
+    // Stop the sound when no enemies need it
+    static releaseLoop(key: string): void {
+        const existing = this.sharedLoops.get(key);
+        if (!existing) return;
+
+        existing.users--;
+
+        if (existing.users <= 0) {
+         this.sharedLoops.delete(key);
+          existing.sound.stop();
+         existing.sound.destroy();
+        }
+    }
+
+    // Get the correct sound volume
+    private static getVolume(key: string): number {
+        if (this.muted) return 0;
+
+         return (this.volumes[key] ?? 0.3) * this.volume;
+    }
+
+    // Update volumes of currently playing loops
+    private static updateLoopVolumes(): void {
+        for (const sound of this.loops) {
+             if ("setVolume" in sound && typeof sound.setVolume === "function") {
+                sound.setVolume(this.getVolume(sound.key));
+            }
+        }
+    }
+
     static setVolume(volume: number): void {
         this.volume = Phaser.Math.Clamp(volume, 0, 1);
+        this.updateLoopVolumes();
     }
 
     static setMuted(muted: boolean): void {
         this.muted = muted;
+        this.updateLoopVolumes();
+
     }
 }

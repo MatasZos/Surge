@@ -1,15 +1,10 @@
-
 import Phaser from "phaser";
+import { SoundManager } from "./SoundManager.ts";
 
 export function startGameMusic(scene: Phaser.Scene): void {
-    if (!scene.cache.audio.exists("backgroundMusic")) {
-        return;
-    }
+    const music = SoundManager.createLoop(scene, "backgroundMusic");
 
-    const music = scene.sound.add("backgroundMusic", {
-        volume: 0.1,
-        loop: true
-    });
+    if (!music) return;
 
     const playMusic = () => {
         if (!music.isPlaying) {
