@@ -3,6 +3,7 @@ import { Defender } from "./Defender.ts";
 import { Enemy } from "../enemies/Enemy.ts";
 import { CryoProjectile } from "../objects/CryoProjectile.ts";
 import { SETTINGS } from "../config/settings.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 
 export class CryoGunner extends Defender {
@@ -85,11 +86,7 @@ export class CryoGunner extends Defender {
         }
         
         // Play the Cryo Gunner's ice weapon sound
-        if (this.scene.cache.audio.exists("sfx_cryogunner_fire")) {
-            this.scene.sound.play("sfx_cryogunner_fire", {
-                volume: 0.18
-            });
-        }
+        SoundManager.play(this.scene, "sfx_cryogunner_fire");
 
         const projectile = new CryoProjectile(this.scene, this.x + 25, this.y - 2);
 

@@ -2,8 +2,8 @@ import Phaser from "phaser";
 import { Defender } from "./Defender.ts";
 import { Enemy } from "../enemies/Enemy.ts";
 import { SETTINGS } from "../config/settings.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
-/** Potato Mine-inspired: arms after a delay and explodes on contact. */
 export class Landmine extends Defender {
     private armed = false;
     private armingTimer: Phaser.Time.TimerEvent;
@@ -21,11 +21,7 @@ export class Landmine extends Defender {
             this.indicator.setFillStyle(0x23ff8e);
 
             // Play a sound when the landmine is armed
-            if (this.scene.cache.audio.exists("sfx_landmine_arm")) {
-                this.scene.sound.play("sfx_landmine_arm", {
-                    volume: 0.20
-                });
-            }
+            SoundManager.play(this.scene, "sfx_landmine_arm");
 
         });
     }
@@ -38,11 +34,7 @@ export class Landmine extends Defender {
 
 
         // Play explosion sound when an enemy triggers the mine
-        if (this.scene.cache.audio.exists("sfx_landmine_explosion")) {
-            this.scene.sound.play("sfx_landmine_explosion", {
-                volume: 0.30
-            });
-        }
+        SoundManager.play(this.scene, "sfx_landmine_explosion");
 
         // Level 3 increases the explosion radius by 50%
         const radius = this.upgradeLevel === 3

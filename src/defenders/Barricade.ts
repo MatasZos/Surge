@@ -1,7 +1,7 @@
-
 import Phaser from "phaser";
 import { Defender } from "./Defender.ts";
 import { SETTINGS } from "../config/settings.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class Barricade extends Defender {
 
@@ -88,11 +88,7 @@ export class Barricade extends Defender {
         if (!this.active) return;
 
         // Play a metallic impact when hit
-        if (this.scene.cache.audio.exists("sfx_barricade_hit")) {
-            this.scene.sound.play("sfx_barricade_hit", {
-                volume: 0.16
-            });
-        }
+        SoundManager.play(this.scene, "sfx_barricade_hit");
 
         super.takeDamage(amount);
         if (this.active) {

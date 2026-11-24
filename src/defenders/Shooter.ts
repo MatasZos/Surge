@@ -4,6 +4,7 @@ import { Defender } from "./Defender.ts";
 import { Projectile } from "../objects/projectile.ts";
 import { Enemy } from "../enemies/Enemy.ts";
 import { SETTINGS } from "../config/settings.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 
 export class Shooter extends Defender {
@@ -107,11 +108,7 @@ export class Shooter extends Defender {
             ? "sfx_shooter_fire"
             : "sfx_shooter_fire_alt";
 
-        if (this.scene.cache.audio.exists(soundKey)) {
-            this.scene.sound.play(soundKey, {
-                volume: 0.25
-            });
-        }
+        SoundManager.play(this.scene, soundKey);
 
 
         const projectile = new Projectile(this.scene, this.x + 25, this.y - 2);

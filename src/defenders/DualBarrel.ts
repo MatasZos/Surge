@@ -1,10 +1,9 @@
-
 import Phaser from "phaser";
 import { Defender } from "./Defender.ts";
 import { Projectile } from "../objects/projectile.ts";
 import { Enemy } from "../enemies/Enemy.ts";
 import { SETTINGS } from "../config/settings.ts";
-
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class DualBarrel extends Defender {
 
@@ -97,11 +96,7 @@ export class DualBarrel extends Defender {
         if (!this.active) return;
 
         // Play the sound for the selected barrel
-        if (this.scene.cache.audio.exists(soundKey)) {
-            this.scene.sound.play(soundKey, {
-                volume: 0.20
-            });
-        }
+        SoundManager.play(this.scene, soundKey);
 
         const projectile = new Projectile(
             this.scene,

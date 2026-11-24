@@ -6,28 +6,44 @@ export class SoundManager {
     private static lastPlayed = new Map<string, number>();
 
     // Individual sound volumes
+    // Minimum time between repeated sounds (milliseconds)
     private static readonly volumes: Record<string, number> = {
-        sfx_robot_hit: 0.2,
-        sfx_robot_destroy: 0.4,
-        sfx_generator_produce: 0.18,
-        sfx_energy_spawn: 0.2,
-        sfx_ui_hover: 0.1
+    sfx_robot_hit: 0.2,
+    sfx_robot_destroy: 0.4,
+    sfx_generator_produce: 0.18,
+    sfx_energy_spawn: 0.2,
+    sfx_ui_hover: 0.1,
+
+    sfx_shooter_fire: 0.25,
+    sfx_shooter_fire_alt: 0.25,
+    sfx_dualbarrel_fire_1: 0.2,
+    sfx_dualbarrel_fire_2: 0.2,
+    sfx_cryogunner_fire: 0.18,
+    sfx_barricade_hit: 0.16,
+    sfx_landmine_arm: 0.2,
+    sfx_landmine_explosion: 0.3,
+    sfx_scrapper_attack: 0.25
+
     };
 
-    // Minimum time between repeated sounds (milliseconds)
     private static readonly cooldowns: Record<string, number> = {
-        sfx_shooter_fire: 90,
-        sfx_shooter_fire_alt: 90,
-        sfx_dualbarrel_fire_1: 90,
-        sfx_dualbarrel_fire_2: 90,
-        sfx_robot_hit: 120,
-        sfx_robot_destroy: 120,
-        sfx_barricade_hit: 180,
-        sfx_boss_shield_hit: 200,
-        sfx_generator_produce: 200,
-        sfx_energy_spawn: 150,
-        sfx_ui_hover: 180
-    };
+    sfx_shooter_fire: 90,
+    sfx_shooter_fire_alt: 90,
+    sfx_dualbarrel_fire_1: 90,
+    sfx_dualbarrel_fire_2: 90,
+    sfx_cryogunner_fire: 120,
+    sfx_robot_hit: 120,
+    sfx_robot_destroy: 120,
+    sfx_barricade_hit: 180,
+    sfx_landmine_arm: 100,
+    sfx_landmine_explosion: 100,
+    sfx_scrapper_attack: 150,
+    sfx_boss_shield_hit: 200,
+    sfx_generator_produce: 200,
+    sfx_energy_spawn: 150,
+    sfx_ui_hover: 180
+
+};
 
     static play(scene: Phaser.Scene, key: string): void {
         if (this.muted || !scene.cache.audio.exists(key)) return;

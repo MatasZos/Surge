@@ -3,6 +3,7 @@ import { Defender } from "./Defender.ts";
 import { Enemy } from "../enemies/Enemy.ts";
 import { CrusherEnemy } from "../enemies/CrusherEnemy.ts";
 import { SETTINGS } from "../config/settings.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 /** Chomper-inspired close-range defender. */
 export class Scrapper extends Defender {
@@ -36,11 +37,7 @@ export class Scrapper extends Defender {
 
 
         // Play the Scrapper's mechanical attack sound
-        if (this.scene.cache.audio.exists("sfx_scrapper_attack")) {
-            this.scene.sound.play("sfx_scrapper_attack", {
-                volume: 0.25
-            });
-        }
+        SoundManager.play(this.scene, "sfx_scrapper_attack");
 
 
         // Normal enemies are eliminated; Crushers only take heavy damage.
