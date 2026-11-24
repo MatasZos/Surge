@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { EnergyDrops } from "./EnergyDrops.ts";
 import { Projectile } from "../objects/projectile.ts";
 import { EnemyProjectile } from "../objects/EnemyProjectile.ts";
+import { SoundManager } from "./SoundManager.ts";
 
 export function setupGameEvents(
     scene: Phaser.Scene,
@@ -31,11 +32,7 @@ export function setupGameEvents(
     (amount: number, x?: number, y?: number) => {
 
         // Play energy collection sound
-        if (scene.cache.audio.exists("sfx_energy_collect")) {
-            scene.sound.play("sfx_energy_collect", {
-                volume: 0.25
-            });
-        }
+        SoundManager.play(scene, "sfx_energy_collect");
 
         // Keep existing energy collection behaviour
         onEnergyCollected(amount, x, y);

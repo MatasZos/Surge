@@ -1,8 +1,8 @@
-
 import Phaser from "phaser";
 import { Defender } from "../defenders/Defender.ts";
 import { EnergyManager } from "../managers/EnergyManager.ts";
 import { SETTINGS } from "../config/settings.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class DefenderUpgradeMenu {
     private menu: Phaser.GameObjects.Container | null = null;
@@ -108,30 +108,23 @@ export class DefenderUpgradeMenu {
                if (!this.energyManager.canAfford(cost)) {
 
                 // Play error sound
-                if (this.scene.cache.audio.exists("sfx_ui_error")) {
-                    this.scene.sound.play("sfx_ui_error", {
-                      volume: 0.25
-                 });
-            }
+                SoundManager.play(this.scene, "sfx_ui_error");
 
-         upgradeButton.setText("NEED " + cost + " ENERGY");
-            return;
-        }
+                 upgradeButton.setText("NEED " + cost + " ENERGY");
+                     return;
+            }
 
                 // Upgrade the defender and deduct energy
                 if (defender.upgrade()) {
 
-    // Play upgrade sound
-    if (this.scene.cache.audio.exists("sfx_ui_upgrade")) {
-        this.scene.sound.play("sfx_ui_upgrade", {
-            volume: 0.35
-        });
-    }
+                // Play upgrade sound
+                SoundManager.play(this.scene, "sfx_ui_upgrade");
 
-    this.energyManager.spendEnergy(cost);
-    this.updateEnergyText();
-    this.show(defender);
-}
+                this.energyManager.spendEnergy(cost);
+                this.updateEnergyText();
+                this.show(defender);
+            }
+            
             });
         }
 

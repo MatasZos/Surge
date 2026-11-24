@@ -216,23 +216,15 @@ export class DefenderToolbar {
             if (this.getEnergy() < SETTINGS.defenders[type].cost) {
 
             // Play error sound
-             if (this.scene.cache.audio.exists("sfx_ui_error")) {
-                this.scene.sound.play("sfx_ui_error", {
-                    volume: 0.2
-             });
-            }
+             SoundManager.play(this.scene, "sfx_ui_error");
 
-        return;
-    }
+            return;
+        }
             this.selectedType = type;
             this.onSelect(type);
            
             // Sound when picking up a defender
-            if (this.scene.cache.audio.exists("sfx_defender_pickup")) {
-                     this.scene.sound.play("sfx_defender_pickup", {
-                     volume: 0.2
-            });
-    }
+            SoundManager.play(this.scene, "sfx_defender_pickup");
 
             this.resetButtons();
             button.setFillStyle(this.selectedColor);

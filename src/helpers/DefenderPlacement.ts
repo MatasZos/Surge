@@ -11,6 +11,7 @@ import { Landmine } from "../defenders/Landmine.ts";
 import { Scrapper } from "../defenders/Scrapper.ts";
 import { Enemy } from "../enemies/Enemy.ts";
 import { EnergyManager } from "../managers/EnergyManager.ts";
+import { SoundManager } from "./SoundManager.ts";
 
 import {
     GRID_ROWS,
@@ -167,13 +168,9 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
         this.energyManager.spendEnergy(cost);
 
         // Sound when a defender is successfully placed
-        if (this.scene.cache.audio.exists("sfx_defender_place")) {
-                this.scene.sound.play("sfx_defender_place", {
-                volume: 0.25
-        });
-    }
+        SoundManager.play(this.scene, "sfx_defender_place");
 
-this.flashGridCell(row, col, 0x00ff99);
+        this.flashGridCell(row, col, 0x00ff99);
 
         //purchase confirmation
         const purchaseText = this.scene.add.text(

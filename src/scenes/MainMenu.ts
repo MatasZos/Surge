@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { GAME_WIDTH, GAME_HEIGHT } from "../constants.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class MainMenu extends Phaser.Scene {
 
@@ -74,10 +75,7 @@ export class MainMenu extends Phaser.Scene {
         playButton.on("pointerover",()=>{
             playButton.setAlpha(1);
 
-            if(this.cache.audio.exists("sfx_ui_hover")){
-                this.sound.play("sfx_ui_hover",{volume:0.15});
-            }
-        });
+            SoundManager.play(this, "sfx_ui_hover");
 
         playButton.on("pointerout", ()=>{
             playButton.setAlpha(0.8);
@@ -87,11 +85,7 @@ export class MainMenu extends Phaser.Scene {
        playButton.on("pointerdown", () => {
 
         // Play click sound
-            if (this.cache.audio.exists("sfx_ui_click")) {
-             this.sound.play("sfx_ui_click", {
-                 volume: 0.25
-             });
-            }
+         SoundManager.play(this, "sfx_ui_click");
 
             this.scene.start("GameScene");
         });
