@@ -6,6 +6,7 @@ import { RangedEnemy } from "../../enemies/RangedEnemy.ts";
 import { CrusherEnemy } from "../../enemies/CrusherEnemy.ts";
 import { Stronghold } from "../../objects/Stronghold.ts";
 import { HijackerEnemy } from "../../enemies/HijackerEnemy.ts";
+import { SoundManager } from "../../helpers/SoundManager.ts";
 
 export class StrongholdCollision {
     constructor(
@@ -50,9 +51,8 @@ export class StrongholdCollision {
                          ? "sfx_crusher_smash"
                         : "sfx_melee_attack";
 
-                    if (this.scene.cache.audio.exists(soundKey)) {
-                          this.scene.sound.play(soundKey, { volume: 0.25 });
-                }
+                    SoundManager.play(this.scene, soundKey);
+                    
                 if(enemy instanceof MeleeEnemy){
                     enemy.play("executioner-attack",true)
                 } else if(enemy instanceof CrusherEnemy){

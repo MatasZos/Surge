@@ -9,6 +9,7 @@ import { CrusherEnemy } from "../../enemies/CrusherEnemy.ts";
 import { DroneEnemy } from "../../enemies/DroneEnemy.ts";
 import { Landmine } from "../../defenders/Landmine.ts";
 import { Scrapper } from "../../defenders/Scrapper.ts";
+import { SoundManager } from "../../helpers/SoundManager.ts";
 
 export class DefenderCollision {
     constructor(
@@ -102,9 +103,8 @@ export class DefenderCollision {
                      ? "sfx_crusher_smash"
                      : "sfx_melee_attack";
 
-                if (this.scene.cache.audio.exists(soundKey)) {
-                    this.scene.sound.play(soundKey, { volume: 0.25 });
-                }
+                SoundManager.play(this.scene, soundKey);
+                
                 if(enemy instanceof MeleeEnemy){
                     enemy.play("executioner-attack",true)
                 }else if(enemy instanceof CrusherEnemy){

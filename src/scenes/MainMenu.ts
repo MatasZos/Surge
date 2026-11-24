@@ -77,6 +77,8 @@ export class MainMenu extends Phaser.Scene {
 
             SoundManager.play(this, "sfx_ui_hover");
 
+        });
+
         playButton.on("pointerout", ()=>{
             playButton.setAlpha(0.8);
         });

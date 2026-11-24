@@ -46,6 +46,11 @@ export class SoundManager {
     sfx_boss_entrance: 0.5,
     sfx_boss_shield_activate: 0.4,
     sfx_boss_reinforcements: 0.35,
+    sfx_melee_attack: 0.25,
+    sfx_crusher_smash: 0.25,
+    sfx_stronghold_hit: 0.3,
+    sfx_boss_laser_charge: 0.3,
+    sfx_boss_laser_fire: 0.45,
     sfx_drone_engine: 0.1,
     backgroundMusic: 0.1,
     bossMusic: 0.15
@@ -83,7 +88,12 @@ export class SoundManager {
     sfx_boss_phase_change: 350,
     sfx_boss_entrance: 500,
     sfx_boss_shield_activate: 350,
-    sfx_boss_reinforcements: 350
+    sfx_boss_reinforcements: 350,
+    sfx_melee_attack: 150,
+    sfx_crusher_smash: 220,
+    sfx_stronghold_hit: 200,
+    sfx_boss_laser_charge: 400,
+    sfx_boss_laser_fire: 400
 
     };
 

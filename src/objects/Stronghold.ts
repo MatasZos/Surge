@@ -1,4 +1,3 @@
-
 import Phaser from "phaser";
 import {
     GRID_X,
@@ -7,6 +6,7 @@ import {
     CELL_HEIGHT
 } from "../constants.ts";
 import { SETTINGS } from "../config/settings.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class Stronghold extends Phaser.GameObjects.Sprite {
     health: number;
@@ -86,10 +86,8 @@ export class Stronghold extends Phaser.GameObjects.Sprite {
 
         
     // Play sound when Stronghold takes damage
-    if (amount > 0 && this.scene.cache.audio.exists("sfx_stronghold_hit")) {
-        this.scene.sound.play("sfx_stronghold_hit", {
-            volume: 0.3
-        });
+    if (amount > 0) {
+    SoundManager.play(this.scene, "sfx_stronghold_hit");
     }
 
     this.health -= amount;

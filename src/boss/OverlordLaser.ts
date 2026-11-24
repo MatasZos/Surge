@@ -1,4 +1,3 @@
-
 import Phaser from "phaser";
 import { BossEnemy } from "../enemies/BossEnemy.ts";
 import { Defender } from "../defenders/Defender.ts";
@@ -11,6 +10,7 @@ import {
     CELL_WIDTH,
     CELL_HEIGHT
 } from "../constants.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class OverlordLaser {
     private cooldown = 0;
@@ -59,11 +59,8 @@ export class OverlordLaser {
         this.charging = true;
 
         // Laser charging sound
-        if (this.scene.cache.audio.exists("sfx_boss_laser_charge")) {
-             this.scene.sound.play("sfx_boss_laser_charge", {
-                 volume: 0.3
-        });
-    }
+        SoundManager.play(this.scene, "sfx_boss_laser_charge");
+
         this.targetRow = Phaser.Math.Between(0, GRID_ROWS - 1);
         this.chargeTimer = this.boss.phases.phase === 4 ? 1500 : 2000;
 
@@ -85,11 +82,7 @@ export class OverlordLaser {
         this.charging = false;
         
         // Laser firing sound
-        if (this.scene.cache.audio.exists("sfx_boss_laser_fire")) {
-         this.scene.sound.play("sfx_boss_laser_fire", {
-              volume: 0.45
-            });
-        }
+        SoundManager.play(this.scene, "sfx_boss_laser_fire");
 
         this.warning?.destroy();
         this.warning = undefined;
