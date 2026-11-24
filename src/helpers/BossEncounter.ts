@@ -10,6 +10,7 @@ import { Grid } from "../grid/Grid.ts";
 import { OverlordReinforcements } from "../boss/OverlordReinforcements.ts";
 import { OverlordEffects } from "../boss/OverlordEffects.ts";
 import { BossMusic } from "./BossMusic.ts";
+import { SoundManager } from "./SoundManager.ts";
 
 import {
     GRID_X,
@@ -58,11 +59,7 @@ export class BossEncounter {
         boss.setDepth(5);
 
         // Play Overlord entrance sound
-            if (this.scene.cache.audio.exists("sfx_boss_entrance")) {
-                 this.scene.sound.play("sfx_boss_entrance", {
-                    volume: 0.5
-            });
-        }
+        SoundManager.play(this.scene, "sfx_boss_entrance");
 
         this.bossEnemy = boss;
         this.active = true;
@@ -143,18 +140,10 @@ export class BossEncounter {
     private handleShieldActivated(phase: number): void {
 
     // Shield activation sound
-    if (this.scene.cache.audio.exists("sfx_boss_shield_activate")) {
-        this.scene.sound.play("sfx_boss_shield_activate", {
-            volume: 0.4
-        });
-    }
+    SoundManager.play(this.scene, "sfx_boss_shield_activate");
 
     // Reinforcement arrival sound
-    if (this.scene.cache.audio.exists("sfx_boss_reinforcements")) {
-        this.scene.sound.play("sfx_boss_reinforcements", {
-            volume: 0.35
-        });
-    }
+    SoundManager.play(this.scene, "sfx_boss_reinforcements");
 
     this.reinforcements?.spawn(phase);
 }

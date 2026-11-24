@@ -22,7 +22,18 @@ export class SoundManager {
     sfx_barricade_hit: 0.16,
     sfx_landmine_arm: 0.2,
     sfx_landmine_explosion: 0.3,
-    sfx_scrapper_attack: 0.25
+    sfx_scrapper_attack: 0.25,
+
+    sfx_ranged_fire: 0.25,
+    sfx_hijacker_grab: 0.1,
+    sfx_boss_cannon: 0.35,
+    sfx_boss_shield_hit: 0.15,
+    sfx_boss_death: 0.5,
+    sfx_boss_shield_break: 0.4,
+    sfx_boss_phase_change: 0.4,
+    sfx_boss_entrance: 0.5,
+    sfx_boss_shield_activate: 0.4,
+    sfx_boss_reinforcements: 0.35
 
     };
 
@@ -41,9 +52,19 @@ export class SoundManager {
     sfx_boss_shield_hit: 200,
     sfx_generator_produce: 200,
     sfx_energy_spawn: 150,
-    sfx_ui_hover: 180
+    sfx_ui_hover: 180,
 
-};
+    sfx_ranged_fire: 120,
+    sfx_hijacker_grab: 200,
+    sfx_boss_cannon: 250,
+    sfx_boss_death: 500,
+    sfx_boss_shield_break: 350,
+    sfx_boss_phase_change: 350,
+    sfx_boss_entrance: 500,
+    sfx_boss_shield_activate: 350,
+    sfx_boss_reinforcements: 350
+
+    };
 
     static play(scene: Phaser.Scene, key: string): void {
         if (this.muted || !scene.cache.audio.exists(key)) return;

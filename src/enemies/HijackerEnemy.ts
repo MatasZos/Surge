@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { Enemy } from "./Enemy.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class HijackerEnemy extends Enemy {
     private phase: "waiting" | "descending" | "grabbing" | "awaitingRemoval" | "ascending" | "escaped" = "waiting";
@@ -52,11 +53,7 @@ export class HijackerEnemy extends Enemy {
                 this.phase = "awaitingRemoval";
 
                 // Play grab sound once
-                if (this.scene.cache.audio.exists("sfx_hijacker_grab")) {
-                    this.scene.sound.play("sfx_hijacker_grab", {
-                        volume: 0.1
-                    });
-                }
+                SoundManager.play(this.scene, "sfx_hijacker_grab");
 
                 // Tell the stealing system to remove the defender
                 this.onGrabReady?.(this);

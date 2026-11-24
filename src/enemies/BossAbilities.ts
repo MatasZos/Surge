@@ -1,4 +1,3 @@
-
 import Phaser from "phaser";
 import { BossEnemy } from "./BossEnemy.ts";
 import { EnemyProjectile } from "../objects/EnemyProjectile.ts";
@@ -6,6 +5,7 @@ import { GRID_ROWS, GRID_Y, CELL_HEIGHT } from "../constants.ts"
 import { Defender } from "../defenders/Defender.ts";
 import { Grid } from "../grid/Grid.ts";
 import { OverlordLaser } from "../boss/OverlordLaser.ts";;
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class BossAbilities {
     private attackTimer = 0;
@@ -45,11 +45,7 @@ export class BossAbilities {
     private shoot(): void {
         
         // Play Overlord cannon sound
-        if (this.scene.cache.audio.exists("sfx_boss_cannon")) {
-         this.scene.sound.play("sfx_boss_cannon", {
-             volume: 0.35
-            });
-        }
+        SoundManager.play(this.scene, "sfx_boss_cannon");
 
         const row = this.attackLane % GRID_ROWS;
         this.attackLane++;

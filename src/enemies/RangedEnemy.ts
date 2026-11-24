@@ -1,4 +1,3 @@
-
 import Phaser from "phaser";
 import { Enemy } from "./Enemy.ts";
 import { Defender } from "../defenders/Defender.ts";
@@ -6,6 +5,7 @@ import { Landmine } from "../defenders/Landmine.ts";
 import { Stronghold } from "../objects/Stronghold.ts";
 import { EnemyProjectile } from "../objects/EnemyProjectile.ts";
 import { SETTINGS } from "../config/settings.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class RangedEnemy extends Enemy {
 
@@ -57,19 +57,21 @@ export class RangedEnemy extends Enemy {
             });
         }
 
-        this.on(Phaser.Animations.Events.ANIMATION_UPDATE,(animation:Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame)=>{
-            if(animation.key !== "wizard-attack" || frame.index !==7){
-                return;
-            }
-            if(!this.active || !this.isAttacking){
-                return;
-            }
-            if(this.scene.cache.audio.exists("sfx_ranged_fire")){
-                this.scene.sound.play("sfx_ranged_fire",{volume:0.25});
-            }
-            const projectile = new EnemyProjectile(this.scene, this.x -30, this.y);
-            projectile.damage = Math.round(projectile.damage * this.projectileDamageMultiplier);
-        });
+        this.on(Phaser.Animations.Events.ANIMATION_UPDATE, (animation: Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame) => {
+            if (animation.key !== "wizard-attack" || frame.index !== 7) {
+              return;
+        }
+
+            if (!this.active || !this.isAttacking) {
+              return;
+        }
+
+            // Play ranged enemy shooting sound
+            SoundManager.play(this.scene, "sfx_ranged_fire");
+
+             const projectile = new EnemyProjectile(this.scene, this.x - 30, this.y);
+             projectile.damage = Math.round(projectile.damage * this.projectileDamageMultiplier);
+            });
         
         this.shootTimer = scene.time.addEvent({
             delay:SETTINGS.enemies.ranged.attackIntervalMs, callback:() => {

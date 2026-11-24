@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { Enemy } from "./Enemy.ts";
 import { OverlordPhases } from "../boss/OverlordPhases.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 
 export class BossEnemy extends Enemy {
@@ -31,11 +32,8 @@ export class BossEnemy extends Enemy {
 
     // Shield blocks damage
     if (this.phases.shieldActive) {
-        if (this.scene.cache.audio.exists("sfx_boss_shield_hit")) {
-            this.scene.sound.play("sfx_boss_shield_hit", {
-                volume: 0.15
-            });
-        }
+        SoundManager.play(this.scene, "sfx_boss_shield_hit");
+
         return;
     }
 
@@ -52,11 +50,7 @@ export class BossEnemy extends Enemy {
 
             // Play boss death sound only once
             if (wasAlive && !this.active) {
-                if (this.scene.cache.audio.exists("sfx_boss_death")) {
-                 this.scene.sound.play("sfx_boss_death", {
-                     volume: 0.5
-                });
-            }
+                SoundManager.play(this.scene, "sfx_boss_death");
         }
     }
 
@@ -70,20 +64,12 @@ export class BossEnemy extends Enemy {
     completeShield(): void {
 
     // Shield breaking
-    if (this.scene.cache.audio.exists("sfx_boss_shield_break")) {
-        this.scene.sound.play("sfx_boss_shield_break", {
-            volume: 0.4
-        });
-    }
+    SoundManager.play(this.scene, "sfx_boss_shield_break");
 
     this.phases.completeShield();
 
     // New boss phase
-    if (this.scene.cache.audio.exists("sfx_boss_phase_change")) {
-        this.scene.sound.play("sfx_boss_phase_change", {
-            volume: 0.4
-        });
-    }
+    SoundManager.play(this.scene, "sfx_boss_phase_change");
 
     this.isOverdrive = this.phases.phase >= 3;
     }
