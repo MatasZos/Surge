@@ -1,6 +1,6 @@
-
 import Phaser from "phaser";
 import { SETTINGS } from "../config/settings.ts";
+import { SoundManager } from "./SoundManager.ts";
 
 export class EnergyDrops {
 
@@ -27,11 +27,7 @@ export class EnergyDrops {
         const energy = this.scene.add.image(x, y, "energy");
 
         // Play sound when energy appears
-        if (this.scene.cache.audio.exists("sfx_energy_spawn")) {
-         this.scene.sound.play("sfx_energy_spawn", {
-                volume: 0.2
-         });
-        }
+        SoundManager.play(this.scene, "sfx_energy_spawn");
 
         energy.setDisplaySize(35, 35);
         energy.setDepth(15);

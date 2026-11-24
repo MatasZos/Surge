@@ -1,7 +1,7 @@
-
 import Phaser from "phaser";
 import { Defender } from "./Defender.ts";
 import { SETTINGS } from "../config/settings.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class Generator extends Defender {
   private energyTimer?: Phaser.Time.TimerEvent;
@@ -87,12 +87,8 @@ export class Generator extends Defender {
 
 
         // Play a sound when energy is produced
-        if (this.scene.cache.audio.exists("sfx_generator_produce")) {
-            this.scene.sound.play("sfx_generator_produce", {
-                volume: 0.18
-            });
-        }
-
+        SoundManager.play(this.scene, "sfx_generator_produce");
+        
         const energy = this.scene.add.image(
         this.x,
         this.y - 25,

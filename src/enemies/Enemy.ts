@@ -1,5 +1,5 @@
-
 import Phaser from "phaser";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class Enemy extends Phaser.GameObjects.Sprite {
 
@@ -156,9 +156,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
             this.scene.events.emit("enemy-killed", this.x, this.y);
 
             // Play robot destruction sound
-            if (this.scene.cache.audio.exists("sfx_robot_destroy")) {
-             this.scene.sound.play("sfx_robot_destroy", { volume: 0.4 });
-            }
+            SoundManager.play(this.scene, "sfx_robot_destroy");
 
             this.setActive(false);
             this.isAttacking = false;
@@ -166,10 +164,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
             this.playDeathEffect();
         } else {
 
-            // Play robot hit sound
-             if (this.scene.cache.audio.exists("sfx_robot_hit")) {
-             this.scene.sound.play("sfx_robot_hit", { volume: 0.2 });
-          }
+            SoundManager.play(this.scene, "sfx_robot_hit");
         }
     }
 

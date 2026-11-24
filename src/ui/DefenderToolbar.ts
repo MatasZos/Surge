@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { SETTINGS } from "../config/settings.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 type DefenderType = "shooter" | "generator" | "barricade" | "dualbarrel" | "cryogunner" | "landmine" | "scrapper";
 
@@ -139,11 +140,7 @@ export class DefenderToolbar {
             if (this.getEnergy() < SETTINGS.defenders[type].cost) return;
 
             // Play hover sound
-            if (this.scene.cache.audio.exists("sfx_ui_hover")) {
-             this.scene.sound.play("sfx_ui_hover", {
-                   volume: 0.1
-                });
-            }
+              SoundManager.play(this.scene, "sfx_ui_hover");
 
             this.hoveredType = type;
 
