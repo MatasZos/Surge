@@ -151,6 +151,8 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
         defender.setData("gridRow", row);
         defender.setData("gridCol", col);
         defender.setData("defenderType", type);
+        //connect defender to the energy manager
+        defender.setEnergyManager(this.energyManager);
 
         this.defenders.push(defender);
 

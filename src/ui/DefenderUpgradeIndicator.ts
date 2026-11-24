@@ -5,6 +5,7 @@ import type { Defender } from "../defenders/Defender.ts";
 export class DefenderUpgradeIndicator {
     private levelText: Phaser.GameObjects.Text;
     private aura: Phaser.GameObjects.Sprite;
+    private upgradeHint: Phaser.GameObjects.Text;
 
     constructor(
         private scene: Phaser.Scene,
@@ -48,11 +49,31 @@ export class DefenderUpgradeIndicator {
             });
         }
 
+        //create affordable upgrade hint
+        this.upgradeHint = scene.add.text(0, 0, "+", {
+            fontSize: "14px",
+            color: "#00ff99",
+            fontStyle: "bold",
+            backgroundColor: "#101b2b",
+            padding: { x: 4, y: 2 }
+        }).setOrigin(0.5).setDepth(31).setVisible(false);
+
         defender.once(Phaser.GameObjects.Events.DESTROY, () => {
             this.levelText.destroy();
             this.aura.destroy();
+            this.upgradeHint.destroy();
         });
 
+    }
+
+    //display hint when an upgrade is affordable
+    updateUpgradeHint(canAfford: boolean): void {
+        this.upgradeHint.setPosition(
+            this.defender.x + 20,
+            this.defender.y - this.defender.displayHeight / 2 + 12
+        );
+
+        this.upgradeHint.setVisible(canAfford);
     }
 
     show(): void {

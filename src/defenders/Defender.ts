@@ -3,6 +3,8 @@ import Phaser from "phaser";
 import type { Enemy } from "../enemies/Enemy.ts";
 import { BossEnemy } from "../enemies/BossEnemy.ts";
 import { DefenderUpgradeIndicator } from "../ui/DefenderUpgradeIndicator.ts";
+import type { EnergyManager } from "../managers/EnergyManager.ts";
+import { SETTINGS } from "../config/settings.ts";
 
 export class Defender extends Phaser.GameObjects.Sprite {
 
@@ -14,6 +16,7 @@ export class Defender extends Phaser.GameObjects.Sprite {
     private healthBar: Phaser.GameObjects.Graphics;
     private displayedHealthPercent = 1;
     private upgradeIndicator: DefenderUpgradeIndicator;
+    private energyManager?: EnergyManager;
     
     constructor(
         scene: Phaser.Scene,
@@ -69,6 +72,29 @@ export class Defender extends Phaser.GameObjects.Sprite {
         //play the upgrade animation
         this.upgradeIndicator.playUpgradeEffect();
         return true;
+    }
+
+    //connect defender to the energy manager
+    setEnergyManager(energyManager: EnergyManager): void {
+        this.energyManager = energyManager;
+    }
+
+    //check if the next upgrade is affordable
+    private updateUpgradeHint(): void {
+        const type = this.getData("defenderType") as keyof typeof SETTINGS.defenders;
+        const config = SETTINGS.defenders[type];
+
+        const cost = this.upgradeLevel === 1
+            ? config?.upgradeCost
+            : config?.upgradeLevel3Cost;
+
+        const affordable = this.canUpgrade() &&
+            cost !== undefined &&
+            Number.isFinite(cost) &&
+            cost > 0 &&
+            this.energyManager?.canAfford(cost) === true;
+
+        this.upgradeIndicator.updateUpgradeHint(affordable);
     }
 
     canUpgrade(): boolean {
@@ -131,6 +157,7 @@ export class Defender extends Phaser.GameObjects.Sprite {
 
         if (this.active) {
             this.updateHealthBar();
+            this.updateUpgradeHint();
         }
     }
 
@@ -163,6 +190,7 @@ export class Defender extends Phaser.GameObjects.Sprite {
 
         if (this.health <= 0) {
             this.setActive(false);
+            this.upgradeIndicator.updateUpgradeHint(false);
             this.healthBar.setVisible(false);
 
             this.scene.tweens.add({
