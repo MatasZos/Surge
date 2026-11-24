@@ -1,5 +1,5 @@
-
 import Phaser from "phaser";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class LevelComplete extends Phaser.Scene {
 
@@ -19,11 +19,7 @@ export class LevelComplete extends Phaser.Scene {
         const isFinalLevel = this.completedLevel >= 5;
 
         // Play level completion sound
-        if (this.cache.audio.exists("sfx_level_complete")) {
-         this.sound.play("sfx_level_complete", {
-              volume: 0.5
-            });
-        }
+        SoundManager.play(this, "sfx_level_complete");
 
         // Background
         this.cameras.main.setBackgroundColor("#101b2a");

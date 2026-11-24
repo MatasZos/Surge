@@ -29,6 +29,7 @@ import { WaveIntermission } from "../helpers/WaveIntermission.ts";
 import { setupGameInput } from "../helpers/GameInput.ts";
 import { setupGameDefenders } from "../helpers/GameDefenderSetup.ts";
 import { updateEnemies, updateProjectiles } from "../helpers/GameEntityUpdates.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class GameScene extends Phaser.Scene {
     private grid!: Grid;
@@ -218,11 +219,8 @@ private createPauseButton(): void {
         this.sound.pauseAll();
 
         // Play pause sound after pausing existing audio
-        if (this.cache.audio.exists("sfx_ui_pause")) {
-            this.sound.play("sfx_ui_pause", {
-                volume: 0.3
-            });
-        }
+        SoundManager.play(this, "sfx_ui_pause");
+
     });
 }
 
@@ -441,11 +439,7 @@ private createPauseButton(): void {
         this.startEnemySpawning();
 
         // Play first wave sound
-        if (this.cache.audio.exists("sfx_wave_start")) {
-            this.sound.play("sfx_wave_start", {
-             volume: 0.35
-            });
-        }
+        SoundManager.play(this, "sfx_wave_start");
         
         this.showNotification(`LEVEL ${this.currentLevel} — WAVE ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`);
         this.notifications.showLevelHint(this.currentLevel);

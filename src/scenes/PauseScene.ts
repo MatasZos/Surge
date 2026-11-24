@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class PauseScene extends Phaser.Scene {
 
@@ -47,11 +48,7 @@ export class PauseScene extends Phaser.Scene {
     this.sound.resumeAll();
 
     // Play resume sound
-    if (this.cache.audio.exists("sfx_ui_resume")) {
-        this.sound.play("sfx_ui_resume", {
-            volume: 0.3
-        });
-    }
+    SoundManager.play(this, "sfx_ui_resume");
 
     this.scene.resume("GameScene");
     this.scene.stop();
@@ -75,11 +72,7 @@ export class PauseScene extends Phaser.Scene {
         this.sound.stopAll();
 
     // Play back sound
-    if (this.cache.audio.exists("sfx_ui_back")) {
-        this.sound.play("sfx_ui_back", {
-            volume: 0.3
-        });
-    }
+    SoundManager.play(this, "sfx_ui_back");
 
             this.scene.start("MainMenu");
         });

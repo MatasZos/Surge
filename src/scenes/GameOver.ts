@@ -1,5 +1,6 @@
 import Phaser from "phaser"
 import { GAME_WIDTH, GAME_HEIGHT } from "../constants.ts";
+import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class GameOver extends Phaser.Scene{
     constructor(){
@@ -11,11 +12,7 @@ export class GameOver extends Phaser.Scene{
         document.body.classList.remove("menu-active")
 
         // Play Game Over sound
-    if (this.cache.audio.exists("sfx_game_over")) {
-        this.sound.play("sfx_game_over", {
-            volume: 0.5
-        });
-    }
+        SoundManager.play(this, "sfx_game_over");
 
         //dark background
         this.add.rectangle(
