@@ -192,7 +192,7 @@ export class DefenderToolbar {
         this.defenderIcons[type] = icon;
         this.scene.add.text(x, y + 12, name, { fontSize: "12px", color: "#ffffff"}).setOrigin(0.5).setDepth(12);
 
-        const costText = this.scene.add.text(x, y + 31, SETTINGS.defenders[type].cost + " Energy", {fontSize: "11px", color: "#00ccff"}).setOrigin(0.5).setDepth(12);
+        const costText = this.scene.add.text(x, y + 31, "⚡ " + SETTINGS.defenders[type].cost, {fontSize: "11px", color: "#00ccff"}).setOrigin(0.5).setDepth(12);
 
         this.costTexts[type] = costText;
 
@@ -265,7 +265,7 @@ export class DefenderToolbar {
             if (unlocked){
                 icon.clearTint()
 
-                costText.setText(SETTINGS.defenders[type].cost + "Energy");
+                costText.setText("⚡ " + SETTINGS.defenders[type].cost);
                 costText.setColor("#00ccff");
 
                 button.setFillStyle(this.normalColor);

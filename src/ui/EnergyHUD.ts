@@ -32,13 +32,13 @@ export class EnergyHUD {
         //energy counter
         this.energyText = this.scene.add.text(
             179, 61,
-            "Energy: " + this.energyManager.getEnergy(),
+            String(this.energyManager.getEnergy()),
             { fontSize: "22px", color: "#00ccff" }
         ).setOrigin(0.5).setDepth(20);
     }
 
     private renderEnergy(): void{
-        this.energyText.setText("Energy: " + Math.round(this.displayedEnergy.value));
+        this.energyText.setText(String(Math.round(this.displayedEnergy.value)));
     }
 
     update(): void {
