@@ -5,6 +5,7 @@ import { BossEnemy } from "../enemies/BossEnemy.ts";
 import { DefenderUpgradeIndicator } from "../ui/DefenderUpgradeIndicator.ts";
 import type { EnergyManager } from "../managers/EnergyManager.ts";
 import { SETTINGS } from "../config/settings.ts";
+import { HitEffect } from "../helpers/HitEffect.ts";
 
 export class Defender extends Phaser.GameObjects.Sprite {
 
@@ -180,6 +181,11 @@ export class Defender extends Phaser.GameObjects.Sprite {
     takeDamage(amount: number) {
 
         if (!this.active) return;
+
+        //play hit effect when defender takes damage
+        if (amount > 0) {
+            HitEffect.play(this.scene, this.x, this.y, false);
+        }
 
         this.health -= amount;
         this.health = Math.max(0, this.health);

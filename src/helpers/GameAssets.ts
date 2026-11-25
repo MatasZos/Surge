@@ -27,8 +27,10 @@ export function loadGameAssets(scene: Phaser.Scene): void {
     scene.load.image("generator", "assets/defenders/generator.png");
     //defender upgrade effects
     scene.load.spritesheet("defenderAura", "assets/effects/aura.png", {frameWidth: 64, frameHeight: 64});
-
     scene.load.spritesheet("upgradeEffect", "assets/effects/upgradeD.png", {frameWidth: 64, frameHeight: 64});
+
+    //load damage hit effect
+    scene.load.spritesheet("hitEffect", "assets/effects/hit.png", {frameWidth: 64, frameHeight: 64});
 
 
     //BARRICADE SPRITE AND ANIMATIONS

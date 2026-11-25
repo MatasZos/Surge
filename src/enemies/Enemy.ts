@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { SoundManager } from "../helpers/SoundManager.ts";
+import { HitEffect } from "../helpers/HitEffect.ts";
 
 export class Enemy extends Phaser.GameObjects.Sprite {
 
@@ -122,6 +123,17 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     takeDamage(amount: number) {
 
         if (!this.active) return;
+
+        //play hit effect when enemy takes damage
+        if (amount > 0) {
+            HitEffect.play(
+                this.scene,
+                this.x,
+                this.y,
+                true,
+                this.displayWidth > 100 ? 150 : 65
+            );
+        }
 
         this.health -= amount;
         this.health = Math.max(0, this.health);
