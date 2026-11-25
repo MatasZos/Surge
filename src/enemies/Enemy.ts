@@ -126,13 +126,16 @@ export class Enemy extends Phaser.GameObjects.Sprite {
 
         //play hit effect when enemy takes damage
         if (amount > 0) {
-            HitEffect.play(
-                this.scene,
-                this.x,
-                this.y,
-                true,
-                this.displayWidth > 100 ? 150 : 65
-            );
+            const colors: Record<string, number> = {
+            meleeEnemy: 0xffcc66,
+            rangedEnemy: 0xb46aff,
+            crusherEnemy: 0xff8844,
+            drone: 0x66ddff,
+            hijacker: 0x66ff88,
+            overlord: 0xff4444
+        };
+
+            HitEffect.play(this.scene, this.x, this.y, true, this.displayWidth > 100 ? 150 : 65, colors[this.texture.key] ?? 0xffffff);
         }
 
         this.health -= amount;

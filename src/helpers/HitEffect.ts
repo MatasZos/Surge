@@ -7,7 +7,8 @@ export class HitEffect {
         x: number,
         y: number,
         isEnemy: boolean,
-        size: number = 65
+        size: number = 65,
+        color: number = 0xffffff
     ): void {
 
         if (!scene.textures.exists("hitEffect")) return;
@@ -28,6 +29,8 @@ export class HitEffect {
         const effect = scene.add.sprite(x + (isEnemy ? -10 : 10), y,"hitEffect");
 
         effect.setDisplaySize(size, size);
+        //change particle colour
+        effect.setTint(color);
         effect.setDepth(100);
         effect.play(key);
 

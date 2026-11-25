@@ -184,7 +184,18 @@ export class Defender extends Phaser.GameObjects.Sprite {
 
         //play hit effect when defender takes damage
         if (amount > 0) {
-            HitEffect.play(this.scene, this.x, this.y, false);
+            const colors: Record<string, number> = {
+            shooter: 0xff9933,
+            generator: 0xffdd33,
+            barricade: 0xb46aff,
+            dualbarrel: 0x00ffcc,
+            cryogunner: 0x66ddff,
+            landmine: 0xff6622,
+            scrapper: 0xffdd99
+        };
+
+        const type = this.getData("defenderType");
+            HitEffect.play(this.scene, this.x, this.y, false, 65, colors[type] ?? 0xffffff);
         }
 
         this.health -= amount;
