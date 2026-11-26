@@ -81,15 +81,15 @@ export class DefenderToolbar {
             }
         }
         const recallBackground = this.scene.add.rectangle(
-            recallX, cardY, 100, 88, this.normalColor
+             recallX, cardY, 102, 106, this.normalColor
         ).setStrokeStyle(1, 0x72839a)
             .setDepth(11).setInteractive({ useHandCursor: true });
         this.buttons.push(recallBackground);
 
-        const recallIcon = this.scene.add.image(recallX, cardY - 13, "recall")
-            .setDisplaySize(42, 42).setDepth(12)
+        const recallIcon = this.scene.add.image(recallX, cardY - 19, "recall")
+            .setDisplaySize(58, 58).setDepth(12)
             .setInteractive({ useHandCursor: true });
-        this.scene.add.text(recallX, cardY + 28, "Recall", {
+        this.scene.add.text(recallX, cardY + 31, "Recall", {
             fontSize: "12px", color: "#ffffff"
         }).setOrigin(0.5).setDepth(12);
 
@@ -111,13 +111,13 @@ export class DefenderToolbar {
         this.scene.add.rectangle(moveX, cardY, 106, 112, 0x243348, 0.98)
             .setStrokeStyle(1, 0x0c131e).setDepth(10);
 
-        const moveButton = this.scene.add.rectangle(moveX, cardY, 100, 88, this.normalColor).setStrokeStyle(1, 0x72839a).setDepth(11).setInteractive({useHandCursor:true});
+       const moveButton = this.scene.add.rectangle(moveX, cardY, 102, 106, this.normalColor).setStrokeStyle(1, 0x72839a).setDepth(11).setInteractive({useHandCursor:true});
 
         this.buttons.push(moveButton);
 
-        const moveIcon = this.scene.add.image(moveX,cardY -13, "move").setDisplaySize(42,42).setDepth(12).setInteractive({useHandCursor:true});
+       const moveIcon = this.scene.add.image(moveX,cardY -19, "move").setDisplaySize(58,58).setDepth(12).setInteractive({useHandCursor:true});
 
-        this.scene.add.text(moveX, cardY+28, "Move",{fontSize:"12px", color:"#ffffff"}).setOrigin(0.5).setDepth(12);
+        this.scene.add.text(moveX, cardY+31, "Move",{fontSize:"12px", color:"#ffffff"}).setOrigin(0.5).setDepth(12);
 
         const selectMove = () => { 
             this.selectedType="move";
@@ -131,7 +131,7 @@ export class DefenderToolbar {
     }
 
     private addButton(x: number, y: number, name: string, type: DefenderType): void {
-        const button = this.scene.add.rectangle(x, y, 100, 88, this.normalColor)
+        const button = this.scene.add.rectangle(x, y, 108, 106, this.normalColor)
             .setStrokeStyle(1, 0x72839a).setDepth(11).setInteractive({ useHandCursor: true });
         this.buttons.push(button);
 
@@ -188,19 +188,19 @@ export class DefenderToolbar {
             this.onDragStart(type, pointer);
         });
 
-        const icon = this.scene.add.image(x, y - 21, type).setDisplaySize(43, 43).setDepth(12);
+        const icon = this.scene.add.image(x, y - 25, type).setDisplaySize(56, 56).setDepth(12);
         this.defenderIcons[type] = icon;
-        this.scene.add.text(x, y + 12, name, { fontSize: "12px", color: "#ffffff"}).setOrigin(0.5).setDepth(12);
+        this.scene.add.text(x, y + 14, name, { fontSize: "12px", color: "#ffffff"}).setOrigin(0.5).setDepth(12);
 
-        const costText = this.scene.add.text(x, y + 31, "⚡ " + SETTINGS.defenders[type].cost, {fontSize: "11px", color: "#00ccff"}).setOrigin(0.5).setDepth(12);
+        const costText = this.scene.add.text(x, y + 35, "⚡ " + SETTINGS.defenders[type].cost, {fontSize: "11px", color: "#00ccff"}).setOrigin(0.5).setDepth(12);
 
         this.costTexts[type] = costText;
 
-        const lockedText = this.scene.add.text(x,y-21,"LOCKED",{fontSize:"11px", color:"#ffcc66", fontStyle:"bold", backgroundColor:"#182231", padding:{x:4,y:3}}).setOrigin(0.5).setDepth(13).setVisible(false);
+        const lockedText = this.scene.add.text(x,y-25,"LOCKED",{fontSize:"11px", color:"#ffcc66", fontStyle:"bold", backgroundColor:"#182231", padding:{x:4,y:3}}).setOrigin(0.5).setDepth(13).setVisible(false);
 
         this.lockedTexts[type] = lockedText;
 
-        const cooldownText = this.scene.add.text(x, y - 21, "", {
+        const cooldownText = this.scene.add.text(x, y - 25, "", {
             fontSize: "22px", color: "#ffffff", fontStyle: "bold",
             stroke: "#000000", strokeThickness: 4
         }).setOrigin(0.5).setDepth(13).setVisible(false);
