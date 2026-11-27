@@ -1,3 +1,4 @@
+import { DEFENDER_DETAILS } from "../config/defenderUnlocks.ts";
 import Phaser from "phaser";
 import { SETTINGS } from "../config/settings.ts";
 import { SoundManager } from "../helpers/SoundManager.ts";
@@ -65,8 +66,10 @@ export class DefenderToolbar {
         }
 
         const cardY = 62;
-        const names = ["Shooter", "Generator", "Barricade", "Dual Barrel", "Cryo Gunner", "Landmine", "Scrapper"];
-        TYPES.forEach((type, i) => this.addButton(startX + i * spacing, cardY, names[i], type));
+        for (let index = 0; index < TYPES.length; index++) {
+            const type = TYPES[index];
+            this.addButton(startX + index * spacing, cardY, DEFENDER_DETAILS[type].name, type);
+        }
 
         // Recall has its own metal frame, separated from the defender cards.
         const recallX = startX + TYPES.length * spacing + 20;

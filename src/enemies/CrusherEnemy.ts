@@ -3,7 +3,6 @@ import Phaser from "phaser";
 import { Enemy } from "./Enemy.ts";
 import { SETTINGS } from "../config/settings.ts";
 
-// Heavy, slow melee robot. CollisionSystem handles its mace attacks.
 export class CrusherEnemy extends Enemy {
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(
@@ -45,15 +44,61 @@ export class CrusherEnemy extends Enemy {
                 repeat:0
             });
         }
+        if (!scene.anims.exists("crusher-hurt")) {
+            scene.anims.create({
+                key: "crusher-hurt",
+                frames: scene.anims.generateFrameNumbers("crusher-hurt-sheet", { start: 0, end: 2 }),
+                frameRate: 14,
+                repeat: 0
+            });
+        }
+
+        if (!scene.anims.exists("crusher-dead")) {
+            scene.anims.create({
+                key: "crusher-dead",
+                frames: scene.anims.generateFrameNumbers("crusher-dead-sheet", { start: 0, end: 15 }),
+                frameRate: 16,
+                repeat: 0
+            });
+        }
+
         this.setDisplaySize(170, 136);
         this.setFlipX(true);
     }
 
-    override move(delta:number):void{
-        if(!this.anims.isPlaying || this.anims.currentAnim?.key !== "crusher-attack"){
-            this.play(this.isAttacking?"crusher-idle":"crusher-walk",true)
+    override move(delta: number): void {
+        if (this.anims.isPlaying) {
+            const animation = this.anims.currentAnim?.key;
+            if (animation === "crusher-attack" || animation === "crusher-hurt") {
+                super.move(delta);
+                return;
+            }
         }
 
-        super.move(delta)
+        if (this.isAttacking) {
+            this.play("crusher-idle", true);
+        } else {
+            this.play("crusher-walk", true);
+        }
+        super.move(delta);
+    }
+
+    override takeDamage(amount: number): void {
+        super.takeDamage(amount);
+        if (!this.active || amount <= 0) return;
+        if (this.anims.isPlaying && this.anims.currentAnim?.key === "crusher-attack") return;
+        this.play("crusher-hurt", true);
+    }
+
+    protected override playDeathEffect(): void {
+        const deathSprite = this.scene.add.sprite(this.x, this.y, "crusher-dead-sheet", 0);
+        deathSprite.setDisplaySize(this.displayWidth, this.displayHeight);
+        deathSprite.setDepth(this.depth);
+        deathSprite.setFlipX(this.flipX);
+        deathSprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+            deathSprite.destroy();
+        });
+        deathSprite.play("crusher-dead");
+        this.destroy();
     }
 }

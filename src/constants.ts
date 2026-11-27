@@ -17,17 +17,3 @@ export const CELL_HEIGHT = 120;
 
 export const GRID_X = 210;
 export const GRID_Y = 135;
-
-
-
-// Defender costs
-export const DEFENDER_COSTS: Record<string, number> = {
-    shooter: 100,
-    generator: 50
-};
-
-// Defender placement cooldowns
-export const DEFENDER_COOLDOWNS: Record<string, number> = {
-    shooter: 7500,
-    generator: 7500
-};

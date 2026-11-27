@@ -95,5 +95,35 @@ def export_gameplay():
 
     print(f"Wrote {len(settings)} settings to config/gameplay.csv.")
 
+
+def export_wave_plan():
+    sheet = cel.spreadsheet.read_sheet(resource=SPREADSHEET, sheet="Wave Plan")
+    headers = [
+        "level", "wave", "budget", "spawn_interval_ms", "enemies_per_batch",
+        "melee_weight", "ranged_weight", "crusher_weight", "drone_weight", "hijacker_weight"
+    ]
+    rows = sheet["rows"]
+    if not rows or list(rows[0][:10]) != headers:
+        raise ValueError("Wave Plan: the column headers must match config/wave_plan.csv.")
+
+    text = io.StringIO()
+    writer = csv.writer(text, lineterminator="\n")
+    writer.writerow(headers)
+    for row_number, row in enumerate(rows[1:], start=2):
+        values = list(row[:10])
+        if all(value is None for value in values):
+            continue
+        if len(values) != 10 or any(
+            isinstance(value, bool) or not isinstance(value, (int, float))
+            for value in values
+        ):
+            raise ValueError(f"Wave Plan, row {row_number}: enter a number in every column.")
+        writer.writerow(values)
+
+    cel.file.write(file_resource="config/wave_plan.csv", content=text.getvalue())
+    print("Wrote config/wave_plan.csv.")
+
+
 export_gameplay()
+export_wave_plan()
 print("SURGE spreadsheet export complete.")

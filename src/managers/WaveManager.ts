@@ -1,11 +1,9 @@
-// Wave spawning and progressi
-
 import { SETTINGS } from "../config/settings.ts";
+import { findWavePlan, type WavePlan } from "../config/wavePlan.ts";
 
-type EnemyType = "melee" | "ranged" | "crusher" |  "drone" | "hijacker";
+export type EnemyType = "melee" | "ranged" | "crusher" | "drone" | "hijacker";
 
-export class WaveManager{
-
+export class WaveManager {
     private enemiesSpawned = 0;
     private currentWave = 1;
     private currentLevel = 1;
@@ -14,6 +12,7 @@ export class WaveManager{
     private waveBudget = 0;
     private budgetSpent = 0;
     private defeatedBudget = 0;
+    private wavePlan: WavePlan | undefined;
 
     //excel enemy point costs
     private getEnemyCost(type: EnemyType): number {
@@ -31,29 +30,31 @@ export class WaveManager{
         }
     }
 
-    //excel spawn probabilities
-
-    private getSpawnWeight(type: EnemyType): number{
-        let weight = 0;
+    private getSpawnWeight(type: EnemyType): number {
+        const plan = this.wavePlan;
+        const defaults = SETTINGS.waves;
+        let weight: number;
 
         switch (type) {
             case "melee":
-                weight = SETTINGS.waves.meleeSpawnProbability;
+                weight = plan?.meleeWeight ?? defaults.meleeSpawnProbability;
                 break;
             case "ranged":
-                weight = SETTINGS.waves.rangedSpawnProbability;
+                weight = plan?.rangedWeight ?? defaults.rangedSpawnProbability;
                 break;
             case "crusher":
-                weight = SETTINGS.waves.crusherSpawnProbability;
+                weight = plan?.crusherWeight ?? defaults.crusherSpawnProbability;
                 break;
             case "drone":
-                weight = SETTINGS.waves.droneSpawnProbability;
+                weight = plan?.droneWeight ?? defaults.droneSpawnProbability;
                 break;
             case "hijacker":
-                weight = SETTINGS.waves.hijackerSpawnProbability;
+                weight = plan?.hijackerWeight ?? defaults.hijackerSpawnProbability;
                 break;
         }
-        return Number.isFinite(weight) ? Math.max(0, weight):0;
+
+        if (plan) return weight;
+        return Number.isFinite(weight) ? Math.max(0, weight) : 0;
     }
 
     //only allow enemy types to spawn that are unlocked for the specific level
@@ -64,61 +65,64 @@ export class WaveManager{
         if (this.currentLevel === 2) {
             return ["melee", "ranged"];
         }
-        if(this.currentLevel === 3){
+        if (this.currentLevel === 3) {
             return ["melee", "ranged", "crusher"];
-
         }
-        if(this.currentLevel === 4){
+        if (this.currentLevel === 4) {
             return ["melee", "ranged", "crusher", "drone"];
-
         }
-        return ["melee", "ranged", "crusher","drone", "hijacker"];
+        return ["melee", "ranged", "crusher", "drone", "hijacker"];
     }
 
     //check which enemies are still cheaper than the remaining budget
-    private getAffordableTypes():EnemyType[] {
+    private getAffordableTypes(): EnemyType[] {
         const remaining = this.getRemainingBudget();
 
-        return this.getUnlockedTypes().filter(type => {
+        const affordable: EnemyType[] = [];
+        for (const type of this.getUnlockedTypes()) {
             const cost = this.getEnemyCost(type);
-
-            return (
-                Number.isFinite(cost) &&
-                cost > 0 &&
-                cost <= remaining
-            );
-        });
+            if (Number.isFinite(cost) && cost > 0 && cost <= remaining) {
+                affordable.push(type);
+            }
+        }
+        return affordable;
     }
 
-
     chooseEnemyType(): EnemyType | null {
-
         const affordable = this.getAffordableTypes();
 
-        //no enemy fits in the remaining budget
-        if(affordable.length === 0 ){
-            return null;
+        if (affordable.length === 0) return null;
 
+        const firstEnemy = this.getFirstEnemy();
+        if (firstEnemy !== null && affordable.includes(firstEnemy)) {
+            return firstEnemy;
         }
 
-        //guarantee ranged enemy in level 2
-        if(this.currentLevel === 2 && this.currentWave === 1 && this.enemiesSpawned === 0 && affordable.includes("ranged")){
-            return "ranged";
+        return this.chooseByWeight(affordable);
+    }
+
+    private getFirstEnemy(): EnemyType | null {
+        if (this.currentWave !== 1 || this.enemiesSpawned !== 0) return null;
+
+        switch (this.currentLevel) {
+            case 2:
+                return "ranged";
+            case 3:
+                return "crusher";
+            case 4:
+                return "drone";
+            default:
+                return null;
+        }
+    }
+
+    private chooseByWeight(affordable: EnemyType[]): EnemyType {
+        let totalWeight = 0;
+        for (const type of affordable) {
+            totalWeight += this.getSpawnWeight(type);
         }
 
-        //guarantee crusher in level 3
-        if(this.currentLevel === 3 && this.currentWave === 1 && this.enemiesSpawned === 0 && affordable.includes("crusher")){
-            return "crusher"
-        }
-
-        //guarantee a drone appears at the start of level 4
-        if(this.currentLevel === 4 && this.currentWave === 1 && this.enemiesSpawned === 0 && affordable.includes("drone")){
-            return "drone";
-        }
-
-        const totalWeight = affordable.reduce((sum, type) => sum+ this.getSpawnWeight(type),0);
-
-        // if probabilities are 0
+        // Keep the wave moving when all eligible enemies have zero weight.
         if (totalWeight <= 0) {
             return affordable[0];
         }
@@ -137,7 +141,7 @@ export class WaveManager{
     }
 
     //record the enemy only after it spawned
-     enemySpawned(type: EnemyType): void {
+    enemySpawned(type: EnemyType): void {
         this.enemiesSpawned++;
         this.budgetSpent += this.getEnemyCost(type);
     }
@@ -160,7 +164,7 @@ export class WaveManager{
 
     //when all affordable enemies have been spawned
     isWaveFinished(): boolean {
-        return(this.waveBudget > 0 && this.enemiesSpawned > 0 && this.getAffordableTypes().length === 0);
+        return (this.waveBudget > 0 && this.enemiesSpawned > 0 && this.getAffordableTypes().length === 0);
     }
 
     // Check if all enemies have spawned
@@ -168,44 +172,60 @@ export class WaveManager{
         return this.currentWave >= this.maxWaves;
     }
 
-
     //read the csv config budget for each wave
-    private getBudgetForWave(level: number, wave:number): number{
+    private getBudgetForWave(level: number, wave: number): number {
         const budgets: number[][] = [
             [],
             [
-                SETTINGS.waves.level1Wave1Budget
+                SETTINGS.waves.level1Wave1Budget,
             ],
             [
                 SETTINGS.waves.level2Wave1Budget,
-                SETTINGS.waves.level2Wave2Budget
+                SETTINGS.waves.level2Wave2Budget,
             ],
             [
                 SETTINGS.waves.level3Wave1Budget,
                 SETTINGS.waves.level3Wave2Budget,
-                SETTINGS.waves.level3Wave3Budget
+                SETTINGS.waves.level3Wave3Budget,
             ],
             [
                 SETTINGS.waves.level4Wave1Budget,
                 SETTINGS.waves.level4Wave2Budget,
-                SETTINGS.waves.level4Wave3Budget
+                SETTINGS.waves.level4Wave3Budget,
             ],
             [
                 SETTINGS.waves.level5Wave1Budget,
                 SETTINGS.waves.level5Wave2Budget,
-                SETTINGS.waves.level5Wave3Budget
-            ]
+                SETTINGS.waves.level5Wave3Budget,
+            ],
         ];
         return budgets[level]?.[wave - 1] ?? 0;
     }
 
-    private loadWaveBudget(): void{
-        this.waveBudget = this.getBudgetForWave(this.currentLevel, this.currentWave);
-
+    private loadWaveBudget(): void {
         this.budgetSpent = 0;
         this.enemiesSpawned = 0;
         //reset progress for the next wave
         this.defeatedBudget = 0;
+
+        this.wavePlan = findWavePlan(this.currentLevel, this.currentWave);
+        if (this.wavePlan) {
+            this.waveBudget = this.wavePlan.budget;
+            if (this.getAffordableTypes().length > 0) return;
+            console.warn("Wave Plan budget cannot buy an enemy. Using the Waves settings.");
+            this.wavePlan = undefined;
+        }
+        this.waveBudget = this.getBudgetForWave(this.currentLevel, this.currentWave);
+    }
+
+    getSpawnIntervalMs(): number {
+        if (this.wavePlan) return Math.max(100, this.wavePlan.spawnIntervalMs);
+        return Math.max(1000, SETTINGS.waves.enemySpawnIntervalMs);
+    }
+
+    getEnemiesPerBatch(): number {
+        if (this.wavePlan) return this.wavePlan.enemiesPerBatch;
+        return 1;
     }
 
     nextWave() {
@@ -217,11 +237,11 @@ export class WaveManager{
         return this.currentWave;
     }
 
-    getCurrentLevel():number{
+    getCurrentLevel(): number {
         return this.currentLevel;
     }
 
-    getMaxWaves(): number{
+    getMaxWaves(): number {
         return this.maxWaves;
     }
 

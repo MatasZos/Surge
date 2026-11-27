@@ -1,9 +1,8 @@
-
 import Phaser from "phaser";
 
 import { SETTINGS } from "../config/settings.ts";
-import { WaveManager } from "../managers/WaveManager.ts";
-import { EnergyManager } from "../managers/EnergyManager.ts";
+import type { WaveManager } from "../managers/WaveManager.ts";
+import type { EnergyManager } from "../managers/EnergyManager.ts";
 import { SoundManager } from "./SoundManager.ts";
 
 export class WaveIntermission {
@@ -23,7 +22,7 @@ export class WaveIntermission {
         private updateEnergyText: () => void,
         private showNotification: (message: string) => void,
         private startBossWave: () => void,
-        private resetWaveProgress: () => void
+        private resetWaveProgress: () => void,
     ) {
         // Create the early-start button
         this.earlyWaveButton = scene.add.text(
@@ -35,15 +34,15 @@ export class WaveIntermission {
                 color: "#ffffff",
                 backgroundColor: "#244b73",
                 fontStyle: "bold",
-                padding: { x: 18, y: 10 }
-            }
+                padding: { x: 18, y: 10 },
+            },
         );
 
         this.earlyWaveButton.setOrigin(0.5);
         this.earlyWaveButton.setDepth(60);
         this.earlyWaveButton.setScrollFactor(0);
         this.earlyWaveButton.setInteractive({
-            useHandCursor: true
+            useHandCursor: true,
         });
         this.earlyWaveButton.setVisible(false);
 
@@ -52,7 +51,7 @@ export class WaveIntermission {
             _pointer: Phaser.Input.Pointer,
             _localX: number,
             _localY: number,
-            event: Phaser.Types.Input.EventData
+            event: Phaser.Types.Input.EventData,
         ) => {
             event.stopPropagation();
             this.finish(true);
@@ -60,7 +59,7 @@ export class WaveIntermission {
 
         scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             this.stop();
-            });
+        });
     }
 
     // Check whether an intermission is running
@@ -91,51 +90,40 @@ export class WaveIntermission {
         this.earlyWaveButton.setVisible(!bossNext);
 
         this.showNotification(
-            `WAVE ${this.waveManager.getWave()} CLEARED!`
+            `WAVE ${this.waveManager.getWave()} CLEARED!`,
         );
 
+        this.startCountdown(durationMs, bossNext, this.waveManager.getWave());
+    }
+
+    private startCountdown(durationMs: number, bossNext: boolean, completedWave: number): void {
         let secondsRemaining = Math.ceil(durationMs / 1000);
-        const completedWave = this.waveManager.getWave();
+        this.showCountdown(bossNext, completedWave, secondsRemaining);
 
-        // Display the countdown in the wave HUD
-        const updateCountdown = () => {
-            if (bossNext) {
-                this.waveText.setText(
-                    `BOSS IN ${secondsRemaining}s`
-                );
-            } else {
-                this.waveText.setText(
-                    `Wave ${completedWave}/${this.waveManager.getMaxWaves()} | in ${secondsRemaining}s`
-                );
-            }
-        };
-
-        updateCountdown();
-
-        // Update the countdown every second
         this.countdown = this.scene.time.addEvent({
             delay: 1000,
             loop: true,
             callback: () => {
-                if (!this.active) {
-                    return;
-                }
+                if (!this.active) return;
 
-                secondsRemaining = secondsRemaining - 1;
-
+                secondsRemaining--;
                 if (secondsRemaining > 0) {
-                    updateCountdown();
+                    this.showCountdown(bossNext, completedWave, secondsRemaining);
                 }
-            }
+            },
         });
 
-        // Automatically begin the next wave
-        this.endTimer = this.scene.time.delayedCall(
-            durationMs,
-            () => {
-                this.finish();
-            }
-        );
+        this.endTimer = this.scene.time.delayedCall(durationMs, () => this.finish());
+    }
+
+    private showCountdown(bossNext: boolean, completedWave: number, secondsRemaining: number): void {
+        if (bossNext) {
+            this.waveText.setText(`BOSS IN ${secondsRemaining}s`);
+            return;
+        }
+
+        const maxWaves = this.waveManager.getMaxWaves();
+        this.waveText.setText(`Wave ${completedWave}/${maxWaves} | in ${secondsRemaining}s`);
     }
 
     // Finish the countdown or start early
@@ -162,29 +150,27 @@ export class WaveIntermission {
             this.updateEnergyText();
 
             this.showNotification(
-                `EARLY WAVE BONUS: +${bonus} ENERGY`
+                `EARLY WAVE BONUS: +${bonus} ENERGY`,
             );
         }
 
-        // Start the boss or the next normal wave
         if (startBoss) {
             this.startBossWave();
-        } else {
-            this.waveManager.nextWave();
-
-            // Play next wave sound
-            SoundManager.play(this.scene, "sfx_wave_start");
-
-            this.resetWaveProgress();
-
-            this.waveText.setText(
-                `Wave ${this.waveManager.getWave()}/${this.waveManager.getMaxWaves()}`
-            );
-
-            this.showNotification(
-                `WAVE ${this.waveManager.getWave()} INCOMING!`
-            );
+            return;
         }
+
+        this.startNormalWave();
+    }
+
+    private startNormalWave(): void {
+        this.waveManager.nextWave();
+        SoundManager.play(this.scene, "sfx_wave_start");
+        this.resetWaveProgress();
+
+        const wave = this.waveManager.getWave();
+        const maxWaves = this.waveManager.getMaxWaves();
+        this.waveText.setText(`Wave ${wave}/${maxWaves}`);
+        this.showNotification(`WAVE ${wave} INCOMING!`);
     }
 
     // Stop an intermission and cancel its timers

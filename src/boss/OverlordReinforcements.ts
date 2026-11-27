@@ -6,11 +6,8 @@ import { RangedEnemy } from "../enemies/RangedEnemy.ts";
 import { CrusherEnemy } from "../enemies/CrusherEnemy.ts";
 import { Defender } from "../defenders/Defender.ts";
 import { Stronghold } from "../objects/Stronghold.ts";
-import {
-    GRID_Y,
-    GRID_ROWS,
-    CELL_HEIGHT
-} from "../constants.ts";
+import { GRID_ROWS } from "../constants.ts";
+import { getRowCenterY } from "../grid/GridPosition.ts";
 
 type RobotType = "melee" | "ranged" | "crusher";
 
@@ -63,7 +60,7 @@ export class OverlordReinforcements {
 
         const row = Phaser.Math.Between(0, GRID_ROWS - 1);
         const x = this.boss.x - this.boss.displayWidth / 2 - 60;
-        const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
+        const y = getRowCenterY(row);
 
         let enemy: Enemy;
 

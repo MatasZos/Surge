@@ -19,8 +19,6 @@ export class MainMenu extends Phaser.Scene {
         this.load.image("newGameButton", "./assets/mainmenu/new-game.png");
 
         this.load.image("optionsButton","./assets/mainmenu/options.png");
-
-        this.load.image("howToPlayButton", "./assets/mainmenu/how-to-play.png");
     }
 
     create() {
@@ -65,10 +63,7 @@ export class MainMenu extends Phaser.Scene {
         const playButton = this.add.image(110, 330,"newGameButton").setOrigin(0,0.5).setDisplaySize(260,47.5).setAlpha(0.8);
 
         //options button
-        const optionsButton = this.add.image(110,420,"optionsButton").setOrigin(0,0.5).setDisplaySize(205,55).setAlpha(0.8);
-
-        //howtoplaybutton
-        const howToPlayButton =this.add.image(98, 510, "howToPlayButton").setOrigin(0, 0.5).setDisplaySize(280, 93.33).setAlpha(0.8);
+        this.add.image(110,420,"optionsButton").setOrigin(0,0.5).setDisplaySize(205,55).setAlpha(0.8);
 
         playButton.setInteractive({ useHandCursor: true });
 

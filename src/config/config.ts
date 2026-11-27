@@ -1,9 +1,8 @@
-
 import { SETTINGS } from "./settings.ts";
 
 const CONFIG_FILE = "config/gameplay.csv";
 
-export async function loadConfig() {
+export async function loadConfig(): Promise<void> {
     let text: string;
 
     try {
@@ -16,31 +15,23 @@ export async function loadConfig() {
     }
 
     // Skip the header line and blank lines.
-    const lines = text.split(/\r?\n/).slice(1)
-        .filter(line => line.trim() !== "");
+    const lines = text.split(/\r?\n/);
 
-    for (const line of lines) {
-        const [name, value] = line.split(",")
-            .map(field => field.trim());
+    for (let index = 1; index < lines.length; index++) {
+        const line = lines[index].trim();
+        if (line === "") continue;
 
-        applySetting(name, Number(value));
+        const [name, value] = line.split(",");
+        applySetting(name.trim(), Number(value));
     }
 }
 
-function applySetting(name: string, value: number) {
-    const path = name.split(".").map(toCamelCase);
-    const key = path.pop();
+function applySetting(name: string, value: number): void {
+    const path = name.split(".");
+    const key = toCamelCase(path.pop() ?? "");
+    const group = findSettingsGroup(path);
 
-    let target: Record<string, unknown> | undefined = SETTINGS;
-
-    for (const part of path) {
-        const next: unknown = target?.[part];
-        target = typeof next === "object" && next !== null
-            ? next as Record<string, unknown>
-            : undefined;
-    }
-
-    if (!key || typeof target?.[key] !== "number") {
+    if (!key || !group || typeof group[key] !== "number") {
         console.warn(`${CONFIG_FILE}: ignoring unknown setting ${name}`);
         return;
     }
@@ -50,10 +41,21 @@ function applySetting(name: string, value: number) {
         return;
     }
 
-    target[key] = value;
+    group[key] = value;
 }
 
-function toCamelCase(word: string) {
-    return word.replace(/_([a-z0-9])/g,
-        (_match, letter: string) => letter.toUpperCase());
+function findSettingsGroup(path: string[]): Record<string, unknown> | undefined {
+    let group: Record<string, unknown> = SETTINGS;
+
+    for (const part of path) {
+        const next = group[toCamelCase(part)];
+        if (typeof next !== "object" || next === null) return undefined;
+        group = next as Record<string, unknown>;
+    }
+
+    return group;
+}
+
+function toCamelCase(word: string): string {
+    return word.replace(/_([a-z0-9])/g, (_match, letter: string) => letter.toUpperCase());
 }

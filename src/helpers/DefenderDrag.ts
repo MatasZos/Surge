@@ -1,10 +1,8 @@
 import Phaser from "phaser";
 import { Grid } from "../grid/Grid.ts";
+import { getCellCenter, getGridPosition } from "../grid/GridPosition.ts";
 import { DefenderPlacement } from "./DefenderPlacement.ts";
-import {
-    GRID_ROWS, GRID_X, GRID_Y,
-    CELL_WIDTH, CELL_HEIGHT
-} from "../constants.ts";
+import { GRID_ROWS, CELL_WIDTH, CELL_HEIGHT } from "../constants.ts";
 
 export class DefenderDrag {
 
@@ -36,8 +34,7 @@ export class DefenderDrag {
 
         this.dragImage.setPosition(pointer.x, pointer.y);
 
-        const col = Math.floor((pointer.x - GRID_X) / CELL_WIDTH);
-        const row = Math.floor((pointer.y - GRID_Y) / CELL_HEIGHT);
+        const { row, col } = getGridPosition(pointer.x, pointer.y);
 
         if (
             row < 0 || row >= GRID_ROWS ||
@@ -48,10 +45,8 @@ export class DefenderDrag {
             return;
         }
 
-        this.dragHighlight.setPosition(
-            GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2,
-            GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2
-        );
+        const { x, y } = getCellCenter(row, col);
+        this.dragHighlight.setPosition(x, y);
 
         this.dragHighlight.setVisible(true);
     }

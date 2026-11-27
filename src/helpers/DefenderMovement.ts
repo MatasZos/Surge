@@ -3,16 +3,10 @@ import Phaser from "phaser";
 
 import { Defender } from "../defenders/Defender.ts";
 import { Grid } from "../grid/Grid.ts";
+import { getCellCenter, getGridPosition } from "../grid/GridPosition.ts";
 import { EnergyManager } from "../managers/EnergyManager.ts";
 
-import {
-    GRID_ROWS,
-    GRID_COLS,
-    GRID_X,
-    GRID_Y,
-    CELL_WIDTH,
-    CELL_HEIGHT
-} from "../constants.ts";
+import { GRID_ROWS, GRID_COLS } from "../constants.ts";
 
 export class DefenderMovement {
     private selectedDefender: Defender | null = null;
@@ -64,13 +58,7 @@ export class DefenderMovement {
         }
 
         // Find the clicked grid cell
-        const col = Math.floor(
-            (pointer.worldX - GRID_X) / CELL_WIDTH
-        );
-
-        const row = Math.floor(
-            (pointer.worldY - GRID_Y) / CELL_HEIGHT
-        );
+        const { row, col } = getGridPosition(pointer.worldX, pointer.worldY);
 
         // Check that the cell is inside the battlefield
         if (row < 0 || row >= GRID_ROWS ||
@@ -123,8 +111,7 @@ export class DefenderMovement {
         this.grid.placeHuman(row, col, defender);
 
         // Work out the centre of the new cell
-        const x = GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2;
-        const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
+        const { x, y } = getCellCenter(row, col);
 
         // Move the defender and its indicators
         defender.repositionTo(x, y);

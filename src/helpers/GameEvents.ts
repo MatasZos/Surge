@@ -9,35 +9,32 @@ export function setupGameEvents(
     onNextLevel: (level: number) => void,
     projectiles: Projectile[],
     enemyProjectiles: EnemyProjectile[],
-    onEnergyCollected: (amount: number, x?:number, y?:number) => void
-
+    onEnergyCollected: (amount: number, x?: number, y?: number) => void
 ): void {
-    
-    //level changes
-    scene.events.on("next-level", onNextLevel);
-
-    //friendly projectiles
-    scene.events.on("projectile-created", (projectile: Projectile) => {
+    function addProjectile(projectile: Projectile): void {
         projectiles.push(projectile);
-    });
+    }
 
-    //enemy projectiles
-    scene.events.on("enemy-projectile-created", (projectile: EnemyProjectile) => {
+    function addEnemyProjectile(projectile: EnemyProjectile): void {
         enemyProjectiles.push(projectile);
-    });
+    }
 
-    // Energy collection
-    scene.events.on(
-    "energy-collected",
-    (amount: number, x?: number, y?: number) => {
-
-        // Play energy collection sound
+    function collectEnergy(amount: number, x?: number, y?: number): void {
         SoundManager.play(scene, "sfx_energy_collect");
-
-        // Keep existing energy collection behaviour
         onEnergyCollected(amount, x, y);
     }
-);
+
+    scene.events.on("next-level", onNextLevel);
+    scene.events.on("projectile-created", addProjectile);
+    scene.events.on("enemy-projectile-created", addEnemyProjectile);
+    scene.events.on("energy-collected", collectEnergy);
+
+    scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+        scene.events.off("next-level", onNextLevel);
+        scene.events.off("projectile-created", addProjectile);
+        scene.events.off("enemy-projectile-created", addEnemyProjectile);
+        scene.events.off("energy-collected", collectEnergy);
+    });
 
     new EnergyDrops(scene).setup();
 }

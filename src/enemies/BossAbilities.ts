@@ -1,9 +1,10 @@
 import Phaser from "phaser";
 import { BossEnemy } from "./BossEnemy.ts";
 import { EnemyProjectile } from "../objects/EnemyProjectile.ts";
-import { GRID_ROWS, GRID_Y, CELL_HEIGHT } from "../constants.ts"
+import { GRID_ROWS } from "../constants.ts";
 import { Defender } from "../defenders/Defender.ts";
 import { Grid } from "../grid/Grid.ts";
+import { getRowCenterY } from "../grid/GridPosition.ts";
 import { OverlordLaser } from "../boss/OverlordLaser.ts";;
 import { SoundManager } from "../helpers/SoundManager.ts";
 
@@ -50,7 +51,7 @@ export class BossAbilities {
         const row = this.attackLane % GRID_ROWS;
         this.attackLane++;
 
-        const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
+        const y = getRowCenterY(row);
 
         const projectile = new EnemyProjectile(
             this.scene,

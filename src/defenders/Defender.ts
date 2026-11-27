@@ -80,15 +80,17 @@ export class Defender extends Phaser.GameObjects.Sprite {
         this.energyManager = energyManager;
     }
 
-    //check if the next upgrade is affordable
-    private updateUpgradeHint(): void {
+    getUpgradeCost(): number | undefined {
         const type = this.getData("defenderType") as keyof typeof SETTINGS.defenders;
         const config = SETTINGS.defenders[type];
 
-        const cost = this.upgradeLevel === 1
-            ? config?.upgradeCost
-            : config?.upgradeLevel3Cost;
+        if (this.upgradeLevel === 1) return config?.upgradeCost;
+        return config?.upgradeLevel3Cost;
+    }
 
+    //check if the next upgrade is affordable
+    private updateUpgradeHint(): void {
+        const cost = this.getUpgradeCost();
         const affordable = this.canUpgrade() &&
             cost !== undefined &&
             Number.isFinite(cost) &&

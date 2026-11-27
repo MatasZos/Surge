@@ -2,11 +2,11 @@ import Phaser from "phaser";
 import { BossEnemy } from "../enemies/BossEnemy.ts";
 import { Defender } from "../defenders/Defender.ts";
 import { Grid } from "../grid/Grid.ts";
+import { getRowCenterY } from "../grid/GridPosition.ts";
 import {
     GRID_ROWS,
     GRID_COLS,
     GRID_X,
-    GRID_Y,
     CELL_WIDTH,
     CELL_HEIGHT
 } from "../constants.ts";
@@ -64,7 +64,7 @@ export class OverlordLaser {
         this.targetRow = Phaser.Math.Between(0, GRID_ROWS - 1);
         this.chargeTimer = this.boss.phases.phase === 4 ? 1500 : 2000;
 
-        const y = GRID_Y + this.targetRow * CELL_HEIGHT + CELL_HEIGHT / 2;
+        const y = getRowCenterY(this.targetRow);
 
         this.warning = this.scene.add.rectangle(
             GRID_X + GRID_COLS * CELL_WIDTH / 2,
@@ -88,7 +88,7 @@ export class OverlordLaser {
         this.warning = undefined;
 
         const damage = this.boss.phases.phase === 4 ? 350 : 200;
-        const y = GRID_Y + this.targetRow * CELL_HEIGHT + CELL_HEIGHT / 2;
+        const y = getRowCenterY(this.targetRow);
 
         const laser = this.scene.add.rectangle(
             GRID_X + GRID_COLS * CELL_WIDTH / 2,

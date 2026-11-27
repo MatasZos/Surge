@@ -13,10 +13,23 @@ import {
 } from "../constants.ts";
 
 import type {Grid} from "../grid/Grid.ts";
+import { getCellCenter, getGridPosition } from "../grid/GridPosition.ts";
+import { Stronghold } from "../objects/Stronghold.ts";
 
 
 export class BattlefieldView {
     constructor(private scene: Phaser.Scene) {}
+
+    createStronghold(): Stronghold {
+        const width = 150;
+        const gridHeight = GRID_ROWS * CELL_HEIGHT;
+        const x = GRID_X - width / 2;
+        const y = GRID_Y + gridHeight / 2;
+        const stronghold = new Stronghold(this.scene, x, y, "stronghold");
+        stronghold.setDisplaySize(width, gridHeight + 40);
+        stronghold.setDepth(2);
+        return stronghold;
+    }
 
 private levelText!: Phaser.GameObjects.Text;
 private progressBar!: Phaser.GameObjects.Rectangle;
@@ -125,22 +138,14 @@ createBackground(): void {
         this.scene.input.on(
             "pointermove",
             (pointer: Phaser.Input.Pointer) => {
-                const col = Math.floor(
-                    (pointer.x - GRID_X) / CELL_WIDTH
-                );
-
-                const row = Math.floor(
-                    (pointer.y - GRID_Y) / CELL_HEIGHT
-                );
+                const { row, col } = getGridPosition(pointer.x, pointer.y);
 
                 if (
                     row >= 0 && row < GRID_ROWS &&
                     col >= 0 && col < GRID_COLS
                 ) {
-                    highlight.setPosition(
-                        GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2,
-                        GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2
-                    );
+                    const { x, y } = getCellCenter(row, col);
+                    highlight.setPosition(x, y);
 
                     highlight.setVisible(true);
                 } else {

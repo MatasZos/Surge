@@ -1,12 +1,11 @@
 import Phaser from "phaser";
 import { SETTINGS } from "../../config/settings.ts";
 import { Enemy } from "../../enemies/Enemy.ts";
-import { MeleeEnemy } from "../../enemies/MeleeEnemy.ts";
 import { RangedEnemy } from "../../enemies/RangedEnemy.ts";
 import { CrusherEnemy } from "../../enemies/CrusherEnemy.ts";
 import { Stronghold } from "../../objects/Stronghold.ts";
 import { HijackerEnemy } from "../../enemies/HijackerEnemy.ts";
-import { SoundManager } from "../../helpers/SoundManager.ts";
+import { playMeleeAttack } from "./PlayMeleeAttack.ts";
 
 export class StrongholdCollision {
     constructor(
@@ -46,18 +45,7 @@ export class StrongholdCollision {
                         return;
                     }
 
-                    // Play enemy attack sound against stronghold
-                        const soundKey = enemy instanceof CrusherEnemy
-                         ? "sfx_crusher_smash"
-                        : "sfx_melee_attack";
-
-                    SoundManager.play(this.scene, soundKey);
-                    
-                if(enemy instanceof MeleeEnemy){
-                    enemy.play("executioner-attack",true)
-                } else if(enemy instanceof CrusherEnemy){
-                    enemy.play("crusher-attack",true)
-                }
+                    playMeleeAttack(this.scene, enemy);
                     this.stronghold.takeDamage(enemy.damage);
 
                     // Stronghold retaliates if it survives.

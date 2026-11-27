@@ -166,6 +166,7 @@ const configFiles = [
   "energy.csv",
   "stronghold.csv",
   "waves.csv",
+  "wave_plan.csv",
   "gameplay.csv"
 ];
 

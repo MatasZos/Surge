@@ -1,5 +1,5 @@
-
 import Phaser from "phaser";
+import { DEFENDER_DETAILS } from "../config/defenderUnlocks.ts";
 
 export class GameNotifications {
     private scene: Phaser.Scene;
@@ -59,6 +59,30 @@ export class GameNotifications {
             ).setOrigin(0.5).setDepth(100).setScrollFactor(0);
         } else {
             this.tutorialText.setText(message);
+        }
+    }
+
+    public announceWave(level: number, wave: number, totalWaves: number): void {
+        this.show(`LEVEL ${level} — WAVE ${wave}/${totalWaves}`);
+    }
+
+    public showDefenderUnlocks(level: number): void {
+        if (level <= 1) return;
+
+        for (const defender of Object.values(DEFENDER_DETAILS)) {
+            if (defender.unlockLevel === level) {
+                this.show(`NEW DEFENDER UNLOCKED: ${defender.name.toUpperCase()}!`);
+            }
+        }
+    }
+
+    public showNewEnemy(level: number): void {
+        if (level === 2) {
+            this.show("NEW ENEMY: RANGED ROBOT!");
+        }
+
+        if (level === 3) {
+            this.show("WARNING: CRUSHER INCOMING!");
         }
     }
 

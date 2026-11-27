@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { SETTINGS } from "../config/settings.ts";
 import { Grid } from "../grid/Grid.ts";
+import { getCellCenter, getGridPosition } from "../grid/GridPosition.ts";
 import { Defender } from "../defenders/Defender.ts";
 import { Shooter } from "../defenders/Shooter.ts";
 import { Generator } from "../defenders/Generator.ts";
@@ -16,8 +17,6 @@ import { SoundManager } from "./SoundManager.ts";
 import {
     GRID_ROWS,
     GRID_COLS,
-    GRID_X,
-    GRID_Y,
     CELL_WIDTH,
     CELL_HEIGHT
 } from "../constants.ts";
@@ -40,13 +39,6 @@ export class DefenderPlacement {
         private openUpgradeMenu: (defender: Defender) => void,
         private isUnlocked: (type:string) => boolean
     ) {}
-
-        private getGridPosition(pointer: Phaser.Input.Pointer) {
-        return {
-            col: Math.floor((pointer.x - GRID_X) / CELL_WIDTH),
-            row: Math.floor((pointer.y - GRID_Y) / CELL_HEIGHT)
-        };
-    }
 
 private createDefender(type: DefenderType, x: number, y: number): Defender {
     switch (type) {
@@ -94,7 +86,7 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
     }
 
     place(pointer: Phaser.Input.Pointer, selectedDefender: string | null): void {
-         const { row, col } = this.getGridPosition(pointer);
+        const { row, col } = getGridPosition(pointer.x, pointer.y);
 
         if (row < 0 || row >= GRID_ROWS || col < 0 || col >= GRID_COLS) return;
         if (!this.grid.getCell(row, col).isEmpty()) {
@@ -142,8 +134,7 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
             return;
         }
 
-        const x = GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2;
-        const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
+        const { x, y } = getCellCenter(row, col);
 
        const defender = this.createDefender(type, x, y);
 
@@ -212,8 +203,7 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
     }
 
     private flashGridCell(row: number, col: number, color: number): void {
-        const x = GRID_X + col * CELL_WIDTH + CELL_WIDTH / 2;
-        const y = GRID_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
+        const { x, y } = getCellCenter(row, col);
 
         const flash = this.scene.add.rectangle(
             x,
@@ -237,7 +227,7 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
 
     recall(pointer: Phaser.Input.Pointer): void {
 
-        const { row, col } = this.getGridPosition(pointer);
+        const { row, col } = getGridPosition(pointer.x, pointer.y);
 
         if (row < 0 || row >= GRID_ROWS || col < 0 || col >= GRID_COLS) return;
 

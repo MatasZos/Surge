@@ -57,7 +57,7 @@ export class Generator extends Defender {
 
     // Level 2 and 3 generate faster
     if (this.upgradeLevel >= 2) {
-        interval = 16000;
+        interval = Math.round(interval * 2 / 3);
     }
 
     this.energyTimer = this.scene.time.addEvent({
@@ -115,11 +115,11 @@ export class Generator extends Defender {
     energy.on("pointerdown", () => {
         if (!energy.active) return;
 
-        let amount = 50;
+        let amount = SETTINGS.energy.generatorPickupValue;
 
         //level 3 gives more energy
         if (this.upgradeLevel === 3) {
-            amount = 75;
+            amount = Math.round(amount * SETTINGS.defenders.generator.upgradeEnergyMultiplier);
         }
 
         this.scene.events.emit("energy-collected", amount, energy.x, energy.y);
