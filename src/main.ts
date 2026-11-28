@@ -7,7 +7,6 @@ import { LevelComplete } from "./scenes/LevelComplete.ts";
 
 import { loadConfig } from "./config/config.ts";
 import { loadWavePlan } from "./config/wavePlan.ts";
-import { SETTINGS } from "./config/settings.ts";
 
 import { GAME_WIDTH, GAME_HEIGHT } from "./constants.ts";
 
@@ -15,10 +14,10 @@ async function startGame(){
     await loadConfig();
     await loadWavePlan();
 
-    console.log("Melee health:", SETTINGS.enemies.melee.health);
 
     new Phaser.Game({
         type: Phaser.AUTO,
+        banner: false,
         width: GAME_WIDTH,
         height: GAME_HEIGHT,
         backgroundColor: "#1b1b1b",

@@ -99,7 +99,7 @@ export class CryoGunner extends Defender {
         if (this.upgradeLevel === 3) {
             this.shotCount++;
 
-            if (this.shotCount % 8 === 0) {
+            if (this.shotCount % SETTINGS.defenders.cryogunner.freezeEveryShots === 0) {
                 projectile.frozenShock = true;
             }
         }

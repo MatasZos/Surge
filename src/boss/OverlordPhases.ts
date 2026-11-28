@@ -1,3 +1,5 @@
+import { SETTINGS } from "../config/settings.ts";
+
 export class OverlordPhases {
     phase = 1;
     shieldActive = false;
@@ -6,7 +8,7 @@ export class OverlordPhases {
         if (this.shieldActive || this.phase >= 4) return false;
 
         const healthPercent = health / maxHealth;
-        const threshold = 1 - this.phase * 0.25;
+        const threshold = 1 - this.phase * SETTINGS.enemies.boss.shieldHealthStep;
 
         if (healthPercent > threshold) return false;
 

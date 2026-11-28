@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { SETTINGS } from "../config/settings.ts";
 import { BossEnemy } from "../enemies/BossEnemy.ts";
 import { Enemy } from "../enemies/Enemy.ts";
 import { MeleeEnemy } from "../enemies/MeleeEnemy.ts";
@@ -28,29 +29,21 @@ export class OverlordReinforcements {
         this.clearSpawnTimers();
         this.summonedEnemies = [];
 
-        let robots: RobotType[] = [];
+        const settings = SETTINGS.enemies.boss;
+        let robots: readonly RobotType[] = [];
 
         if (phase === 1) {
-            robots = ["melee", "melee", "melee", "melee", "ranged", "ranged"];
-
+            robots = settings.reinforcementsPhase1;
         } else if (phase === 2) {
-            robots = [
-                "melee", "melee", "melee", "melee",
-                "ranged", "ranged", "ranged",
-                "crusher", "crusher"
-            ];
+            robots = settings.reinforcementsPhase2;
         } else if (phase === 3) {
-            robots = [
-                "melee", "melee", "melee", "melee", "melee",
-                "ranged", "ranged", "ranged", "ranged",
-                "crusher", "crusher", "crusher"
-            ];
+            robots = settings.reinforcementsPhase3;
         }
 
        this.pending = robots.length;
 
         robots.forEach((type, i) => {
-        const timer = this.scene.time.delayedCall(i * 280, () => {
+        const timer = this.scene.time.delayedCall(i * settings.reinforcementSpawnGapMs, () => {
 
         // Do not spawn if the boss is defeated
         if (!this.boss.active || !this.boss.phases.shieldActive) {
@@ -124,4 +117,3 @@ export class OverlordReinforcements {
         this.spawnTimers = [];
     }
 }
-

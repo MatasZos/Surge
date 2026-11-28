@@ -116,7 +116,7 @@ export class Shooter extends Defender {
         if (this.upgradeLevel === 3) {
             this.shotCount++;
 
-            if (this.shotCount % 3 === 0) {
+            if (this.shotCount % SETTINGS.defenders.shooter.chainEveryShots === 0) {
                 projectile.chainShot = true;
             }
         }
@@ -124,7 +124,6 @@ export class Shooter extends Defender {
         if (this.upgradeLevel >= 2) {
             projectile.damage *= SETTINGS.defenders.shooter.upgradeDamageMultiplier;
         }
-        console.log("Shooter Level:", this.upgradeLevel, "Damage:", projectile.damage);
     }
 
     override takeDamage(amount:number):void{

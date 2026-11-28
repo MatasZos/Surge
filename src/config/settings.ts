@@ -43,6 +43,9 @@ export const SETTINGS = {
 
         hijacker: {
             health: 450,
+            descentSpeed: 180,
+            ascentSpeed: 240,
+            grabDelayMs: 1000,
             speed: 40,
             damage: 0,
             attackIntervalMs: 0,
@@ -52,7 +55,7 @@ export const SETTINGS = {
         },
     
 
-     overlord: {
+        boss: {
             health: 15000,
             shield: 4000,
             speed: 0,
@@ -62,7 +65,24 @@ export const SETTINGS = {
             empDurationMs: 4000,
             reinforcementCooldownMs: 25000,
             shieldRechargeDelayMs: 15000,
-            overdriveThreshold: 0.5
+            overdriveThreshold: 0.5,
+            shieldHealthStep: 0.25,
+            phase2AttackIntervalMs: 1700,
+            phase3AttackIntervalMs: 1400,
+            phase4AttackIntervalMs: 1000,
+            phase2AttackDamage: 250,
+            phase3AttackDamage: 300,
+            phase4AttackDamage: 400,
+            laserIntervalMs: 15000,
+            overdriveLaserIntervalMs: 10000,
+            laserChargeMs: 2000,
+            overdriveLaserChargeMs: 1500,
+            laserDamage: 200,
+            overdriveLaserDamage: 350,
+            reinforcementSpawnGapMs: 280,
+            reinforcementsPhase1: ["melee", "melee", "melee", "melee", "ranged", "ranged"] as const,
+            reinforcementsPhase2: ["melee", "melee", "melee", "melee", "ranged", "ranged", "ranged", "crusher", "crusher"] as const,
+            reinforcementsPhase3: ["melee", "melee", "melee", "melee", "melee","ranged", "ranged", "ranged", "ranged","crusher", "crusher", "crusher"] as const
         }
     },
 
@@ -77,7 +97,10 @@ export const SETTINGS = {
             projectileDamage: 0,
             upgradeCost: 0,
             upgradeDamageMultiplier: 0,
-            upgradeLevel3Cost: 0
+            upgradeLevel3Cost: 0,
+            chainEveryShots: 3,
+            chainRange: 120,
+            chainDamageMultiplier: 0.5
         },
 
         generator: {
@@ -91,6 +114,7 @@ export const SETTINGS = {
             upgradeCost: 0,
             upgradeDamageMultiplier: 0,
             upgradeEnergyMultiplier: 0,
+            upgradedProductionIntervalMultiplier: 2 / 3,
             upgradeLevel3Cost: 0
         },
 
@@ -105,6 +129,8 @@ export const SETTINGS = {
             upgradeCost: 0,
             upgradeDamageMultiplier: 0,
             upgradeHealthMultiplier: 0,
+            healIntervalMs: 3000,
+            healAmount: 50,
             upgradeLevel3Cost: 0
         },
 
@@ -118,6 +144,8 @@ export const SETTINGS = {
             projectileDamage: 0,
             slowMultiplier: 0,
             slowDurationMs: 0,
+            freezeEveryShots: 8,
+            freezeDurationMs: 2000,
             upgradeCost: 0,
             upgradeDamageMultiplier: 0,
             upgradeLevel3Cost: 0
@@ -130,6 +158,7 @@ export const SETTINGS = {
             cooldownMs: 0,
             armingMs: 0,
             blastRadius: 0,
+            upgradeRadiusMultiplier: 1.5,
             upgradeCost: 0,
             upgradeDamageMultiplier: 0,
             upgradeLevel3Cost: 0
@@ -141,6 +170,10 @@ export const SETTINGS = {
             cost: 0,
             cooldownMs: 0,
             recoveryMs: 0,
+            biteRange: 85,
+            biteLaneTolerance: 35,
+            biteBehindTolerance: 12,
+            upgradedRecoveryMultiplier: 0.5,
             upgradeCost: 0,
             upgradeDamageMultiplier: 0,
             upgradeEnergyMultiplier: 0,
@@ -149,6 +182,10 @@ export const SETTINGS = {
         },
 
         dualbarrel: {
+            secondShotDelayMs: 150,
+            explosiveShotChance: 0.25,
+            explosionRadius: 80,
+            explosionDamageMultiplier: 0.5,
             health: 0,
             damage: 0,
             cost: 0,
@@ -173,7 +210,22 @@ export const SETTINGS = {
         enemyDropValue: 0,
         passiveEnergyValue: 0,
         passiveEnergyIntervalMs: 0,
-        sellRefundMultiplier: 0
+        sellRefundMultiplier: 0,
+        moveCost: 50,
+        developerEnergyBonus: 500
+    },
+
+    combat: {
+        defaultDefenderHealth: 100,
+        defaultDefenderDamage: 20,
+        defenderTargetLaneTolerance: 20,
+        rangedTargetLaneTolerance: 30,
+        meleeLaneTolerance: 45,
+        meleeBehindTolerance: 12,
+        meleeRange: 75,
+        meleeStandOffDistance: 34,
+        bossProjectileHitLeft: 105,
+        bossProjectileHitRight: 100
     },
 
     stronghold: {

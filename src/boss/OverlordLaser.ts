@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { SETTINGS } from "../config/settings.ts";
 import { BossEnemy } from "../enemies/BossEnemy.ts";
 import { Defender } from "../defenders/Defender.ts";
 import { Grid } from "../grid/Grid.ts";
@@ -47,7 +48,7 @@ export class OverlordLaser {
 
         this.cooldown += delta;
 
-        const interval = this.boss.phases.phase === 4 ? 10000 : 15000;
+        const interval = this.boss.phases.phase === 4 ? SETTINGS.enemies.boss.overdriveLaserIntervalMs : SETTINGS.enemies.boss.laserIntervalMs;
 
         if (this.cooldown >= interval) {
             this.cooldown = 0;
@@ -62,7 +63,7 @@ export class OverlordLaser {
         SoundManager.play(this.scene, "sfx_boss_laser_charge");
 
         this.targetRow = Phaser.Math.Between(0, GRID_ROWS - 1);
-        this.chargeTimer = this.boss.phases.phase === 4 ? 1500 : 2000;
+        this.chargeTimer = this.boss.phases.phase === 4 ? SETTINGS.enemies.boss.overdriveLaserChargeMs : SETTINGS.enemies.boss.laserChargeMs;
 
         const y = getRowCenterY(this.targetRow);
 
@@ -87,7 +88,7 @@ export class OverlordLaser {
         this.warning?.destroy();
         this.warning = undefined;
 
-        const damage = this.boss.phases.phase === 4 ? 350 : 200;
+        const damage = this.boss.phases.phase === 4 ? SETTINGS.enemies.boss.overdriveLaserDamage : SETTINGS.enemies.boss.laserDamage;
         const y = getRowCenterY(this.targetRow);
 
         const laser = this.scene.add.rectangle(

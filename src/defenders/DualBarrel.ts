@@ -81,7 +81,7 @@ export class DualBarrel extends Defender {
                     this.shoot("sfx_dualbarrel_fire_1");
 
                     // Second shot after 150ms
-                    this.scene.time.delayedCall(150, () => {
+                    this.scene.time.delayedCall(SETTINGS.defenders.dualbarrel.secondShotDelayMs, () => {
                         if (this.active && this.hasEnemyInRow(this.enemies)) {
                             this.shoot("sfx_dualbarrel_fire_2");
                         }
@@ -113,7 +113,7 @@ export class DualBarrel extends Defender {
             projectile.damage *= SETTINGS.defenders.dualbarrel.upgradeDamageMultiplier;
         }
         // Level 3 explosive rounds
-        if (this.upgradeLevel === 3 && Math.random() < 0.25) {
+        if (this.upgradeLevel === 3 && Math.random() < SETTINGS.defenders.dualbarrel.explosiveShotChance) {
             projectile.explosiveShot = true;
         }
     }

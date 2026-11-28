@@ -62,10 +62,10 @@ export class Barricade extends Defender {
 
         // Level 3 automatically repairs the Barricade
         this.repairTimer = scene.time.addEvent({
-            delay: 3000,
+            delay: SETTINGS.defenders.barricade.healIntervalMs,
             callback: () => {
                 if (this.active && this.upgradeLevel === 3) {
-                    this.heal(50);
+                    this.heal(SETTINGS.defenders.barricade.healAmount);
                 }
             },
             loop: true
@@ -80,7 +80,6 @@ export class Barricade extends Defender {
 
             );
         }
-        console.log("Barricade Level:", this.upgradeLevel, "Health:", this.health);
         return true;
     }
 

@@ -95,10 +95,8 @@ export class Stronghold extends Phaser.GameObjects.Sprite {
 
         this.updateHealthBar();
 
-        console.log("Stronghold health:", this.health);
 
         if (this.health <= 0) {
-            console.log("Stronghold destroyed!");
 
             this.scene.events.emit("stronghold-destroyed");
         }

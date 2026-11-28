@@ -18,7 +18,7 @@ export async function loadWavePlan(): Promise<void> {
 
     try {
         const response = await fetch("config/wave_plan.csv", { cache: "no-store" });
-        if (!response.ok) throw new Error("HTTP " + response.status);
+        if (!response.ok) return;
 
         const lines = (await response.text()).trim().split(/\r?\n/);
         for (let index = 1; index < lines.length; index++) {
@@ -27,7 +27,6 @@ export async function loadWavePlan(): Promise<void> {
 
             const fields = line.split(",");
             if (fields.length !== 10) {
-                console.warn("Wave Plan row " + (index + 1) + " needs 10 columns.");
                 continue;
             }
 
@@ -47,7 +46,6 @@ export async function loadWavePlan(): Promise<void> {
                 }
             }
             if (!valid) {
-                console.warn("Ignoring invalid Wave Plan row " + (index + 1));
                 continue;
             }
 
@@ -64,13 +62,12 @@ export async function loadWavePlan(): Promise<void> {
                 hijackerWeight: values[9],
             };
             if (findWavePlan(plan.level, plan.wave)) {
-                console.warn("Ignoring duplicate Wave Plan row " + (index + 1));
                 continue;
             }
             wavePlans.push(plan);
         }
-    } catch (error) {
-        console.warn("Could not load the Wave Plan. Using the Waves settings.", error);
+    } catch {
+        return;
     }
 }
 

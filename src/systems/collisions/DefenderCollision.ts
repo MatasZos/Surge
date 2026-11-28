@@ -60,9 +60,10 @@ export class DefenderCollision {
                 if (!defender.active || defender instanceof Landmine) continue;
 
                 // Use grid positions so transparent sprite padding does not change attack range.
-                const sameLane = Math.abs(enemy.y - defender.y) < 45;
+                const sameLane = Math.abs(enemy.y - defender.y) < SETTINGS.combat.meleeLaneTolerance;
                 const distanceAhead = enemy.x - defender.x;
-                const inAttackRange = distanceAhead >= -12 && distanceAhead <= 75;
+                const inAttackRange = distanceAhead >= -SETTINGS.combat.meleeBehindTolerance &&
+                    distanceAhead <= SETTINGS.combat.meleeRange;
                 if (!sameLane || !inAttackRange) continue;
 
                 this.startAttack(enemy, defender);
@@ -73,7 +74,8 @@ export class DefenderCollision {
 
     private startAttack(enemy: Enemy, defender: Defender): void {
         enemy.isAttacking = true;
-        if (enemy.x < defender.x + 34) enemy.x = defender.x + 34;
+        const frontEdge = defender.x + SETTINGS.combat.meleeStandOffDistance;
+        if (enemy.x < frontEdge) enemy.x = frontEdge;
 
         const row = defender.getData("gridRow");
         const col = defender.getData("gridCol");

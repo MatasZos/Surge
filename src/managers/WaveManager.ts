@@ -212,7 +212,6 @@ export class WaveManager {
         if (this.wavePlan) {
             this.waveBudget = this.wavePlan.budget;
             if (this.getAffordableTypes().length > 0) return;
-            console.warn("Wave Plan budget cannot buy an enemy. Using the Waves settings.");
             this.wavePlan = undefined;
         }
         this.waveBudget = this.getBudgetForWave(this.currentLevel, this.currentWave);
@@ -267,7 +266,6 @@ export class WaveManager {
                 break;
             default:
                 this.maxWaves = 0;
-                console.warn("Unknown level:", level);
                 break;
         }
 

@@ -1,23 +1,18 @@
 import Phaser from "phaser";
+import { SETTINGS } from "../config/settings.ts";
 import { Enemy } from "./Enemy.ts";
 import { OverlordPhases } from "../boss/OverlordPhases.ts";
 import { SoundManager } from "../helpers/SoundManager.ts";
 
 
 export class BossEnemy extends Enemy {
-    static readonly HEALTH = 15000;
-    static readonly SPEED = 0;
-    static readonly DAMAGE = 200;
-    static readonly ATTACK_INTERVAL_MS = 2000;
-    static readonly EMP_COOLDOWN_MS = 20000;
-    static readonly EMP_DURATION_MS = 4000;
-    static readonly REINFORCEMENT_COOLDOWN_MS = 25000;
     
      readonly phases = new OverlordPhases();
     isOverdrive = false;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
-        super(scene, x, y, "overlord", BossEnemy.HEALTH, 0, BossEnemy.DAMAGE);
+        const settings = SETTINGS.enemies.boss;
+        super(scene, x, y, "overlord", settings.health, settings.speed, settings.damage);
         this.setDisplaySize(300, 300);
     }
 
@@ -37,7 +32,7 @@ export class BossEnemy extends Enemy {
         return;
     }
 
-        const threshold = BossEnemy.HEALTH * (1 - this.phases.phase * 0.25);
+        const threshold = SETTINGS.enemies.boss.health * (1 - this.phases.phase * SETTINGS.enemies.boss.shieldHealthStep);
 
         const damage = this.phases.phase < 4
             ? Math.min(amount, Math.max(0, this.health - threshold))
@@ -54,7 +49,7 @@ export class BossEnemy extends Enemy {
         }
     }
 
-        if (this.active && this.phases.update(this.health, BossEnemy.HEALTH)) {
+        if (this.active && this.phases.update(this.health, SETTINGS.enemies.boss.health)) {
             this.scene.events.emit("boss-shield-activated", this.phases.phase);
         }
 

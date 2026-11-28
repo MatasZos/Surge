@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { SETTINGS } from "../../config/settings.ts";
 import type { Enemy } from "../../enemies/Enemy.ts";
 import type { Projectile } from "../../objects/projectile.ts";
 import { BossEnemy } from "../../enemies/BossEnemy.ts";
@@ -40,7 +41,8 @@ export class ProjectileCollision {
 
             // Every lane can hit the boss.
             const bounds = projectile.getBounds();
-            return bounds.right >= enemy.x - 105 && bounds.left <= enemy.x + 100;
+            return bounds.right >= enemy.x - SETTINGS.combat.bossProjectileHitLeft &&
+                bounds.left <= enemy.x + SETTINGS.combat.bossProjectileHitRight;
         }
 
         return Phaser.Geom.Intersects.RectangleToRectangle(projectile.getBounds(), enemy.getBounds());
@@ -48,9 +50,9 @@ export class ProjectileCollision {
 
     private hitChainTarget(projectile: Projectile, enemy: Enemy): void {
         for (const other of this.enemies) {
-            if (!this.isNearbyEnemy(enemy, other, 120)) continue;
+            if (!this.isNearbyEnemy(enemy, other, SETTINGS.defenders.shooter.chainRange)) continue;
 
-            other.takeDamage(projectile.damage * 0.5);
+            other.takeDamage(projectile.damage * SETTINGS.defenders.shooter.chainDamageMultiplier);
             const lightning = enemy.scene.add.graphics();
             lightning.setDepth(100);
             lightning.lineStyle(8, 0x00ffff);
@@ -65,12 +67,12 @@ export class ProjectileCollision {
 
     private explodeAt(projectile: Projectile, enemy: Enemy): void {
         for (const other of this.enemies) {
-            if (this.isNearbyEnemy(enemy, other, 80)) {
-                other.takeDamage(projectile.damage * 0.5);
+            if (this.isNearbyEnemy(enemy, other, SETTINGS.defenders.dualbarrel.explosionRadius)) {
+                other.takeDamage(projectile.damage * SETTINGS.defenders.dualbarrel.explosionDamageMultiplier);
             }
         }
 
-        const explosion = projectile.scene.add.circle(enemy.x, enemy.y, 80, 0xff9900, 0.4);
+        const explosion = projectile.scene.add.circle(enemy.x, enemy.y, SETTINGS.defenders.dualbarrel.explosionRadius, 0xff9900, 0.4);
         explosion.setDepth(100);
         projectile.scene.time.delayedCall(200, () => explosion.destroy());
     }
@@ -86,7 +88,7 @@ export class ProjectileCollision {
         }
 
         if (projectile.frozenShock) {
-            enemy.applySlow(0, 2000);
+            enemy.applySlow(0, SETTINGS.defenders.cryogunner.freezeDurationMs);
         } else {
             enemy.applySlow(projectile.slowMultiplier, projectile.slowDurationMs);
         }

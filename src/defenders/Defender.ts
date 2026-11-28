@@ -29,8 +29,8 @@ export class Defender extends Phaser.GameObjects.Sprite {
 
         scene.add.existing(this);
 
-        this.health = 100;
-        this.damage = 20;
+        this.health = SETTINGS.combat.defaultDefenderHealth;
+        this.damage = SETTINGS.combat.defaultDefenderDamage;
         this.maxHealth = this.health;
 
         this.healthBar = scene.add.graphics();
@@ -177,7 +177,7 @@ export class Defender extends Phaser.GameObjects.Sprite {
         }
 
             //normal enemies stay in their own lane
-            return Math.abs(enemy.y - this.y) < 20;
+            return Math.abs(enemy.y - this.y) < SETTINGS.combat.defenderTargetLaneTolerance;
         });
     }
     takeDamage(amount: number) {
@@ -205,7 +205,6 @@ export class Defender extends Phaser.GameObjects.Sprite {
 
         this.updateHealthBar();
 
-        console.log("Defender health:", this.health);
 
         if (this.health <= 0) {
             this.setActive(false);

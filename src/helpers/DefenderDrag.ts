@@ -20,9 +20,9 @@ export class DefenderDrag {
     start(type: string, pointer: Phaser.Input.Pointer): void {
         this.draggedDefender = type;
 
-        this.dragImage = this.scene.add.image(pointer.x, pointer.y, type)
-            .setDisplaySize(65, 65)
-            .setDepth(100);
+        const frame = this.scene.textures.get(type).has("0") ? 0 : undefined;
+        this.dragImage = this.scene.add.image(pointer.x, pointer.y, type, frame).setDisplaySize(65, 65).setDepth(100);
+        if (type === "scrapper") this.dragImage.setFlipX(true);
 
         this.dragHighlight = this.scene.add.rectangle(
             0, 0, CELL_WIDTH, CELL_HEIGHT, 0x00ff99, 0.25

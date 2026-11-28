@@ -63,7 +63,6 @@ def write_csv(sheet_name, headers, settings):
         content=text.getvalue()
     )
 
-    print(f"Wrote {len(settings)} settings to {csv_file}.")
 
 
 def export_gameplay():
@@ -93,7 +92,6 @@ def export_gameplay():
 
     cel.file.write(file_resource="config/gameplay.csv",content=text.getvalue())
 
-    print(f"Wrote {len(settings)} settings to config/gameplay.csv.")
 
 
 def export_wave_plan():
@@ -121,9 +119,7 @@ def export_wave_plan():
         writer.writerow(values)
 
     cel.file.write(file_resource="config/wave_plan.csv", content=text.getvalue())
-    print("Wrote config/wave_plan.csv.")
 
 
 export_gameplay()
 export_wave_plan()
-print("SURGE spreadsheet export complete.")

@@ -161,7 +161,6 @@ export class Enemy extends Phaser.GameObjects.Sprite {
             });
         }
 
-        console.log("Enemy health:", this.health);
 
         if (this.health <= 0) {
 

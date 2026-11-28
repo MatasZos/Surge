@@ -7,10 +7,9 @@ export async function loadConfig(): Promise<void> {
 
     try {
         const response = await fetch(CONFIG_FILE, { cache: "no-store" });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        if (!response.ok) return;
         text = await response.text();
-    } catch (error) {
-        console.warn(`Could not load ${CONFIG_FILE}:`, error);
+    } catch {
         return;
     }
 
@@ -32,12 +31,10 @@ function applySetting(name: string, value: number): void {
     const group = findSettingsGroup(path);
 
     if (!key || !group || typeof group[key] !== "number") {
-        console.warn(`${CONFIG_FILE}: ignoring unknown setting ${name}`);
         return;
     }
 
     if (!Number.isFinite(value)) {
-        console.warn(`${CONFIG_FILE}: ignoring invalid value for ${name}`);
         return;
     }
 

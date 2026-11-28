@@ -107,7 +107,6 @@ export class DefenderUpgradeMenu {
         }
 
         if (cost === undefined || !Number.isFinite(cost) || cost <= 0) {
-            console.warn("Invalid upgrade cost for:", defender.getData("defenderType"));
             return;
         }
 

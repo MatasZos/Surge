@@ -257,6 +257,5 @@ private createDefender(type: DefenderType, x: number, y: number): Defender {
             this.defenders.splice(index, 1);
         }
         
-        console.log("Sold:", type, "Energy refunded:", refund);
     }
 }

@@ -40,6 +40,14 @@ export function loadDefenderAssets(scene: Phaser.Scene): void {
     scene.load.spritesheet("cryogunner-shoot-sheet", "assets/defenders/cryogunner/Shoot.png", cryogunnerFrames);
     scene.load.spritesheet("cryogunner-hurt-sheet", "assets/defenders/cryogunner/Hurt.png", cryogunnerFrames);
 
-    scene.load.image("landmine", "assets/defenders/landmine.png");
-    scene.load.image("scrapper", "assets/defenders/scrapper.png");
+    //LANDMINE 
+    const landmineFrames = { frameWidth: 80, frameHeight: 80 };
+    scene.load.spritesheet("landmine", "assets/defenders/landmine/Idle.png", landmineFrames);
+    scene.load.spritesheet("landmine-hurt-sheet", "assets/defenders/landmine/Hurt.png", landmineFrames);
+    scene.load.spritesheet("landmine-dead-sheet", "assets/defenders/landmine/Dead.png", landmineFrames);
+    scene.load.spritesheet("landmine-explosion-sheet", "assets/defenders/landmine/Explosion.png", landmineFrames);
+
+
+    //SCRAPPER
+    scene.load.spritesheet("scrapper", "assets/defenders/scrapper/Slime.png", {frameWidth: 32,frameHeight: 25,});
 }

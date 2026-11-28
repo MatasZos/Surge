@@ -57,7 +57,7 @@ export class Generator extends Defender {
 
     // Level 2 and 3 generate faster
     if (this.upgradeLevel >= 2) {
-        interval = Math.round(interval * 2 / 3);
+        interval = Math.round(interval * SETTINGS.defenders.generator.upgradedProductionIntervalMultiplier);
     }
 
     this.energyTimer = this.scene.time.addEvent({

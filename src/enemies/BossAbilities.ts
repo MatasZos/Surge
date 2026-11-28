@@ -1,5 +1,6 @@
 import Phaser from "phaser";
-import { BossEnemy } from "./BossEnemy.ts";
+import { SETTINGS } from "../config/settings.ts";
+import type { BossEnemy } from "./BossEnemy.ts";
 import { EnemyProjectile } from "../objects/EnemyProjectile.ts";
 import { GRID_ROWS } from "../constants.ts";
 import { Defender } from "../defenders/Defender.ts";
@@ -37,9 +38,9 @@ export class BossAbilities {
             this.shoot();
         }
 
-        if (this.empTimer >= BossEnemy.EMP_COOLDOWN_MS) {
+        if (this.empTimer >= SETTINGS.enemies.boss.empCooldownMs) {
             this.empTimer = 0;
-            this.onEMP(BossEnemy.EMP_DURATION_MS);
+            this.onEMP(SETTINGS.enemies.boss.empDurationMs);
         }
     }
 
@@ -64,19 +65,19 @@ export class BossAbilities {
 
     private getAttackInterval(): number {
         switch (this.boss.phases.phase) {
-            case 2: return 1700;
-            case 3: return 1400;
-            case 4: return 1000;
-            default: return 2000;
+            case 2: return SETTINGS.enemies.boss.phase2AttackIntervalMs;
+            case 3: return SETTINGS.enemies.boss.phase3AttackIntervalMs;
+            case 4: return SETTINGS.enemies.boss.phase4AttackIntervalMs;
+            default: return SETTINGS.enemies.boss.attackIntervalMs;
         }
     }
 
     private getAttackDamage(): number {
         switch (this.boss.phases.phase) {
-            case 2: return 250;
-            case 3: return 300;
-            case 4: return 400;
-            default: return 200;
+            case 2: return SETTINGS.enemies.boss.phase2AttackDamage;
+            case 3: return SETTINGS.enemies.boss.phase3AttackDamage;
+            case 4: return SETTINGS.enemies.boss.phase4AttackDamage;
+            default: return SETTINGS.enemies.boss.damage;
         }
     }
 }

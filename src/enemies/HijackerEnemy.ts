@@ -1,18 +1,16 @@
 import Phaser from "phaser";
+import { SETTINGS } from "../config/settings.ts";
 import { Enemy } from "./Enemy.ts";
 import { SoundManager } from "../helpers/SoundManager.ts";
 
 export class HijackerEnemy extends Enemy {
     private phase: "waiting" | "descending" | "grabbing" | "awaitingRemoval" | "ascending" | "escaped" = "waiting";
     private targetY = 0;
-    private readonly descentSpeed = 180;
-    private readonly ascentSpeed = 240;
-    private readonly grabDelayMs = 1000;
     private grabElapsedMs = 0;
 
     onGrabReady?: (hijacker: HijackerEnemy) => void;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, health = 450) {
+    constructor(scene: Phaser.Scene, x: number, y: number, health = SETTINGS.enemies.hijacker.health) {
         // Hijackers do not walk horizontally or deal melee damage.
         super(scene, x, y, "hijacker", health, 0, 0);
     }
@@ -36,7 +34,7 @@ export class HijackerEnemy extends Enemy {
         if (this.phase === "descending") {
             this.y = Math.min(
                 this.targetY,
-                this.y + this.descentSpeed * seconds
+                this.y + SETTINGS.enemies.hijacker.descentSpeed * seconds
             );
 
             // Start grabbing when the Hijacker reaches the defender
@@ -49,7 +47,7 @@ export class HijackerEnemy extends Enemy {
             this.grabElapsedMs += delta;
 
             // Wait 1 second before stealing
-            if (this.grabElapsedMs >= this.grabDelayMs) {
+            if (this.grabElapsedMs >= SETTINGS.enemies.hijacker.grabDelayMs) {
                 this.phase = "awaitingRemoval";
 
                 // Play grab sound once
@@ -61,7 +59,7 @@ export class HijackerEnemy extends Enemy {
 
         } else if (this.phase === "ascending") {
             // Fly upwards after stealing
-            this.y -= this.ascentSpeed * seconds;
+            this.y -= SETTINGS.enemies.hijacker.ascentSpeed * seconds;
 
             if (this.y < -80) {
                 this.phase = "escaped";

@@ -90,7 +90,7 @@ export class RangedEnemy extends Enemy {
             defender.active &&
             !(defender instanceof Landmine) &&
             defender.x < this.x &&
-            Math.abs(defender.y - this.y) < 30 &&
+            Math.abs(defender.y - this.y) < SETTINGS.combat.rangedTargetLaneTolerance &&
             this.x - defender.x <= SETTINGS.enemies.ranged.attackRange
         );
 

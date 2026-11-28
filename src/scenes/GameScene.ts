@@ -296,9 +296,9 @@ export class GameScene extends Phaser.Scene {
         this.events.once("stronghold-destroyed", onStrongholdDestroyed);
 
         const onDevAddEnergy = () => {
-            this.energyManager.addEnergy(500);
+            this.energyManager.addEnergy(SETTINGS.energy.developerEnergyBonus);
             this.updateEnergyText();
-            this.showNotification("+500 ENERGY");
+            this.showNotification("+" + SETTINGS.energy.developerEnergyBonus + " ENERGY");
         };
         this.events.on("dev-add-energy", onDevAddEnergy);
 

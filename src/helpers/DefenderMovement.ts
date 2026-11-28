@@ -1,5 +1,6 @@
 
 import Phaser from "phaser";
+import { SETTINGS } from "../config/settings.ts";
 
 import { Defender } from "../defenders/Defender.ts";
 import { Grid } from "../grid/Grid.ts";
@@ -10,7 +11,6 @@ import { GRID_ROWS, GRID_COLS } from "../constants.ts";
 
 export class DefenderMovement {
     private selectedDefender: Defender | null = null;
-    private readonly moveCost = 50;
 
     constructor(
         private grid: Grid,
@@ -99,7 +99,7 @@ export class DefenderMovement {
         }
 
         // Pay the movement cost
-        if (!this.energyManager.spendEnergy(this.moveCost)) {
+        if (!this.energyManager.spendEnergy(SETTINGS.energy.moveCost)) {
             this.showNotification("NOT ENOUGH ENERGY");
             return;
         }

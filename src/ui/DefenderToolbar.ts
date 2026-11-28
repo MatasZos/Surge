@@ -191,7 +191,10 @@ export class DefenderToolbar {
             this.onDragStart(type, pointer);
         });
 
-        const icon = this.scene.add.image(x, y - 25, type).setDisplaySize(56, 56).setDepth(12);
+        const frame = this.scene.textures.get(type).has("0") ? 0 : undefined;
+        const icon = this.scene.add.image(x, y - 25, type, frame).setDisplaySize(56, 56).setDepth(12);
+        if (type === "scrapper") icon.setFlipX(true);
+
         this.defenderIcons[type] = icon;
         this.scene.add.text(x, y + 14, name, { fontSize: "12px", color: "#ffffff"}).setOrigin(0.5).setDepth(12);
 
